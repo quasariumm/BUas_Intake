@@ -1,8 +1,8 @@
-#ifndef MAIN_MAIN_H_
-#define MAIN_MAIN_H_
+#ifndef MAIN_H_
+#define MAIN_H_
 
 namespace main {
   
 }
 
-#endif // MAIN_MAIN_H_
+#endif // MAIN_H_

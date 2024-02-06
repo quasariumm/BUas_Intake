@@ -8,4 +8,5 @@ _Italic_ text can give some context or indicate names.
 ## 2024-02-05
 Struggles with letting SFML work with windows using cmake. Got a lot of errors. Realized that I forgot to link _sfml-graphics_.
 
-## 2024-
+## 2024-02-06
+Started on the physics header file. Got to know some physics behind the bouncing of a ball.

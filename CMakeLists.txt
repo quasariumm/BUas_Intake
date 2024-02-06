@@ -40,11 +40,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_D
 
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE lib)
 
-if(MSYS OR WIN32)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system)
-else()
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-network sfml-window)
-endif()
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system)
 
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_17)
 
