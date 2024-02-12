@@ -18,6 +18,9 @@ int main() {
   window.setMaximumSize(window.getSize());
   window.setMinimumSize(window.getSize());
 
+  window.setFramerateLimit(0);
+  window.setVerticalSyncEnabled(true);
+
   sf::CircleShape shape(100.f);
   shape.setFillColor(sf::Color::Green);
 
