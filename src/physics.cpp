@@ -1,12 +1,16 @@
 #include "../include/physics.hpp"
-#include <SFML/System.hpp>
+#include "../include/math.hpp"
+#include <SFML/System/Vector2.hpp>
+#include <SFML/System/Angle.hpp>
+#include <cmath>
 
+const unsigned short NUM_SIDES = 4;
 enum sides {TOP, RIGHT, BOTTOM, LEFT};
 
-void Physics::Ball::applyForce(double deltaTime, double F, sf::Vector2f direction) {
+void PhysicsObjects::Ball::applyForce(float deltaTime, float F, sf::Vector2f direction) {
 
   // Get the acceleraion from the formula F = m * a
-  double acceleraion = F / mass;
+  float acceleraion = F / mass;
 
   // Multiply the acceleration by deltaTime (a = dv/dt) and multiply the result by the direction.
   direction *= static_cast<float>(acceleraion * deltaTime);
@@ -16,53 +20,74 @@ void Physics::Ball::applyForce(double deltaTime, double F, sf::Vector2f directio
 
 }
 
-void Physics::Ball::updatePoistion(double deltaTime) {
+PhysicsObjects::Ball::Ball(sf::Texture& texture, sf::Vector2f mid, float m, float r) :
+      mass(m), radius(r), midpoint(mid), Ball::Sprite(texture)
+{
+  float factor = (2 * r) / static_cast<float>(texture.getSize().x);
+  this->setScale({factor, factor});
+}
 
-  this->x += this->velocityVector.x * deltaTime;
-  this->y += this->velocityVector.y * deltaTime;
+void PhysicsObjects::Ball::setRadius(float newRadius) {
+  radius = newRadius;
+  float factor = (2 * newRadius) / static_cast<float>(this->getTexture().getSize().x);
+  this->setScale({factor, factor});
+}
+
+void PhysicsObjects::Ball::updatePoistion(float deltaTime) {
+
+  this->midpoint += this->velocityVector * deltaTime;
+  this->setPosition(this->midpoint);
 
 }
 
-/// Checks if the given coordinate is in the given (rotated) rectangle
-short checkIntersect(std::vector<sf::Vector2u> points, int x, int y) {
-  // For every edge pair of the object (top & bottom, left & right), determine the tangent
-  // Then, determine if the given coordinate is between the pair.
-  // If so, check if it is also between the other pair and return the closest edge.
+int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball) {
 
-  // TODO: Fix this drunk logic please or rewirte this more efficiently.
+  // This collision system is very sketchy, but that's game dev for you. No need to be fully realistic.
+  // For each side, get the formula of the line and check if its distance to the midpoint of the ball is smaller than the radius of the ball.
+  // If so, check if the found point on the line is inside the object.
+  // If that is also the case, the ball collides
 
-  bool betweenTopBottom, betweenLeftRight;
+  for (unsigned short i = 0; i < NUM_SIDES; ++i) {
 
-  sf::Vector2u differenceTopBottom = points[1] - points[0];
-  double tangentTopBottom = differenceTopBottom.y / static_cast<float>(differenceTopBottom.x);
-  if (
-    !(x < ((points[0].x < points[2].x) ? points[0].x : points[2].x) ||
-    x > ((points[1].x > points[3].x) ? points[1].x : points[3].x))
-  ) {
-    betweenTopBottom = 
-      y < (points[0].y + (x - points[0].x) * tangentTopBottom) ||
-      y > (points[2].y + (x - points[2].x) * tangentTopBottom);
-  }
-  sf::Vector2u differenceLeftRight = points[0] - points[3];
-  double tangentLeftRight = differenceLeftRight.x / static_cast<float>(differenceLeftRight.y);
-  if (
-    !(y > ((points[0].y > points[1].y) ? points[0].y : points[2].y) ||
-    y < ((points[2].y < points[3].y) ? points[1].y : points[3].y))
-  ) {
-    betweenLeftRight = 
-      x < (points[0].x + (y - points[0].x) * tangentLeftRight) ||
-      x > (points[2].x + (y - points[2].x) * tangentLeftRight);
-  }
+    // Get the formula
+    // The a and b can be filled in by using the normal of the side.
 
-  if (betweenTopBottom && betweenLeftRight) {
-    // TODO: Determine closest edge
+    sf::Vector2f direction_vector = (this->points[(i+1)%4] - this->points[i]).normalized();
+    sf::Vector2f normal = direction_vector.perpendicular();
+
+    float a, b, c;
+
+    a = normal.x;
+    b = normal.y;
+
+    c = -1 * (a * points[i].x + b * points[i].y);
+
+    float distanceToMidpoint = getDistance(a, b, c, ball.getMidpoint());
+
+    if (distanceToMidpoint < ball.getRadius()) {
+      // Hurray, at least the line is in the circle.
+      // Now to check if it is in the actual object, I multiply the normal with the distance and add it to the midpoint.
+      // If that point is on the line and not outside the side, it collides.
+      sf::Vector2f checkPoint = ball.getMidpoint() + distanceToMidpoint * normal;
+      if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
+        return i;
+      }
+      checkPoint = ball.getMidpoint() + distanceToMidpoint * -normal;
+      if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
+        return i;
+      }
+    }
+    
   }
 
   return -1;
+
 }
 
-void Physics::BouncyObject::checkBallCollision(Physics::Ball& ball) {
+void PhysicsObjects::BouncyObject::bounce(Ball& ball, int side) {
 
-  
+  // Take the inverse of the velocity vector of the ball and mirror it relative to this object's normal.
+  sf::Vector2f invVelocity = -ball.getDirection();
+  // sf::Vector2f newVelocity = cor * invVelocity.rotatedBy(invVelocity.angleTo(this->orientation.rotatedBy(90)));
 
 }

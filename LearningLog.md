@@ -10,3 +10,12 @@ Struggles with letting SFML work with windows using cmake. Got a lot of errors. 
 
 ## 2024-02-06
 Started on the physics header file. Got to know some physics behind the bouncing of a ball.
+
+## 2024-02-13
+Brainstormed for the collision system. Went through a couple of iterations:
+1. For `x` points on the ball, determine if the points are in between the sides by per side calculating the tangent and checking if the point is 'inside' the rectangle. (Trown away due to immense complexity)
+2. For some number of points on each side, check the distance to the midpoint of the ball. If the distance is smaller than the radius of the ball, the ball collides with the object.
+3. (Best) For every side, derive a formula of the format $$ax+by+c=0$$ and calculate the distance to the midpoint of the ball with the formula: $$\frac{|ax_0+by_0+c|}{\sqrt{a^2+b^2}}$$
+
+## 2024-02-14
+Finished the first version of the physics and collision system. Got to work on the drawing of the ball.  Got to know how the file system works and how to make prites and load textures from files.  
