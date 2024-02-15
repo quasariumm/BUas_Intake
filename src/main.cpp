@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "../include/physics.hpp"
-#include "SFML/System/Angle.hpp"
 
 const float WINDOW_SIZE_FACTOR = 0.9f;
 const short NULL_VALUE = -1;
@@ -42,10 +41,8 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<Phys
     //std::cout << collisionSide << "=>" << object.justBounced;
     if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
       object.bounce(ball, collisionSide);
-      std::cout << "Collided with obj with angle " << object.getOrientation().angle().asDegrees() << "(" << collisionSide << "=>" << object.getJustBounced() << ")" << std::endl;
     } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
       // This prevents the ball from inevitably staying in the first object it made contact with
-      std::cout << "Reset justBounced" << std::endl;
       object.setJustBounced(NULL_VALUE);
     }
   }
@@ -95,15 +92,15 @@ int main() {
   }
   ballTexture.setSmooth(true);
 
-  PhysicsObjects::Ball ball{ballTexture, {50.f,50.f}};
+  PhysicsObjects::Ball ball{ballTexture, {50.f,50.f}, 2, 30};
 
-  std::cout << "Ball midpoint: " << ball.getMidpoint().x << "," << ball.getMidpoint().y << std::endl;
-  std::cout << "Ball radius: " << ball.getRadius()<< std::endl;
-  std::cout << "Ball origin: " << ball.getOrigin().x << "," << ball.getOrigin().y << std::endl;
-  std::cout << "Ball bound offset: " << ball.getGlobalBounds().left << "," << ball.getGlobalBounds().top << std::endl;
-  std::cout << "Ball bound offset (local): " << ball.getLocalBounds().left << "," << ball.getLocalBounds().top << std::endl;
-  std::cout << "Ball bounds size: " << ball.getGlobalBounds().width << "," << ball.getGlobalBounds().height << std::endl;
-  std::cout << "Ball bounds size (local): " << ball.getLocalBounds().width << "," << ball.getLocalBounds().height << std::endl;
+  // std::cout << "Ball midpoint: " << ball.getMidpoint().x << "," << ball.getMidpoint().y << std::endl;
+  // std::cout << "Ball radius: " << ball.getRadius()<< std::endl;
+  // std::cout << "Ball origin: " << ball.getOrigin().x << "," << ball.getOrigin().y << std::endl;
+  // std::cout << "Ball bound offset: " << ball.getGlobalBounds().left << "," << ball.getGlobalBounds().top << std::endl;
+  // std::cout << "Ball bound offset (local): " << ball.getLocalBounds().left << "," << ball.getLocalBounds().top << std::endl;
+  // std::cout << "Ball bounds size: " << ball.getGlobalBounds().width << "," << ball.getGlobalBounds().height << std::endl;
+  // std::cout << "Ball bounds size (local): " << ball.getLocalBounds().width << "," << ball.getLocalBounds().height << std::endl;
 
   // Temp
   sf::Vector2u windowSize = window.getSize();
