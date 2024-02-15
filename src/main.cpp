@@ -2,14 +2,18 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/System/Clock.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <filesystem>
 #include <stdexcept>
 #include <iostream>
 #include <vector>
 
 #include "../include/physics.hpp"
-#include "SFML/System/Vector2.hpp"
+#include "SFML/System/Angle.hpp"
 
 const float WINDOW_SIZE_FACTOR = 0.9f;
 const short NULL_VALUE = -1;
@@ -17,7 +21,7 @@ const short NULL_VALUE = -1;
 float unitSize; // The conversion factor from SFML coordinates to meters
 
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
-  ball.applyForce(deltaTime, ball.getMass() * 9.81, {0,1});
+  ball.applyForce(deltaTime, ball.getMass() * (20 * 9.81), {0,-1});
 
   ball.updatePoistion(deltaTime);
 }
@@ -31,14 +35,34 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<Phys
     }
   }
   window.clear();
-
   applyForces(ball, deltaTime);
 
-  short collisionSide = bouncyObjectList[0].checkBallCollision(ball);
-  if (collisionSide != NULL_VALUE) {
-    std::cout << collisionSide << std::endl;
+  for (PhysicsObjects::BouncyObject& object : bouncyObjectList) {
+    short collisionSide = object.checkBallCollision(ball);
+    //std::cout << collisionSide << "=>" << object.justBounced;
+    if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
+      object.bounce(ball, collisionSide);
+      std::cout << "Collided with obj with angle " << object.getOrientation().angle().asDegrees() << "(" << collisionSide << "=>" << object.getJustBounced() << ")" << std::endl;
+    } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
+      // This prevents the ball from inevitably staying in the first object it made contact with
+      std::cout << "Reset justBounced" << std::endl;
+      object.setJustBounced(NULL_VALUE);
+    }
   }
 
+  // Just visual
+  sf::ConvexShape convex;
+
+  convex.setPointCount(3);
+
+  sf::Vector2u windowSize = window.getSize();
+  convex.setPoint(0, sf::Vector2f(0, windowSize.y - 40));
+  convex.setPoint(1, sf::Vector2f(0, windowSize.y));
+  convex.setPoint(2, sf::Vector2f(200, windowSize.y));
+
+  convex.setFillColor(sf::Color::Green);
+
+  window.draw(convex);
   window.draw(ball);
   window.display();
 
@@ -71,7 +95,15 @@ int main() {
   }
   ballTexture.setSmooth(true);
 
-  PhysicsObjects::Ball ball{ballTexture, {25.f,25.f}};
+  PhysicsObjects::Ball ball{ballTexture, {50.f,50.f}};
+
+  std::cout << "Ball midpoint: " << ball.getMidpoint().x << "," << ball.getMidpoint().y << std::endl;
+  std::cout << "Ball radius: " << ball.getRadius()<< std::endl;
+  std::cout << "Ball origin: " << ball.getOrigin().x << "," << ball.getOrigin().y << std::endl;
+  std::cout << "Ball bound offset: " << ball.getGlobalBounds().left << "," << ball.getGlobalBounds().top << std::endl;
+  std::cout << "Ball bound offset (local): " << ball.getLocalBounds().left << "," << ball.getLocalBounds().top << std::endl;
+  std::cout << "Ball bounds size: " << ball.getGlobalBounds().width << "," << ball.getGlobalBounds().height << std::endl;
+  std::cout << "Ball bounds size (local): " << ball.getLocalBounds().width << "," << ball.getLocalBounds().height << std::endl;
 
   // Temp
   sf::Vector2u windowSize = window.getSize();
@@ -82,8 +114,28 @@ int main() {
     sf::Vector2f(windowSize.x, windowSize.y + 100),
     sf::Vector2f(0, windowSize.y + 100)
   });
+  floor.setCOR(0.8f);
 
-  std::vector<PhysicsObjects::BouncyObject> boList = {floor};
+  PhysicsObjects::BouncyObject right_wall;
+  right_wall.setPoints({
+    sf::Vector2f(windowSize.x, 0), 
+    sf::Vector2f(windowSize.x + 100, 0),
+    sf::Vector2f(windowSize.x + 100, windowSize.y),
+    sf::Vector2f(windowSize.x, windowSize.y)
+  });
+  right_wall.setCOR(0.8f);
+
+  PhysicsObjects::BouncyObject obj1;
+  obj1.setPoints({
+    sf::Vector2f(0, windowSize.y - 40),
+    sf::Vector2f(200, windowSize.y),
+    sf::Vector2f(200, windowSize.y + 100),
+    sf::Vector2f(0, windowSize.y + 100),
+  });
+  obj1.setCOR(0.8f);
+  obj1.setOrientation(sf::Vector2f(200, -40).normalized());
+
+  std::vector<PhysicsObjects::BouncyObject> boList = {floor, right_wall, obj1};
 
   sf::Clock dt_clock;
 

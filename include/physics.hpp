@@ -20,7 +20,7 @@ namespace PhysicsObjects {
     void setMidpoint(const sf::Vector2f newMidpoint) {midpoint = newMidpoint;};
     sf::Vector2f getMidpoint() {return midpoint;};
 
-    void setVelocity(sf::Vector2f& newVelocity) {velocityVector = newVelocity;};
+    void setVelocity(const sf::Vector2f& newVelocity) {velocityVector = newVelocity;};
     float getVelocity() {return velocityVector.length();};
     sf::Vector2f getDirection() {return velocityVector.normalized();};
 
@@ -62,6 +62,9 @@ namespace PhysicsObjects {
     /// Bounces the ball. It calculates the needed force based on the elasticity of the ball and the surface and applies it.
     void bounce(Ball& ball, int side);
   
+    void setJustBounced(short jb) {justBounced = jb;};
+    short getJustBounced() {return justBounced;};
+
   private:
 
     // The points are in the following order:
@@ -70,6 +73,8 @@ namespace PhysicsObjects {
 
     sf::Vector2f orientation = {1, 0};
     float cor; // Coefficient of restitution e. This is the factor with which the ball gets slowed down upon impact.
+
+    short justBounced = -1;
 
   };
 
