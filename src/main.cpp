@@ -3,6 +3,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/System/Clock.hpp>
@@ -13,19 +14,25 @@
 #include <vector>
 
 #include "../include/physics.hpp"
+#include "../include/level.hpp"
 
 const float WINDOW_SIZE_FACTOR = 0.9f;
 const short NULL_VALUE = -1;
 
-float unitSize; // The conversion factor from SFML coordinates to meters
+float unitSize = 80.f; // The conversion factor from SFML coordinates to meters
+
+sf::Vector2u windowSize;
+
+sf::Texture wallsTexture;
+sf::Texture propsTexture;
 
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
-  ball.applyForce(deltaTime, ball.getMass() * (20 * 9.81), {0,-1});
+  ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
 
   ball.updatePoistion(deltaTime);
 }
 
-void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<PhysicsObjects::BouncyObject>& bouncyObjectList, float deltaTime) {
+void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<PhysicsObjects::BouncyObject>& bouncyObjectList, Tilemap& tm, float deltaTime) {
 
   sf::Event event;
   while (window.pollEvent(event)) {
@@ -47,19 +54,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<Phys
     }
   }
 
-  // Just visual
-  sf::ConvexShape convex;
-
-  convex.setPointCount(3);
-
-  sf::Vector2u windowSize = window.getSize();
-  convex.setPoint(0, sf::Vector2f(0, windowSize.y - 40));
-  convex.setPoint(1, sf::Vector2f(0, windowSize.y));
-  convex.setPoint(2, sf::Vector2f(200, windowSize.y));
-
-  convex.setFillColor(sf::Color::Green);
-
-  window.draw(convex);
+  tm.drawPropsWalls(window, wallsTexture, propsTexture, sf::Vector2i(128, 128), unitSize);
   window.draw(ball);
   window.display();
 
@@ -83,6 +78,11 @@ int main() {
   window.setFramerateLimit(0);
   window.setVerticalSyncEnabled(true);
 
+  // Set the unit size (conversion from pixels to 'meters') to 1/18 (16x16 for the level, 1 on eacht side for the wall tiles) of the screen width
+  unitSize = static_cast<float>(window.getSize().y) / 17.f;
+  std::cout << "Unit size is: " << unitSize <<std::endl;
+  windowSize = window.getSize();
+
   sf::Texture ballTexture;
   std::filesystem::path ballTexturePath = RESOURCES_PATH;
   ballTexturePath += "sprites/ball.png";
@@ -92,7 +92,7 @@ int main() {
   }
   ballTexture.setSmooth(true);
 
-  PhysicsObjects::Ball ball{ballTexture, {50.f,50.f}, 2, 30};
+  PhysicsObjects::Ball ball{ballTexture, {75.f,75.f}, 0.1, 0.25f * unitSize};
 
   // std::cout << "Ball midpoint: " << ball.getMidpoint().x << "," << ball.getMidpoint().y << std::endl;
   // std::cout << "Ball radius: " << ball.getRadius()<< std::endl;
@@ -102,43 +102,44 @@ int main() {
   // std::cout << "Ball bounds size: " << ball.getGlobalBounds().width << "," << ball.getGlobalBounds().height << std::endl;
   // std::cout << "Ball bounds size (local): " << ball.getLocalBounds().width << "," << ball.getLocalBounds().height << std::endl;
 
-  // Temp
-  sf::Vector2u windowSize = window.getSize();
-  PhysicsObjects::BouncyObject floor;
-  floor.setPoints({
-    sf::Vector2f(0, windowSize.y), 
-    sf::Vector2f(windowSize.x, windowSize.y), 
-    sf::Vector2f(windowSize.x, windowSize.y + 100),
-    sf::Vector2f(0, windowSize.y + 100)
-  });
-  floor.setCOR(0.8f);
+  // BouncyObjects
+  std::filesystem::path tmppath = RESOURCES_PATH;
+  tmppath += "levels/level0.ql";
 
-  PhysicsObjects::BouncyObject right_wall;
-  right_wall.setPoints({
-    sf::Vector2f(windowSize.x, 0), 
-    sf::Vector2f(windowSize.x + 100, 0),
-    sf::Vector2f(windowSize.x + 100, windowSize.y),
-    sf::Vector2f(windowSize.x, windowSize.y)
-  });
-  right_wall.setCOR(0.8f);
-
-  PhysicsObjects::BouncyObject obj1;
-  obj1.setPoints({
-    sf::Vector2f(0, windowSize.y - 40),
-    sf::Vector2f(200, windowSize.y),
+  BouncyObjects bo;
+  bo.makeWalls(window, unitSize);
+  bo.makeBO({
+    sf::Vector2f(0, windowSize.y - 70),
+    sf::Vector2f(200, windowSize.y - 30),
     sf::Vector2f(200, windowSize.y + 100),
     sf::Vector2f(0, windowSize.y + 100),
-  });
-  obj1.setCOR(0.8f);
-  obj1.setOrientation(sf::Vector2f(200, -40).normalized());
+  }, 0.8f, sf::Vector2f(200, -40));
 
-  std::vector<PhysicsObjects::BouncyObject> boList = {floor, right_wall, obj1};
+  bo.loadFromFile(tmppath, unitSize);
+
+  //TEST
+  std::filesystem::path wallsPath = RESOURCES_PATH;
+  wallsPath += "sprites/tilemapWall.png";
+
+  if (!wallsTexture.loadFromFile(wallsPath)) {
+    throw std::runtime_error("Failed to load wall tilemap!");
+  }
+
+  std::filesystem::path propsPath = RESOURCES_PATH;
+  propsPath += "sprites/tilemapProps.png";
+
+  if (!propsTexture.loadFromFile(propsPath)) {
+    throw std::runtime_error("Failed to load props tilemap!");
+  }
+
+  Tilemap tm;
+  tm.loadFromFile(tmppath);
 
   sf::Clock dt_clock;
 
   while (window.isOpen()) {
     float deltaTime = dt_clock.restart().asSeconds();
-    loop(window, ball, boList, deltaTime);
+    loop(window, ball, bo.getList(), tm, deltaTime);
   }
 
   return 0;

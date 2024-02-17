@@ -22,7 +22,7 @@ namespace PhysicsObjects {
 
     void setVelocity(const sf::Vector2f& newVelocity) {velocityVector = newVelocity;};
     float getVelocity() {return velocityVector.length();};
-    sf::Vector2f getDirection() {return velocityVector.normalized();};
+    sf::Vector2f getDirection();
 
     void setRadius(const float newRadius);
     float getRadius() {return radius;};

@@ -50,6 +50,13 @@ void PhysicsObjects::Ball::updatePoistion(float deltaTime) {
 
 }
 
+sf::Vector2f PhysicsObjects::Ball::getDirection() {
+  if (velocityVector.length() == 0) {
+    return sf::Vector2f();
+  }
+  return velocityVector.normalized();
+}
+
 int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball) {
 
   // This collision system is very sketchy, but that's game dev for you. No need to be fully realistic ;).
