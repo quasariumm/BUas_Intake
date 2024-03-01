@@ -2,8 +2,11 @@
 #include "../include/math.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Angle.hpp>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <iterator>
+#include <vector>
 
 const unsigned short NUM_SIDES = 4;
 enum sides {TOP, RIGHT, BOTTOM, LEFT};
@@ -57,12 +60,32 @@ sf::Vector2f PhysicsObjects::Ball::getDirection() {
   return velocityVector.normalized();
 }
 
-int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball) {
+unsigned short getBestSide(std::vector<unsigned short>& sides, std::vector<float>& distances) {
+  // float smallestAngle = 180.f;
+  // unsigned short sASide;
+  // for (unsigned short side : collSides) {
+  //   float angle = std::abs((-ball.getDirection() * ball.getVelocity()).angleTo(this->orientation.rotatedBy(sf::degrees(90 * (side - 1)))).asDegrees());
+  //   if (angle < smallestAngle) {
+  //     smallestAngle = angle;
+  //     sASide = side;
+  //   } 
+  // }
+  // return sASide;
+
+  // NOTE: Also doesn't work
+  auto smallestDistance = std::min_element(distances.begin(), distances.end());
+  return sides.at(std::distance(distances.begin(), smallestDistance));
+}
+
+int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball, float unitSize) {
 
   // This collision system is very sketchy, but that's game dev for you. No need to be fully realistic ;).
   // For each side, get the formula of the line and check if its distance to the midpoint of the ball is smaller than the radius of the ball.
   // If so, project the midpoint of the ball on the line and check if it is inside the object.
   // If that is also the case, the ball collides.
+
+  std::vector<unsigned short> collSides;
+  std::vector<float> distances;
 
   for (unsigned short i = 0; i < NUM_SIDES; ++i) {
 
@@ -100,7 +123,8 @@ int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball)
           (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
           (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
         ) {
-          return i;
+          collSides.push_back(i);
+          distances.push_back(distanceToMidpoint);
         }
       }
       checkPoint = ball.getMidpoint() + distanceToMidpoint * -normal;
@@ -115,11 +139,30 @@ int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball)
           (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
           (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
         ) {
-          return i;
+          collSides.push_back(i);
+          distances.push_back(distanceToMidpoint);
         }
       }
     }
     
+  }
+
+  for (unsigned short i = 1; i < distances.size(); ++i) {
+    if (std::abs(distances[i] - distances[i-1]) <= 0.1f * unitSize) {
+      std::clog << "In range" << std::endl;
+      std::vector<unsigned short> sides = std::vector<unsigned short>({static_cast<unsigned short>(i - 1), i});
+      return getBestSide(sides, distances);
+    }
+  }
+
+  if (collSides.size() == 1) {
+    return collSides[0];
+  }
+  // If more than one side collided, check which is the most plausible
+  // So we look which side the ball is closest to
+  else if (collSides.size() > 1) {
+    std::clog << "Hit on corner" << std::endl;
+    return getBestSide(collSides, distances);
   }
 
   return -1;

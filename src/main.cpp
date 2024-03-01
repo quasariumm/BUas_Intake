@@ -41,10 +41,17 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<Phys
     }
   }
   window.clear();
+
+  // Just for debugging's sake
+  if (deltaTime > 1) {
+    // Skip this frame
+    deltaTime = 0;
+  }
+
   applyForces(ball, deltaTime);
 
   for (PhysicsObjects::BouncyObject& object : bouncyObjectList) {
-    short collisionSide = object.checkBallCollision(ball);
+    short collisionSide = object.checkBallCollision(ball, unitSize);
     //std::cout << collisionSide << "=>" << object.justBounced;
     if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
       object.bounce(ball, collisionSide);
@@ -116,6 +123,8 @@ int main() {
   }, 0.8f, sf::Vector2f(200, -40));
 
   bo.loadFromFile(tmppath, unitSize);
+
+  std::clog << "BouncyObject list size: " << bo.getList().size() << std::endl;
 
   //TEST
   std::filesystem::path wallsPath = RESOURCES_PATH;

@@ -49,7 +49,7 @@ namespace PhysicsObjects {
   public:
 
     void setPoints(const std::vector<sf::Vector2f>& newPoints) {points = newPoints;};
-    auto& getPoints() {return points;};
+    std::vector<sf::Vector2f>& getPoints() {return points;};
 
     void setOrientation(const sf::Vector2f newOrientation) {orientation = newOrientation;};
     sf::Vector2f& getOrientation() {return orientation;};
@@ -57,7 +57,7 @@ namespace PhysicsObjects {
     void setCOR(const float newCor) {cor = newCor;};
 
     /// Checks if the ball is in this object. If so, return the side
-    int checkBallCollision(Ball& ball);
+    int checkBallCollision(Ball& ball, float unitSize);
 
     /// Bounces the ball. It calculates the needed force based on the elasticity of the ball and the surface and applies it.
     void bounce(Ball& ball, int side);
