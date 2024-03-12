@@ -9,6 +9,7 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
+#include <filesystem>
 #include <map>
 #include <string>
 #include <vector>
@@ -27,11 +28,17 @@ namespace UIElements {
   public:
     
     Button(
-      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const sf::Texture& tInner,
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
       const std::string buttonText = "", const unsigned short newCount = -1, const bool lockAspectRario = false
     ) :
-    outer(tOuter), inner(tInner), text(buttonText), position(vPos), size(vSize), count(newCount), lockAspect(lockAspectRario) {};
+    outer(tOuter), innerPath(pathInner), text(buttonText), position(vPos), size(vSize), count(newCount), lockAspect(lockAspectRario) {};
 
+    void setPosition(sf::Vector2f newPos) {position = newPos;};
+    sf::Vector2f& getPosition() {return position;};
+
+    void setSize(sf::Vector2u newSize) {size = newSize;};
+    sf::Vector2u& getSize() {return size;};
+    
     bool intersect(int x, int y);
     
     void draw(sf::RenderWindow& window);
@@ -43,7 +50,7 @@ namespace UIElements {
     const float textSize = 0.6f;
 
     sf::Texture outer;
-    sf::Texture inner;
+    std::filesystem::path innerPath;
     bool lockAspect;
     std::string text;
     int16_t count; // Diaplyed at the bottom right of the button if needed (-1 to turn off)
@@ -56,7 +63,7 @@ namespace UIElements {
   class Inventory {
   public:
 
-    Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, const sf::Texture& buttonOuter, const std::vector<sf::Texture>& textures);
+    Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter);
     ~Inventory();
 
     void setItems(std::vector<uint8_t>& newItems);
@@ -64,12 +71,16 @@ namespace UIElements {
 
     void setCounts(std::vector<int16_t>& newCounts) {counts = newCounts;};
     std::vector<int16_t>& getCounts() {return counts;};
+
+    void draw(sf::RenderWindow& window, const float unitSize);
   
   private:
 
     std::vector<uint8_t> items;
     std::vector<int16_t> counts;
     std::vector<UIElements::Button> buttons;
+
+    sf::Texture& outerTexture;
 
     std::string spritePath = std::string(RESOURCES_PATH) + "/res/sprites/";
 

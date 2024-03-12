@@ -5,6 +5,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <cmath>
 #include <cstdint>
 #include <filesystem>
 #include <stdexcept>
@@ -27,23 +28,30 @@ bool UIElements::Button::intersect(int x, int y) {
 
 void UIElements::Button::draw(sf::RenderWindow& window) {
   sf::Sprite outerSprite(this->outer);
-  sf::Sprite innerSprite(this->inner);
+  
+  sf::Texture innerTexture;
+
+  if (!innerTexture.loadFromFile(this->innerPath)) {
+    throw std::runtime_error("Failed to load the item texture.");
+  }
+
+  sf::Sprite innerSprite(innerTexture);
   sf::Text text(global.getFont(), this->text);
 
   outerSprite.setScale(sf::Vector2f(this->size.x / static_cast<float>(this->outer.getSize().x), this->size.y / static_cast<float>(this->outer.getSize().y)));
   outerSprite.setPosition(this->position);
   window.draw(outerSprite);
 
-  if (this->inner.getSize().x != 0 && this->inner.getSize().y != 0) {
+  if (innerTexture.getSize().x != 0 && innerTexture.getSize().y != 0) {
     sf::Vector2f innerSize = this->itemSize * static_cast<sf::Vector2f>(this->size);
     sf::Vector2f factors;
     if (lockAspect) {
       unsigned short smallestSide = (this->size.x < this->size.y) ? this->size.x : this->size.y;
       smallestSide *= this->itemSize;
-      const float yToXAspect = this->inner.getSize().x / static_cast<float>(this->inner.getSize().y);
-      factors = sf::Vector2f((smallestSide * yToXAspect) / static_cast<float>(this->inner.getSize().x), smallestSide / static_cast<float>(this->inner.getSize().y));
+      const float yToXAspect = innerTexture.getSize().x / static_cast<float>(innerTexture.getSize().y);
+      factors = sf::Vector2f((smallestSide * yToXAspect) / static_cast<float>(innerTexture.getSize().x), smallestSide / static_cast<float>(innerTexture.getSize().y));
     } else {
-      factors = sf::Vector2f(innerSize.x / static_cast<float>(this->inner.getSize().x), innerSize.y / static_cast<float>(this->inner.getSize().y));
+      factors = sf::Vector2f(innerSize.x / static_cast<float>(innerTexture.getSize().x), innerSize.y / static_cast<float>(innerTexture.getSize().y));
     }
     innerSprite.setScale(factors);
     innerSprite.setPosition(this->position + 0.5f * (1.f - this->itemSize) * static_cast<sf::Vector2f>(this->size));
@@ -66,12 +74,16 @@ void UIElements::Button::draw(sf::RenderWindow& window) {
   }
 }
 
-// TODO: Refactor a bit. Turn textures into std::filesystem::path and in Button convert to sf::Texture.
-
-UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, const sf::Texture& buttonOuter, const std::vector<sf::Texture>& textures)
-: items(newItems), counts(newCounts) {
-  for (sf::Texture texture : textures) {
-    this->buttons.push_back(UIElements::Button(buttonOuter, sf::Vector2f(), sf::Vector2u(), texture));
+/////////////////////////////////////////////////////////////////////////
+/// \brief Initialises the Inventory class.
+/// \param newItems Item IDs of the items in the inventory.
+/// \param newCounts Spreaks for itself.
+/// \param buttonOuter The texture for the background of the button.
+////////////////////////////////////////////////////////////////////////
+UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
+: items(newItems), counts(newCounts), outerTexture(buttonOuter) {
+  for (uint8_t item : newItems) {
+    this->buttons.push_back(UIElements::Button(buttonOuter, sf::Vector2f(), sf::Vector2u(), this->itemIdToPath[item]));
   }
 }
 
@@ -79,6 +91,56 @@ void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
   this->items = newItems;
   this->buttons = {};
   for (uint8_t item : newItems) {
-    // this->buttons.push_back();
+    this->buttons.push_back(UIElements::Button(this->outerTexture, sf::Vector2f(), sf::Vector2u(), this->itemIdToPath[item]));
+  }
+}
+
+/// \brief Draws the inventory on the screen.
+/// \param window The RenderWindow to draw the inventory on.
+/// \param unitSize The size of one unit as a float. A unit is defined in src/main.cpp
+void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize) {
+  // Update the position of the buttons to display the items properly in the center of the screen.
+  // If the number of items is odd, make one item the middle one and offset the rest accordingly.
+  // If the number of items is even, set the middle to the middle of the screen and offset the items accordingly.
+  sf::Vector2u windowSize = window.getSize();
+
+  sf::Vector2f middle = sf::Vector2f(windowSize.x / 2.f, windowSize.y * 0.8f);
+  float offset;
+  const float PADDING = 0.3f * unitSize;
+
+  const sf::Vector2u SIZE = sf::Vector2u(2 * unitSize, 2 * unitSize);
+
+  std::vector<UIElements::Button>::iterator left, right;
+  if (this->items.size() % 2 == 0) {
+
+    left = this->buttons.begin() + (this->buttons.size() / 2) - 1;
+    right = ++left;
+
+    offset = -0.5f * PADDING;
+
+  } else {
+    
+    std::vector<UIElements::Button>::iterator middleButton = this->buttons.begin() + floor(this->buttons.size() / 2);
+    middleButton->setSize(SIZE);
+    middleButton->setPosition(middle - 0.5f * static_cast<sf::Vector2f>(SIZE));
+    middleButton->draw(window);
+
+    offset = unitSize;
+
+    left = --middleButton;
+    right = ++middleButton;
+
+  }
+
+  // Place the buttons
+  uint8_t count = 1;
+  for (;left >= this->buttons.begin() && right <= this->buttons.end(); left--, right++, count++) {
+    left->setSize(SIZE);
+    left->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
+    left->draw(window);
+
+    right->setSize(SIZE);
+    right->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
+    right->draw(window);
   }
 }
