@@ -1,3 +1,14 @@
+/**
+ * @file math.cpp
+ * @author Patrick Vreeburg
+ * @brief Handles some mathematical calculations.
+ * @version 0.1
+ * @date 2024-02-14
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #include "../include/math.hpp"
 #include <SFML/System.hpp>
 #include <cmath>

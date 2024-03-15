@@ -1,3 +1,14 @@
+/**
+ * @file physics.cpp
+ * @author Patrick Vreeburg
+ * @brief Handles the physics of the game
+ * @version 0.1
+ * @date 2024-02-06
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #include "../include/physics.hpp"
 #include "../include/math.hpp"
 #include <SFML/System/Vector2.hpp>
@@ -20,7 +31,7 @@ void PhysicsObjects::Ball::applyForce(float deltaTime, float F, sf::Vector2f dir
   // Get the acceleraion from the formula F = m * a
   float acceleraion = F / mass;
 
-  // Multiply the acceleration by deltaTime (a = dv/dt) and multiply the result by the direction.
+  // Multiply the acceleration by deltaTime (a = dv/dt) and multiply the result by the direction
   direction *= static_cast<float>(acceleraion * deltaTime);
 
   // Update the velocity by adding the result to the current velocity
@@ -61,6 +72,9 @@ sf::Vector2f PhysicsObjects::Ball::getDirection() {
 }
 
 unsigned short getBestSide(std::vector<unsigned short>& sides, std::vector<float>& distances) {
+  // Get the distance to both sides. Grab the smallest distance (x) and get the position of the ball x pixels back.
+  // Then, check wich side is closest.
+
   // float smallestAngle = 180.f;
   // unsigned short sASide;
   // for (unsigned short side : collSides) {

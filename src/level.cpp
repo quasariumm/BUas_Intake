@@ -1,3 +1,14 @@
+/**
+ * @file level.cpp
+ * @author Patrick Vreeburg
+ * @brief Handles the reading and drawind of the levels.
+ * @version 0.1
+ * @date 2024-02-17
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #include "../include/level.hpp"
 #include "physics.hpp"
 

@@ -22,8 +22,8 @@ void UIElements::Global::initFont() {
   }
 }
 
-bool UIElements::Button::intersect(int x, int y) {
-  return (x >= this->position.x && x <= this->position.x + this->size.x && y >= this->position.y && y <= this->position.y + this->size.y);
+bool UIElements::Button::intersect(sf::Vector2f& pos) {
+  return (pos.x >= this->position.x && pos.x <= this->position.x + this->size.x && pos.y >= this->position.y && pos.y <= this->position.y + this->size.y);
 }
 
 void UIElements::Button::draw(sf::RenderWindow& window) {
@@ -74,12 +74,6 @@ void UIElements::Button::draw(sf::RenderWindow& window) {
   }
 }
 
-/////////////////////////////////////////////////////////////////////////
-/// \brief Initialises the Inventory class.
-/// \param newItems Item IDs of the items in the inventory.
-/// \param newCounts Spreaks for itself.
-/// \param buttonOuter The texture for the background of the button.
-////////////////////////////////////////////////////////////////////////
 UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
 : items(newItems), counts(newCounts), outerTexture(buttonOuter) {
   for (uint8_t item : newItems) {
@@ -95,9 +89,6 @@ void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
   }
 }
 
-/// \brief Draws the inventory on the screen.
-/// \param window The RenderWindow to draw the inventory on.
-/// \param unitSize The size of one unit as a float. A unit is defined in src/main.cpp
 void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize) {
   // Update the position of the buttons to display the items properly in the center of the screen.
   // If the number of items is odd, make one item the middle one and offset the rest accordingly.

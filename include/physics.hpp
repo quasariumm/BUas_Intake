@@ -12,25 +12,93 @@ namespace PhysicsObjects {
 
   public:
 
+    /**
+     * @brief Construct a new Ball object
+     * 
+     * @param texture The texture for the ball
+     * @param mid Midpoint
+     * @param m Mass
+     * @param r Radius
+     */
     Ball(sf::Texture& texture, sf::Vector2f mid, float m = 1, float r = 50);
     
+    /**
+     * @brief Set the mass
+     * 
+     * @param newMass The new mass
+     */
     void setMass(const float newMass) {mass = newMass;};
+
+    /**
+     * @brief Get the mass
+     *
+     * @return float The mass
+     */
     float getMass() {return mass;};
 
+    /**
+     * @brief Set the midpoint
+     * 
+     * @param newMidpoint The new midpoint
+     */
     void setMidpoint(const sf::Vector2f newMidpoint) {midpoint = newMidpoint;};
-    sf::Vector2f getMidpoint() {return midpoint;};
 
+    /**
+     * @brief Get the midpoint
+     * 
+     * @return sf::Vector2f& A reference to the midpoint vector 
+     */
+    sf::Vector2f& getMidpoint() {return midpoint;};
+
+    /**
+     * @brief Set the velocity
+     * 
+     * @param newVelocity The new velocity
+     */
     void setVelocity(const sf::Vector2f& newVelocity) {velocityVector = newVelocity;};
+
+    /**
+     * @brief Get the velocity
+     * 
+     * @return float The velocity (length of the velocityVector).
+     */
     float getVelocity() {return velocityVector.length();};
+    
+    /**
+     * @brief Get the direction
+     * 
+     * @return sf::Vector2f The direction in wich the ball moves. It is velocityVector normalized
+     */
     sf::Vector2f getDirection();
 
+    /**
+     * @brief Set the radius
+     * 
+     * @param newRadius The new radius
+     */
     void setRadius(const float newRadius);
+
+    /**
+     * @brief Get the radius
+     * 
+     * @return float The radius
+     */
     float getRadius() {return radius;};
 
-    /// Applies force F in Newton (kg m s^-2) in the given 2D direction vector
+    /**
+     * @brief Applies force F in Newton (kg m s^-2) in the given 2D direction vector
+     * 
+     * @param deltaTime The time passed between the last frame and now
+     * @param F The force
+     * @param direction The direction
+     */
     void applyForce(float deltaTime, float F, sf::Vector2f direction);
 
-    /// Updates the position based on the current velocity.
+    /**
+     * @brief Updates the position based on the current velocity.
+     *
+     * @param deltaTime The time passed between the last frame and now
+     */
     void updatePoistion(float deltaTime);
 
   private:
@@ -44,6 +112,7 @@ namespace PhysicsObjects {
 
   };
 
+  // TODO: document
   class BouncyObject {
   
   public:

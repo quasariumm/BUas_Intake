@@ -1,3 +1,14 @@
+/**
+ * @file main.cpp
+ * @author Patrick Vreeburg
+ * @brief The main file.
+ * @version 0.1
+ * @date 2024-01-21
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
