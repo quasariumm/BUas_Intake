@@ -56,13 +56,7 @@ namespace UIElements {
       const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
       const std::string buttonText = "", const unsigned short newCount = -1, const bool lockAspectRario = false
     ) :
-    outer(tOuter), innerPath(pathInner), text(buttonText), position(vPos), size(vSize), count(newCount), lockAspect(lockAspectRario) {};
-
-    /**
-     * @brief Destroy the Button object
-     * 
-     */
-    ~Button();
+    outer(tOuter), innerPath(pathInner), text(buttonText), position(vPos), size(vSize), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), textSize(0.6f) {};
 
     /**
      * @brief Set the position
@@ -111,8 +105,8 @@ namespace UIElements {
   private:
 
     // Percentages/margins for both the inner sprite and the text
-    const float itemSize = 0.7f;
-    const float textSize = 0.6f;
+    float itemSize;
+    float textSize;
 
     sf::Texture outer;
     std::filesystem::path innerPath;
@@ -136,12 +130,6 @@ namespace UIElements {
      * @param buttonOuter The texture for the background of the button
      */
     Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter);
-    
-    /*
-     * @brief Destroy the Inventory object
-     * 
-     */
-    ~Inventory();
 
     /**
      * @brief Set the items
@@ -175,7 +163,7 @@ namespace UIElements {
      * @brief Draws the inventory by drawing all of the individual buttons
      * 
      * @param window The window on which it needs to be drawn
-     * @param unitSize The size of a unit. This is defined in \a main.cpp
+     * @param unitSize The size of a unit. This is defined in @a main.cpp
      */
     void draw(sf::RenderWindow& window, const float unitSize);
   

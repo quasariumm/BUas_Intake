@@ -26,7 +26,7 @@ public:
    * @param walls The wall texture atlas
    * @param props The props texture atlas
    * @param tileSize The size in pixels of a single texture in the atlas
-   * @param unitSize The size of one unit. This is defined in \a main.cpp
+   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
   void drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::Texture& props, sf::Vector2i tileSize, float unitSize);
 
@@ -36,7 +36,7 @@ public:
    * @param window The window on which it needs to be drawn
    * @param wholeTexture The pipe texture atlas
    * @param tileSize The size in pixels of a single texture in the atlas
-   * @param unitSize The size of one unit. This is defined in \a main.cpp
+   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
   void drawPipes(sf::RenderWindow& window, sf::Texture& wholeTexture, sf::Vector2i tileSize, float unitSize);
 
@@ -53,7 +53,7 @@ public:
    * @brief Generates the walls
    * 
    * @param window The window. Only needed for the size
-   * @param unitSize The size of one unit. This is defined in \a main.cpp
+   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
   void makeWalls(sf::RenderWindow& window, float unitSize);
 
@@ -70,7 +70,7 @@ public:
    * @brief Loads and generates the BouncyObjects from a level file (*.ql)
    * 
    * @param path The path to the level file
-   * @param unitSize The size of one unit. This is defined in \a main.cpp
+   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
   void loadFromFile(std::filesystem::path path, float unitSize);
 

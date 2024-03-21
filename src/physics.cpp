@@ -71,24 +71,12 @@ sf::Vector2f PhysicsObjects::Ball::getDirection() {
   return velocityVector.normalized();
 }
 
-unsigned short getBestSide(std::vector<unsigned short>& sides, std::vector<float>& distances) {
-  // Get the distance to both sides. Grab the smallest distance (x) and get the position of the ball x pixels back.
+unsigned short getBestSide(PhysicsObjects::Ball& ball, std::vector<unsigned short>& sides, std::vector<float>& distances) {
+  // Get the distance to both sides. Grab the smallest distance (x) and get the position of the ball x-1 pixels back.
   // Then, check wich side is closest.
-
-  // float smallestAngle = 180.f;
-  // unsigned short sASide;
-  // for (unsigned short side : collSides) {
-  //   float angle = std::abs((-ball.getDirection() * ball.getVelocity()).angleTo(this->orientation.rotatedBy(sf::degrees(90 * (side - 1)))).asDegrees());
-  //   if (angle < smallestAngle) {
-  //     smallestAngle = angle;
-  //     sASide = side;
-  //   } 
-  // }
-  // return sASide;
-
-  // NOTE: Also doesn't work
-  auto smallestDistance = std::min_element(distances.begin(), distances.end());
-  return sides.at(std::distance(distances.begin(), smallestDistance));
+  float smallestDistance = *std::min_element(distances.begin(), distances.end());
+  sf::Vector2f ballBackPos = ball.getPosition() - (smallestDistance - 1) * ball.getDirection();
+  // TODO: Check collision again without getting in an endless loop.
 }
 
 int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball, float unitSize) {
