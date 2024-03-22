@@ -36,6 +36,7 @@ sf::Vector2u windowSize;
 
 sf::Texture wallsTexture;
 sf::Texture propsTexture;
+sf::Texture pipesTexture;
 
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
@@ -43,7 +44,7 @@ void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.updatePoistion(deltaTime);
 }
 
-void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<PhysicsObjects::BouncyObject>& bouncyObjectList, Tilemap& tm, float deltaTime) {
+void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, float deltaTime) {
 
   sf::Event event;
   while (window.pollEvent(event)) {
@@ -53,7 +54,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<Phys
   }
   window.clear();
 
-  // Just for debugging's sake
+  // Just for debugging's sake. Stops the bal from abruptly teleporting down due to lag at the start.
   if (deltaTime > 1) {
     // Skip this frame
     deltaTime = 0;
@@ -61,9 +62,8 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<Phys
 
   applyForces(ball, deltaTime);
 
-  for (PhysicsObjects::BouncyObject& object : bouncyObjectList) {
+  for (PhysicsObjects::BouncyObject& object : level.getBouncyObjects().getList()) {
     short collisionSide = object.checkBallCollision(ball, unitSize);
-    //std::cout << collisionSide << "=>" << object.justBounced;
     if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
       object.bounce(ball, collisionSide);
     } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
@@ -72,8 +72,12 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, std::vector<Phys
     }
   }
 
-  tm.drawPropsWalls(window, wallsTexture, propsTexture, sf::Vector2i(128, 128), unitSize);
+  level.getTilemap().drawPropsWalls(window, wallsTexture, propsTexture, sf::Vector2i(128, 128), unitSize);
+  
   window.draw(ball);
+
+  level.getTilemap().drawPipes(window, pipesTexture, sf::Vector2i(128, 128), unitSize);
+  
   window.display();
 
 }
@@ -124,20 +128,9 @@ int main() {
   std::filesystem::path tmppath = RESOURCES_PATH;
   tmppath += "levels/level0.ql";
 
-  BouncyObjects bo;
-  bo.makeWalls(window, unitSize);
-  bo.makeBO({
-    sf::Vector2f(0, windowSize.y - 70),
-    sf::Vector2f(200, windowSize.y - 30),
-    sf::Vector2f(200, windowSize.y + 100),
-    sf::Vector2f(0, windowSize.y + 100),
-  }, 0.8f, sf::Vector2f(200, -40));
+  Level tmpLevel{tmppath};
 
-  bo.loadFromFile(tmppath, unitSize);
-
-  std::clog << "BouncyObject list size: " << bo.getList().size() << std::endl;
-
-  //TEST
+  // Load all of the texture atlases
   std::filesystem::path wallsPath = RESOURCES_PATH;
   wallsPath += "sprites/tilemapWall.png";
 
@@ -152,14 +145,21 @@ int main() {
     throw std::runtime_error("Failed to load props tilemap!");
   }
 
-  Tilemap tm;
-  tm.loadFromFile(tmppath);
+  std::filesystem::path pipesPath = RESOURCES_PATH;
+  pipesPath += "sprites/tilemapPipes.png";
+
+  if (!pipesTexture.loadFromFile(pipesPath)) {
+    throw std::runtime_error("Failed to load props tilemap!");
+  }
+
+  tmpLevel.initLevel(window, unitSize, wallsTexture, propsTexture, pipesTexture);
+  std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
 
   sf::Clock dt_clock;
 
   while (window.isOpen()) {
     float deltaTime = dt_clock.restart().asSeconds();
-    loop(window, ball, bo.getList(), tm, deltaTime);
+    loop(window, ball, tmpLevel, deltaTime);
   }
 
   return 0;

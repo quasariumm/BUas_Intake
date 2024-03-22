@@ -112,7 +112,6 @@ namespace PhysicsObjects {
 
   };
 
-  // TODO: document
   class BouncyObject {
   
   public:

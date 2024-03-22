@@ -87,4 +87,44 @@ private:
 
 };
 
+class Level {
+public:
+
+  /**
+   * @brief Construct a new Level object
+   * 
+   * @param filePath The path to the level file (.ql extension)
+   */
+  Level(std::filesystem::path filePath) : levelFilePath(filePath) {};
+
+  /**
+   * @brief Get the Tilemap object
+   * 
+   * @return Tilemap& A reference to the tilemap
+   */
+  Tilemap& getTilemap() {return tilemap;};
+
+  /**
+   * @brief Get the Bouncy Objects object
+   * 
+   * @return BouncyObjects& A reference to the BouncyObjects class
+   */
+  BouncyObjects& getBouncyObjects() {return bouncyObjects;};
+
+  /**
+   * @brief Initiates the level's tilemap and BouncyObjects
+   * 
+   * @param window The window it needs to be drawn on
+   * @param unitSize The size of one unit. This is defined in @a main.cpp
+   */
+  void initLevel(sf::RenderWindow& window, float unitSize, sf::Texture& walls, sf::Texture& props, sf::Texture& pipes);
+
+private:
+
+  std::filesystem::path levelFilePath;
+  Tilemap tilemap;
+  BouncyObjects bouncyObjects;
+
+};
+
 #endif //LEVEL_H_

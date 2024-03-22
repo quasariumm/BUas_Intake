@@ -16,8 +16,16 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <iterator>
 #include <vector>
+
+/**
+ * @brief A way to represent a side as a line of the format ax+by=c. Also includes the side index.
+ * 
+ */
+struct Side {
+  float a, b, c;
+  unsigned short i;
+};
 
 const unsigned short NUM_SIDES = 4;
 enum sides {TOP, RIGHT, BOTTOM, LEFT};
@@ -71,12 +79,25 @@ sf::Vector2f PhysicsObjects::Ball::getDirection() {
   return velocityVector.normalized();
 }
 
-unsigned short getBestSide(PhysicsObjects::Ball& ball, std::vector<unsigned short>& sides, std::vector<float>& distances) {
+unsigned short getBestSide(PhysicsObjects::Ball& ball, std::vector<Side>& sides, std::vector<float>& distances) {
   // Get the distance to both sides. Grab the smallest distance (x) and get the position of the ball x-1 pixels back.
   // Then, check wich side is closest.
   float smallestDistance = *std::min_element(distances.begin(), distances.end());
-  sf::Vector2f ballBackPos = ball.getPosition() - (smallestDistance - 1) * ball.getDirection();
-  // TODO: Check collision again without getting in an endless loop.
+  sf::Vector2f ballBackPos = ball.getPosition() - (smallestDistance - 3) * ball.getDirection();
+  
+  std::vector<unsigned short> collSides;
+  for (Side side : sides) {
+    float distanceToMidpoint = getDistance(side.a, side.b, side.c, ball.getMidpoint());
+    if (distanceToMidpoint < ball.getRadius()) {
+      collSides.push_back(side.i);
+    }
+  }
+
+  if (collSides.size() == 0) {
+    return sides[0].i;
+  }
+
+  return collSides[0];
 }
 
 int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball, float unitSize) {
@@ -86,7 +107,8 @@ int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball,
   // If so, project the midpoint of the ball on the line and check if it is inside the object.
   // If that is also the case, the ball collides.
 
-  std::vector<unsigned short> collSides;
+  std::vector<Side> collSides;
+  std::vector<Side> allSides;
   std::vector<float> distances;
 
   for (unsigned short i = 0; i < NUM_SIDES; ++i) {
@@ -107,64 +129,77 @@ int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball,
 
     c = -1 * (a * point1.x + b * point1.y);
 
+    allSides.push_back({a, b, c, i});
+
     float distanceToMidpoint = getDistance(a, b, c, ball.getMidpoint());
+    distances.push_back(distanceToMidpoint);
 
     if (distanceToMidpoint < ball.getRadius()) {
       // Hurray, at least the line is in the circle.
       // Now to check if it is in the actual object, I multiply the normal with the distance and add it to the midpoint.
       // If that point is on the line and not outside the side, it collides.
+
       sf::Vector2f checkPoint = ball.getMidpoint() + distanceToMidpoint * normal;
       if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
+        // If xDirection is true, the side is more horizontal than vertical
         bool xDirection = std::abs(point2.x - point1.x) > std::abs(point2.y - point1.y);
+        // Get the smallest and the biggest point based on the x or y coordinate (depending on xDirection).
         sf::Vector2f smallest = 
           (xDirection)
           ? ((point1.x < point2.x) ? point1 : point2)
           : ((point1.y < point2.y) ? point1 : point2);
         sf::Vector2f biggest = (smallest == point1) ? point2 : point1;
+        // Check if the point is between the edges, thus in the object. If so, we collided with the side.
         if (
           (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
           (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
         ) {
-          collSides.push_back(i);
-          distances.push_back(distanceToMidpoint);
+          collSides.push_back({a,b,c, i});
         }
       }
+
       checkPoint = ball.getMidpoint() + distanceToMidpoint * -normal;
+      // This is the same as the if-statement above.
       if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
+        // If xDirection is true, the side is more horizontal than vertical
         bool xDirection = std::abs(point2.x - point1.x) > std::abs(point2.y - point1.y);
+        // Get the smallest and the biggest point based on the x or y coordinate (depending on xDirection).
         sf::Vector2f smallest = 
           (xDirection)
           ? ((point1.x < point2.x) ? point1 : point2)
           : ((point1.y < point2.y) ? point1 : point2);
         sf::Vector2f biggest = (smallest == point1) ? point2 : point1;
+        // Check if the point is between the edges, thus in the object. If so, we collided with the side.
         if (
           (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
           (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
         ) {
-          collSides.push_back(i);
-          distances.push_back(distanceToMidpoint);
+          collSides.push_back({a,b,c, i});
         }
       }
     }
     
   }
 
+  // Check if the ball is near a corner. If so, determine and return the side that it hit first.
   for (unsigned short i = 1; i < distances.size(); ++i) {
+    // Check if both sides of a corner are even close enough to the ball.
+    if (!(distances[i] <= ball.getRadius() && distances[i-1] <= ball.getRadius())) {
+      continue;
+    }
     if (std::abs(distances[i] - distances[i-1]) <= 0.1f * unitSize) {
-      std::clog << "In range" << std::endl;
-      std::vector<unsigned short> sides = std::vector<unsigned short>({static_cast<unsigned short>(i - 1), i});
-      return getBestSide(sides, distances);
+      std::vector<Side> sides = std::vector<Side>({allSides[i-1], allSides[i]});
+      return getBestSide(ball, sides, distances);
     }
   }
 
   if (collSides.size() == 1) {
-    return collSides[0];
+    return collSides[0].i;
   }
   // If more than one side collided, check which is the most plausible
   // So we look which side the ball is closest to
   else if (collSides.size() > 1) {
-    std::clog << "Hit on corner" << std::endl;
-    return getBestSide(collSides, distances);
+    return getBestSide(ball, collSides, distances);
   }
 
   return -1;

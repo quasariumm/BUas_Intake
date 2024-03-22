@@ -111,7 +111,7 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
 
   } else {
     
-    std::vector<UIElements::Button>::iterator middleButton = this->buttons.begin() + floor(this->buttons.size() / 2);
+    std::vector<UIElements::Button>::iterator middleButton = this->buttons.begin() + floor(static_cast<float>(this->buttons.size()) / 2.f);
     middleButton->setSize(SIZE);
     middleButton->setPosition(middle - 0.5f * static_cast<sf::Vector2f>(SIZE));
     middleButton->draw(window);

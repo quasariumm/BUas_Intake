@@ -233,3 +233,21 @@ void BouncyObjects::loadFromFile(std::filesystem::path path, float unitSize) {
   }
 
 }
+
+void Level::initLevel(sf::RenderWindow& window, float unitSize, sf::Texture& walls, sf::Texture& props, sf::Texture& pipes) {
+
+  this->tilemap.loadFromFile(this->levelFilePath);
+  this->tilemap.drawPropsWalls(window, walls, props, sf::Vector2i(128, 128), unitSize);
+  
+  this->bouncyObjects.makeWalls(window, unitSize);
+  this->bouncyObjects.loadFromFile(this->levelFilePath, unitSize);
+
+  // ! This is just for testing. The following is temporaty
+  float windowYSize = window.getSize().y;
+  this->bouncyObjects.makeBO({
+    sf::Vector2f(0, windowYSize - 70),
+    sf::Vector2f(200, windowYSize - 30),
+    sf::Vector2f(200, windowYSize + 100),
+    sf::Vector2f(0, windowYSize + 100),
+  }, 0.8f, sf::Vector2f(200, -40));
+}
