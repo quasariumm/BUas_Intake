@@ -54,7 +54,7 @@ namespace UIElements {
      */
     Button(
       const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
-      const std::string buttonText = "", const unsigned short newCount = -1, const bool lockAspectRario = false
+      std::string buttonText = "", int16_t newCount = -1, bool lockAspectRario = false
     ) :
     outer(tOuter), innerPath(pathInner), text(buttonText), position(vPos), size(vSize), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), textSize(0.6f) {};
 
@@ -126,7 +126,7 @@ namespace UIElements {
      * @brief Construct a new Inventory object
      *
      * @param newItems Item IDs of the items in the inventory
-     * @param newCounts A list of all the item;s count
+     * @param newCounts A list of all the item's count
      * @param buttonOuter The texture for the background of the button
      */
     Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter);
@@ -150,7 +150,7 @@ namespace UIElements {
      * 
      * @param newCounts The new counts
      */
-    void setCounts(std::vector<int16_t>& newCounts) {counts = newCounts;};
+    void setCounts(std::vector<int16_t>& newCounts);
 
     /**
      * @brief Get the count list
@@ -175,7 +175,7 @@ namespace UIElements {
 
     sf::Texture& outerTexture;
 
-    std::string spritePath = std::string(RESOURCES_PATH) + "/res/sprites/";
+    std::string spritePath = std::string(RESOURCES_PATH) + "sprites/";
 
     std::map<uint8_t, std::filesystem::path> itemIdToPath = {
       {0, std::filesystem::path(spritePath + "ball.png")},

@@ -1,4 +1,15 @@
+/**
+ * @file ui_conf.cpp
+ * @author Patrick Vreeburg
+ * @brief Handles the UI elements and the user config
+ * @version 0.1
+ * @date 2024-03-01
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "../include/ui_conf.hpp"
+#include "SFML/Graphics/Color.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -67,25 +78,52 @@ void UIElements::Button::draw(sf::RenderWindow& window) {
   if (this->count > -1) {
     std::string countStr = std::to_string(this->count);
     sf::Text countText(global.getFont(), countStr);
-    text.setCharacterSize(0.1 * this->size.x);
+    countText.setCharacterSize(0.25 * this->size.x);
     sf::Vector2f sizeF = static_cast<sf::Vector2f>(this->size);
-    sf::Vector2f bottomRightPadded = this->position + sizeF - 0.05f * sizeF;
-    text.setPosition(bottomRightPadded - sf::Vector2f(0.1f * sizeF.x * static_cast<float>(countStr.length()), 0));
+
+    sf::Vector2f bottomRightPadded = this->position + sizeF - 0.1f * sizeF;
+    bottomRightPadded.y -= 0.05f * sizeF.y;
+    countText.setPosition(bottomRightPadded - sf::Vector2f(countText.getLocalBounds().width, countText.getLocalBounds().height));
+
+    countText.setFillColor(sf::Color(255, 255, 255));
+
+    window.draw(countText);
   }
 }
 
 UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
 : items(newItems), counts(newCounts), outerTexture(buttonOuter) {
-  for (uint8_t item : newItems) {
-    this->buttons.push_back(UIElements::Button(buttonOuter, sf::Vector2f(), sf::Vector2u(), this->itemIdToPath[item]));
+  // Initialise the font
+  global.initFont();
+
+  for (unsigned short i = 0; i < newItems.size(); ++i) {
+    uint8_t item = newItems[i];
+    int16_t count = newCounts[i];
+    this->buttons.push_back(UIElements::Button(buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], "", count, true));
   }
 }
 
 void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
   this->items = newItems;
   this->buttons = {};
-  for (uint8_t item : newItems) {
-    this->buttons.push_back(UIElements::Button(this->outerTexture, sf::Vector2f(), sf::Vector2u(), this->itemIdToPath[item]));
+  for (unsigned short i = 0; i < newItems.size(); ++i) {
+    uint8_t item = newItems[i];
+    int16_t count = this->counts[i];
+    this->buttons.push_back(UIElements::Button(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], "", count, true));
+  }
+}
+
+void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
+  if (newCounts.size() != this->items.size()) {
+    throw std::runtime_error("The new counts list has a size that is not equal to the item list size.");
+  }
+
+  this->counts = newCounts;
+  this->buttons = {};
+  for (unsigned short i = 0; i < this->items.size(); ++i) {
+    uint8_t item = this->items[i];
+    int16_t count = newCounts[i];
+    this->buttons.push_back(UIElements::Button(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], "", count, true));
   }
 }
 
@@ -99,7 +137,7 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
   float offset;
   const float PADDING = 0.3f * unitSize;
 
-  const sf::Vector2u SIZE = sf::Vector2u(2 * unitSize, 2 * unitSize);
+  const sf::Vector2u SIZE = sf::Vector2u(1.5f * unitSize, 1.5f * unitSize);
 
   std::vector<UIElements::Button>::iterator left, right;
   if (this->items.size() % 2 == 0) {

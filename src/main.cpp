@@ -19,13 +19,16 @@
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <cstdint>
 #include <filesystem>
 #include <stdexcept>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "../include/physics.hpp"
 #include "../include/level.hpp"
+#include "../include/ui_conf.hpp"
 
 const float WINDOW_SIZE_FACTOR = 0.9f;
 const short NULL_VALUE = -1;
@@ -44,7 +47,7 @@ void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.updatePoistion(deltaTime);
 }
 
-void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, float deltaTime) {
+void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime) {
 
   sf::Event event;
   while (window.pollEvent(event)) {
@@ -77,8 +80,21 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, fl
   window.draw(ball);
 
   level.getTilemap().drawPipes(window, pipesTexture, sf::Vector2i(128, 128), unitSize);
+
+  inventory.draw(window, unitSize);
   
   window.display();
+
+}
+
+void loadTexture(std::string pathFromRes, sf::Texture& value) {
+
+  std::filesystem::path imgPath = RESOURCES_PATH;
+  imgPath.append(pathFromRes);
+
+  if (!value.loadFromFile(imgPath)) {
+    throw std::runtime_error("Failed to load ball sprite!");
+  }
 
 }
 
@@ -106,12 +122,8 @@ int main() {
   windowSize = window.getSize();
 
   sf::Texture ballTexture;
-  std::filesystem::path ballTexturePath = RESOURCES_PATH;
-  ballTexturePath += "sprites/ball.png";
+  loadTexture("sprites/ball.png", ballTexture);
 
-  if (!ballTexture.loadFromFile(ballTexturePath)) {
-    throw std::runtime_error("Failed to load ball sprite!");
-  }
   ballTexture.setSmooth(true);
 
   PhysicsObjects::Ball ball{ballTexture, {75.f,75.f}, 0.1, 0.25f * unitSize};
@@ -124,42 +136,32 @@ int main() {
   // std::cout << "Ball bounds size: " << ball.getGlobalBounds().width << "," << ball.getGlobalBounds().height << std::endl;
   // std::cout << "Ball bounds size (local): " << ball.getLocalBounds().width << "," << ball.getLocalBounds().height << std::endl;
 
-  // BouncyObjects
+  // Initialise a test level
   std::filesystem::path tmppath = RESOURCES_PATH;
   tmppath += "levels/level0.ql";
 
   Level tmpLevel{tmppath};
-
+  
   // Load all of the texture atlases
-  std::filesystem::path wallsPath = RESOURCES_PATH;
-  wallsPath += "sprites/tilemapWall.png";
+  loadTexture("sprites/tilemapWall.png", wallsTexture);
+  loadTexture("sprites/tilemapProps.png", propsTexture);
+  loadTexture("sprites/tilemapPipes.png", pipesTexture);
 
-  if (!wallsTexture.loadFromFile(wallsPath)) {
-    throw std::runtime_error("Failed to load wall tilemap!");
-  }
-
-  std::filesystem::path propsPath = RESOURCES_PATH;
-  propsPath += "sprites/tilemapProps.png";
-
-  if (!propsTexture.loadFromFile(propsPath)) {
-    throw std::runtime_error("Failed to load props tilemap!");
-  }
-
-  std::filesystem::path pipesPath = RESOURCES_PATH;
-  pipesPath += "sprites/tilemapPipes.png";
-
-  if (!pipesTexture.loadFromFile(pipesPath)) {
-    throw std::runtime_error("Failed to load props tilemap!");
-  }
+  // Initialise the button outer texture and the items
+  sf::Texture buttonOuter;
+  loadTexture("sprites/buttonBackground.png", buttonOuter);
 
   tmpLevel.initLevel(window, unitSize, wallsTexture, propsTexture, pipesTexture);
   std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
+
+  // Create the inventory
+  UIElements::Inventory inventory{std::vector<uint8_t>{0,1,2}, std::vector<int16_t>{5,6,12}, buttonOuter};
 
   sf::Clock dt_clock;
 
   while (window.isOpen()) {
     float deltaTime = dt_clock.restart().asSeconds();
-    loop(window, ball, tmpLevel, deltaTime);
+    loop(window, ball, tmpLevel, inventory, deltaTime);
   }
 
   return 0;

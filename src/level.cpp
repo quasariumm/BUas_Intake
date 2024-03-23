@@ -1,7 +1,7 @@
 /**
  * @file level.cpp
  * @author Patrick Vreeburg
- * @brief Handles the reading and drawind of the levels.
+ * @brief Handles the reading and drawing of the levels.
  * @version 0.1
  * @date 2024-02-17
  * 
@@ -71,10 +71,8 @@ void Tilemap::loadFromFile(std::filesystem::path path) {
 
 void Tilemap::drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::Texture& props, sf::Vector2i tileSize, float unitSize) {
   
-  unsigned short wallsRows = walls.getSize().y / tileSize.y;
   unsigned short wallsCols = walls.getSize().x / tileSize.x;
   
-  unsigned short propsRows = props.getSize().y / tileSize.y;
   unsigned short propsCols = props.getSize().x / tileSize.x;
 
   for (unsigned short i = 0; i < 18; ++i) {
@@ -82,12 +80,14 @@ void Tilemap::drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::T
       if (this->map[i][j] == 0 || (this->map[i][j] > NUM_WALLS && this->map[i][j] <= NUM_WALLS + NUM_PIPES)) {
         continue;
       }
+
       sf::Sprite tile(walls);
+
       if (this->map[i][j] <= NUM_WALLS) {
         // Place the right wall
         tile.setTextureRect(
           sf::IntRect(sf::Vector2i(
-            (this->map[i][j] - 1) % wallsRows * tileSize.x,
+            (this->map[i][j] - 1) % wallsCols * tileSize.x,
             std::floor((this->map[i][j] - 1) / wallsCols) * tileSize.y), 
             tileSize)
         );
@@ -96,7 +96,7 @@ void Tilemap::drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::T
         // Place the right prop
         tile.setTextureRect(
           sf::IntRect(sf::Vector2i(
-            (this->map[i][j] - NUM_WALLS - NUM_PIPES - 1) % propsRows * tileSize.x,
+            (this->map[i][j] - NUM_WALLS - NUM_PIPES - 1) % propsCols * tileSize.x,
             std::floor((this->map[i][j] - NUM_WALLS - NUM_PIPES - 1) / propsCols) * tileSize.y), 
             tileSize)
         );
@@ -112,6 +112,30 @@ void Tilemap::drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::T
 }
 
 void Tilemap::drawPipes(sf::RenderWindow& window, sf::Texture& wholeTexture, sf::Vector2i tileSize, float unitSize) {
+
+  unsigned short pipesCols = wholeTexture.getSize().x / tileSize.x;
+
+  for (unsigned short i = 0; i < 18; ++i) {
+    for (unsigned short j = 0; j < 18; ++j) {
+      if (this->map[i][j] == 0 || this->map[i][j] <= NUM_WALLS || this->map[i][j] > NUM_WALLS + NUM_PIPES) {
+        continue;
+      }
+
+      sf::Sprite tile(wholeTexture);
+
+      // Place the right pipe
+      tile.setTextureRect(sf::IntRect(sf::Vector2i(
+        (this->map[i][j] - NUM_WALLS - 1) % pipesCols * tileSize.x,
+        std::floor((this->map[i][j] - NUM_WALLS - 1) / pipesCols) * tileSize.y), 
+        tileSize
+      ));
+
+      tile.setScale({unitSize / tileSize.x, unitSize / tileSize.y});
+      tile.setPosition({j * unitSize - 0.5f * unitSize, i * unitSize - 0.5f * unitSize});
+
+      window.draw(tile);
+    }
+  }
 
 }
 
