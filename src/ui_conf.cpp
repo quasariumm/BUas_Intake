@@ -9,7 +9,7 @@
  * 
  */
 #include "../include/ui_conf.hpp"
-#include "SFML/Graphics/Color.hpp"
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -133,8 +133,8 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
   // If the number of items is even, set the middle to the middle of the screen and offset the items accordingly.
   sf::Vector2u windowSize = window.getSize();
 
-  sf::Vector2f middle = sf::Vector2f(windowSize.x / 2.f, windowSize.y * 0.8f);
-  float offset;
+  sf::Vector2f middle = sf::Vector2f(windowSize.x / 2.f, windowSize.y * 0.9f);
+  float offset = 0.f;
   const float PADDING = 0.3f * unitSize;
 
   const sf::Vector2u SIZE = sf::Vector2u(1.5f * unitSize, 1.5f * unitSize);
@@ -143,9 +143,9 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
   if (this->items.size() % 2 == 0) {
 
     left = this->buttons.begin() + (this->buttons.size() / 2) - 1;
-    right = ++left;
+    right = left + 1;
 
-    offset = -0.5f * PADDING;
+    offset = 0.5f * PADDING + 0.5f * SIZE.x;
 
   } else {
     
@@ -154,22 +154,22 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
     middleButton->setPosition(middle - 0.5f * static_cast<sf::Vector2f>(SIZE));
     middleButton->draw(window);
 
-    offset = unitSize;
+    offset = SIZE.x + PADDING;
 
-    left = --middleButton;
-    right = ++middleButton;
+    left = middleButton - 1;
+    right = middleButton + 1;
 
   }
 
   // Place the buttons
-  uint8_t count = 1;
-  for (;left >= this->buttons.begin() && right <= this->buttons.end(); left--, right++, count++) {
+  uint8_t count = 0;
+  for (;left >= this->buttons.begin() && right != this->buttons.end(); left--, right++, count++) {
     left->setSize(SIZE);
-    left->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
+    left->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
     left->draw(window);
 
     right->setSize(SIZE);
-    right->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
+    right->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
     right->draw(window);
   }
 }

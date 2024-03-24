@@ -155,7 +155,7 @@ int main() {
   std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
 
   // Create the inventory
-  UIElements::Inventory inventory{std::vector<uint8_t>{0,1,2}, std::vector<int16_t>{5,6,12}, buttonOuter};
+  UIElements::Inventory inventory{std::vector<uint8_t>{0, 1, 2, 1, 2, 0}, std::vector<int16_t>{5, 6, 12, 13, 15, 56}, buttonOuter};
 
   sf::Clock dt_clock;
 

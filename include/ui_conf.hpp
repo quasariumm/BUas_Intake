@@ -59,6 +59,41 @@ namespace UIElements {
     outer(tOuter), innerPath(pathInner), text(buttonText), position(vPos), size(vSize), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), textSize(0.6f) {};
 
     /**
+     * @brief Set the text
+     * 
+     * @param newText The new text
+     */
+    void setText(std::string newText) {text = newText;};
+
+    /**
+     * @brief Get the text
+     * 
+     * @return std::string& 
+     */
+    std::string& getText() {return text;};
+
+    /**
+     * @brief Get the path of the texture of the item
+     * 
+     * @return std::filesystem::path& 
+     */
+    std::filesystem::path& getItemPath() {return innerPath;};
+
+    /**
+     * @brief Set the count
+     * 
+     * @param newCount The new count
+     */
+    void setCount(int16_t newCount) {count = newCount;};
+
+    /**
+     * @brief Get the count
+     * 
+     * @return int16_t& 
+     */
+    int16_t& getCount() {return count;};
+    
+    /**
      * @brief Set the position
      * 
      * @param newPos The new position
