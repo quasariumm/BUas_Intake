@@ -47,16 +47,12 @@ namespace UIElements {
      * @param tOuter The outer texture of the button
      * @param vPos The position of the button
      * @param vSize The size of the button
-     * @param pathInner The path to the image file of the item (optional)
      * @param buttonText Text that needs to be displayed on the button (optional)
-     * @param newCount How many of the item the player has (optional)
-     * @param lockAspectRario Locks the aspect ratio of the item sprite
      */
     Button(
-      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
-      std::string buttonText = "", int16_t newCount = -1, bool lockAspectRario = false
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = ""
     ) :
-    outer(tOuter), innerPath(pathInner), text(buttonText), position(vPos), size(vSize), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), textSize(0.6f) {};
+    outer(tOuter), text(buttonText), position(vPos), size(vSize), textSize(0.6f) {};
 
     /**
      * @brief Set the text
@@ -71,27 +67,6 @@ namespace UIElements {
      * @return std::string& 
      */
     std::string& getText() {return text;};
-
-    /**
-     * @brief Get the path of the texture of the item
-     * 
-     * @return std::filesystem::path& 
-     */
-    std::filesystem::path& getItemPath() {return innerPath;};
-
-    /**
-     * @brief Set the count
-     * 
-     * @param newCount The new count
-     */
-    void setCount(int16_t newCount) {count = newCount;};
-
-    /**
-     * @brief Get the count
-     * 
-     * @return int16_t& 
-     */
-    int16_t& getCount() {return count;};
     
     /**
      * @brief Set the position
@@ -120,6 +95,20 @@ namespace UIElements {
      * @return sf::Vector2u& A reference to the size vector.
      */
     sf::Vector2u& getSize() {return size;};
+
+    /**
+     * @brief Set the outer texture object
+     * 
+     * @param newTexture 
+     */
+    void setOuterTexture(sf::Texture newTexture) {outer = newTexture;};
+    
+    /**
+     * @brief Get the outer texture
+     * 
+     * @return sf::Texture& 
+     */
+    sf::Texture& getOuterTexture() {return outer;};
     
     /**
      * @brief Checks if a point is in the button using simple AABB
@@ -128,29 +117,96 @@ namespace UIElements {
      * @return true The point is in the button
      * @return false The point is not in the button
      */
-    bool intersect(sf::Vector2f& pos);
+    bool intersect(sf::Vector2i pos);
     
     /**
      * @brief Draws the button
      *
      * @param window The window on which it needs to be drawn
      */
-    void draw(sf::RenderWindow& window);
+    virtual void draw(sf::RenderWindow& window);
+
+    /**
+     * @brief The function to call when the button gets clicked
+     * 
+     */
+    virtual void onClick();
   
   private:
 
-    // Percentages/margins for both the inner sprite and the text
-    float itemSize;
+    // Percentage/margin the text
     float textSize;
 
     sf::Texture outer;
-    std::filesystem::path innerPath;
-    bool lockAspect;
     std::string text;
-    int16_t count; // Diaplyed at the bottom right of the button if needed (-1 to turn off)
 
     sf::Vector2f position;
     sf::Vector2u size;
+
+  };
+
+  class InventoryButton : public Button {
+
+  public:
+
+    /**
+     * @brief Construct a new Button object, either an image button or a text button
+     * 
+     * @param tOuter The outer texture of the button
+     * @param vPos The position of the button
+     * @param vSize The size of the button
+     * @param pathInner The path to the image file of the item (optional)
+     * @param newCount How many of the item the player has (optional)
+     * @param lockAspectRario Locks the aspect ratio of the item sprite
+     */
+    InventoryButton(
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
+      int16_t newCount = -1, bool lockAspectRario = false
+    ) :
+    Button(tOuter, vPos, vSize), innerPath(pathInner), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f) {};
+
+    /**
+     * @brief Get the path of the texture of the item
+     * 
+     * @return std::filesystem::path& 
+     */
+    std::filesystem::path& getItemPath() {return innerPath;};
+
+    /**
+     * @brief Set the count
+     * 
+     * @param newCount The new count
+     */
+    void setCount(int16_t newCount) {count = newCount;};
+
+    /**
+     * @brief Get the count
+     * 
+     * @return int16_t& 
+     */
+    int16_t& getCount() {return count;};
+
+    /**
+     * @brief Draws the button
+     * 
+     * @param window The window on which it needs to be drawn
+     */
+    void draw(sf::RenderWindow& window) override;
+
+    /**
+     * @brief The function to call when the button gets clicked
+     * 
+     */
+    void onClick() override;
+
+  private:
+
+    // Percentage/margin for the inner sprite
+    float itemSize;
+
+    std::filesystem::path innerPath;
+    bool lockAspect;
+    int16_t count; // Diaplyed at the bottom right of the button if needed (-1 to turn off)
 
   };
 
@@ -165,6 +221,12 @@ namespace UIElements {
      * @param buttonOuter The texture for the background of the button
      */
     Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter);
+
+    /**
+     * @brief Destroy the Inventory object
+     * 
+     */
+    ~Inventory();
 
     /**
      * @brief Set the items
@@ -195,6 +257,13 @@ namespace UIElements {
     std::vector<int16_t>& getCounts() {return counts;};
 
     /**
+     * @brief Get the buttons
+     * 
+     * @return std::vector<UIElements::Button>& 
+     */
+    std::vector<UIElements::InventoryButton*>& getButtons() {return buttons;};
+
+    /**
      * @brief Draws the inventory by drawing all of the individual buttons
      * 
      * @param window The window on which it needs to be drawn
@@ -206,7 +275,7 @@ namespace UIElements {
 
     std::vector<uint8_t> items;
     std::vector<int16_t> counts;
-    std::vector<UIElements::Button> buttons;
+    std::vector<UIElements::InventoryButton*> buttons;
 
     sf::Texture& outerTexture;
 

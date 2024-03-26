@@ -11,6 +11,7 @@
 
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -41,6 +42,8 @@ sf::Texture wallsTexture;
 sf::Texture propsTexture;
 sf::Texture pipesTexture;
 
+std::vector<UIElements::Button*> buttons;
+
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
 
@@ -51,9 +54,27 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
 
   sf::Event event;
   while (window.pollEvent(event)) {
-    if (event.type == sf::Event::Closed) {
-      window.close();
+
+    switch (event.type) {
+
+      case sf::Event::Closed:
+        window.close();
+        break;
+      
+      case sf::Event::MouseButtonPressed:
+        if (event.mouseButton.button != sf::Mouse::Button::Left) break;
+        // Check if the mouse clicked on any of the registered buttons
+        for (UIElements::Button* pButton : buttons) {
+          if (!pButton->intersect(sf::Mouse::getPosition(window))) continue;
+          pButton->onClick();
+        }
+        break;
+      
+      default:
+        break;
+
     }
+
   }
   window.clear();
 
@@ -156,6 +177,9 @@ int main() {
 
   // Create the inventory
   UIElements::Inventory inventory{std::vector<uint8_t>{0, 1, 2, 1, 2, 0}, std::vector<int16_t>{5, 6, 12, 13, 15, 56}, buttonOuter};
+  for (UIElements::InventoryButton* button : inventory.getButtons()) {
+    buttons.push_back(button);
+  }
 
   sf::Clock dt_clock;
 

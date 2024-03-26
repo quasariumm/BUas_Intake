@@ -19,6 +19,7 @@
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -33,12 +34,32 @@ void UIElements::Global::initFont() {
   }
 }
 
-bool UIElements::Button::intersect(sf::Vector2f& pos) {
+bool UIElements::Button::intersect(sf::Vector2i pos) {
   return (pos.x >= this->position.x && pos.x <= this->position.x + this->size.x && pos.y >= this->position.y && pos.y <= this->position.y + this->size.y);
 }
 
 void UIElements::Button::draw(sf::RenderWindow& window) {
   sf::Sprite outerSprite(this->outer);
+
+  sf::Text text(global.getFont(), this->text);
+
+  outerSprite.setScale(sf::Vector2f(this->size.x / static_cast<float>(this->outer.getSize().x), this->size.y / static_cast<float>(this->outer.getSize().y)));
+  outerSprite.setPosition(this->position);
+  window.draw(outerSprite);
+
+  if (!this->text.empty()) {
+    text.setCharacterSize((static_cast<sf::Vector2f>(this->size) * this->textSize).x / this->text.length());
+    text.setPosition(this->position + 0.5f * (1.f - this->textSize) * static_cast<sf::Vector2f>(this->size));
+    window.draw(text);
+  }
+}
+
+void UIElements::Button::onClick() {
+  std::clog << "Button click" << std::endl;
+}
+
+void UIElements::InventoryButton::draw(sf::RenderWindow& window) {
+  sf::Sprite outerSprite(this->getOuterTexture());
   
   sf::Texture innerTexture;
 
@@ -47,17 +68,16 @@ void UIElements::Button::draw(sf::RenderWindow& window) {
   }
 
   sf::Sprite innerSprite(innerTexture);
-  sf::Text text(global.getFont(), this->text);
 
-  outerSprite.setScale(sf::Vector2f(this->size.x / static_cast<float>(this->outer.getSize().x), this->size.y / static_cast<float>(this->outer.getSize().y)));
-  outerSprite.setPosition(this->position);
+  outerSprite.setScale(sf::Vector2f(this->getSize().x / static_cast<float>(this->getOuterTexture().getSize().x), this->getSize().y / static_cast<float>(this->getOuterTexture().getSize().y)));
+  outerSprite.setPosition(this->getPosition());
   window.draw(outerSprite);
 
   if (innerTexture.getSize().x != 0 && innerTexture.getSize().y != 0) {
-    sf::Vector2f innerSize = this->itemSize * static_cast<sf::Vector2f>(this->size);
+    sf::Vector2f innerSize = this->itemSize * static_cast<sf::Vector2f>(this->getSize());
     sf::Vector2f factors;
     if (lockAspect) {
-      unsigned short smallestSide = (this->size.x < this->size.y) ? this->size.x : this->size.y;
+      unsigned short smallestSide = (this->getSize().x < this->getSize().y) ? this->getSize().x : this->getSize().y;
       smallestSide *= this->itemSize;
       const float yToXAspect = innerTexture.getSize().x / static_cast<float>(innerTexture.getSize().y);
       factors = sf::Vector2f((smallestSide * yToXAspect) / static_cast<float>(innerTexture.getSize().x), smallestSide / static_cast<float>(innerTexture.getSize().y));
@@ -65,23 +85,17 @@ void UIElements::Button::draw(sf::RenderWindow& window) {
       factors = sf::Vector2f(innerSize.x / static_cast<float>(innerTexture.getSize().x), innerSize.y / static_cast<float>(innerTexture.getSize().y));
     }
     innerSprite.setScale(factors);
-    innerSprite.setPosition(this->position + 0.5f * (1.f - this->itemSize) * static_cast<sf::Vector2f>(this->size));
+    innerSprite.setPosition(this->getPosition() + 0.5f * (1.f - this->itemSize) * static_cast<sf::Vector2f>(this->getSize()));
     window.draw(innerSprite);
-  }
-
-  if (!this->text.empty()) {
-    text.setCharacterSize((static_cast<sf::Vector2f>(this->size) * this->textSize).x / this->text.length());
-    text.setPosition(this->position + 0.5f * (1.f - this->textSize) * static_cast<sf::Vector2f>(this->size));
-    window.draw(text);
   }
 
   if (this->count > -1) {
     std::string countStr = std::to_string(this->count);
     sf::Text countText(global.getFont(), countStr);
-    countText.setCharacterSize(0.25 * this->size.x);
-    sf::Vector2f sizeF = static_cast<sf::Vector2f>(this->size);
+    countText.setCharacterSize(0.25 * this->getSize().x);
+    sf::Vector2f sizeF = static_cast<sf::Vector2f>(this->getSize());
 
-    sf::Vector2f bottomRightPadded = this->position + sizeF - 0.1f * sizeF;
+    sf::Vector2f bottomRightPadded = this->getPosition() + sizeF - 0.1f * sizeF;
     bottomRightPadded.y -= 0.05f * sizeF.y;
     countText.setPosition(bottomRightPadded - sf::Vector2f(countText.getLocalBounds().width, countText.getLocalBounds().height));
 
@@ -89,6 +103,10 @@ void UIElements::Button::draw(sf::RenderWindow& window) {
 
     window.draw(countText);
   }
+}
+
+void UIElements::InventoryButton::onClick() {
+  std::clog << this->count << std::endl;
 }
 
 UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
@@ -99,17 +117,27 @@ UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = newCounts[i];
-    this->buttons.push_back(UIElements::Button(buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], "", count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], count, true));
+  }
+}
+
+UIElements::Inventory::~Inventory() {
+  for (UIElements::InventoryButton* button : this->buttons) {
+    delete button;
   }
 }
 
 void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
   this->items = newItems;
-  this->buttons = {};
+
+  for (UIElements::InventoryButton* button : this->buttons) {
+    delete button;
+  }
+
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = this->counts[i];
-    this->buttons.push_back(UIElements::Button(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], "", count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], count, true));
   }
 }
 
@@ -119,11 +147,15 @@ void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
   }
 
   this->counts = newCounts;
-  this->buttons = {};
+
+  for (UIElements::InventoryButton* button : this->buttons) {
+    delete button;
+  }
+
   for (unsigned short i = 0; i < this->items.size(); ++i) {
     uint8_t item = this->items[i];
     int16_t count = newCounts[i];
-    this->buttons.push_back(UIElements::Button(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], "", count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], count, true));
   }
 }
 
@@ -139,7 +171,7 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
 
   const sf::Vector2u SIZE = sf::Vector2u(1.5f * unitSize, 1.5f * unitSize);
 
-  std::vector<UIElements::Button>::iterator left, right;
+  std::vector<UIElements::InventoryButton*>::iterator left, right;
   if (this->items.size() % 2 == 0) {
 
     left = this->buttons.begin() + (this->buttons.size() / 2) - 1;
@@ -149,10 +181,10 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
 
   } else {
     
-    std::vector<UIElements::Button>::iterator middleButton = this->buttons.begin() + floor(static_cast<float>(this->buttons.size()) / 2.f);
-    middleButton->setSize(SIZE);
-    middleButton->setPosition(middle - 0.5f * static_cast<sf::Vector2f>(SIZE));
-    middleButton->draw(window);
+    std::vector<UIElements::InventoryButton*>::iterator middleButton = this->buttons.begin() + floor(static_cast<float>(this->buttons.size()) / 2.f);
+    (*middleButton)->setSize(SIZE);
+    (*middleButton)->setPosition(middle - 0.5f * static_cast<sf::Vector2f>(SIZE));
+    (*middleButton)->draw(window);
 
     offset = SIZE.x + PADDING;
 
@@ -164,12 +196,12 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
   // Place the buttons
   uint8_t count = 0;
   for (;left >= this->buttons.begin() && right != this->buttons.end(); left--, right++, count++) {
-    left->setSize(SIZE);
-    left->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
-    left->draw(window);
+    (*left)->setSize(SIZE);
+    (*left)->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
+    (*left)->draw(window);
 
-    right->setSize(SIZE);
-    right->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
-    right->draw(window);
+    (*right)->setSize(SIZE);
+    (*right)->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
+    (*right)->draw(window);
   }
 }
