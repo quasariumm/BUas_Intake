@@ -12,6 +12,7 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -30,6 +31,9 @@
 #include "../include/physics.hpp"
 #include "../include/level.hpp"
 #include "../include/ui_conf.hpp"
+#include "../include/build.hpp"
+
+#define Key sf::Keyboard::Key
 
 const float WINDOW_SIZE_FACTOR = 0.9f;
 const short NULL_VALUE = -1;
@@ -44,6 +48,8 @@ sf::Texture pipesTexture;
 
 std::vector<UIElements::Button*> buttons;
 
+std::string modifier; // The modifier pressed ("Ctrl", "Shift", "Alt" or empty)
+
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
 
@@ -53,6 +59,7 @@ void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
 void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime) {
 
   sf::Event event;
+  bool rotate;
   while (window.pollEvent(event)) {
 
     switch (event.type) {
@@ -67,6 +74,26 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
         for (UIElements::Button* pButton : buttons) {
           if (!pButton->intersect(sf::Mouse::getPosition(window))) continue;
           pButton->onClick();
+        }
+        break;
+      
+      case sf::Event::KeyPressed:
+        if (sf::Keyboard::isKeyPressed(Key::LControl)) {
+          modifier = "Ctrl";
+        } else if (sf::Keyboard::isKeyPressed(Key::LShift)) {
+          modifier = "Shift";
+        } else if (sf::Keyboard::isKeyPressed(Key::LAlt)) {
+          modifier = "Alt";
+        } else if (sf::Keyboard::isKeyPressed(Key::R) || sf::Keyboard::isKeyPressed(Key::T)) {
+          rotate = true;
+        }
+        break;
+      
+      case sf::Event::KeyReleased:
+        if (!sf::Keyboard::isKeyPressed(Key::LShift) && !sf::Keyboard::isKeyPressed(Key::LControl) && !sf::Keyboard::isKeyPressed(Key::LAlt)) {
+          modifier = "";
+        } else if (!sf::Keyboard::isKeyPressed(Key::R) && !sf::Keyboard::isKeyPressed(Key::T)) {
+          rotate = false;
         }
         break;
       
@@ -103,6 +130,11 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   level.getTilemap().drawPipes(window, pipesTexture, sf::Vector2i(128, 128), unitSize);
 
   inventory.draw(window, unitSize);
+
+  // Determine if the player is building something. If so, call the ghost object's loop()
+  if (UserObjects::getBuilding()->getSize().length() != 0) {
+    UserObjects::getBuilding()->loop(window, rotate, modifier, unitSize);
+  }
   
   window.display();
 
@@ -114,8 +146,9 @@ void loadTexture(std::string pathFromRes, sf::Texture& value) {
   imgPath.append(pathFromRes);
 
   if (!value.loadFromFile(imgPath)) {
-    throw std::runtime_error("Failed to load ball sprite!");
+    throw std::runtime_error("Failed to load sprite!");
   }
+  value.setSmooth(true);
 
 }
 
@@ -176,7 +209,7 @@ int main() {
   std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
 
   // Create the inventory
-  UIElements::Inventory inventory{std::vector<uint8_t>{0, 1, 2, 1, 2, 0}, std::vector<int16_t>{5, 6, 12, 13, 15, 56}, buttonOuter};
+  UIElements::Inventory inventory{std::vector<uint8_t>{0, 1, 2}, std::vector<int16_t>{5, 6, 12}, buttonOuter};
   for (UIElements::InventoryButton* button : inventory.getButtons()) {
     buttons.push_back(button);
   }

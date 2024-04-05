@@ -17,7 +17,7 @@ public:
    * 
    * @param path The path of the file that needs to be loaded
    */
-  void loadFromFile(std::filesystem::path path);
+  void loadFromFile(const std::filesystem::path path);
 
   /**
    * @brief Does what the name implies
@@ -28,7 +28,7 @@ public:
    * @param tileSize The size in pixels of a single texture in the atlas
    * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::Texture& props, sf::Vector2i tileSize, float unitSize);
+  void drawPropsWalls(sf::RenderWindow& window, const sf::Texture& walls, const sf::Texture& props, const sf::Vector2i tileSize, const float unitSize);
 
   /**
    * @brief Does what the name implies
@@ -38,7 +38,7 @@ public:
    * @param tileSize The size in pixels of a single texture in the atlas
    * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void drawPipes(sf::RenderWindow& window, sf::Texture& wholeTexture, sf::Vector2i tileSize, float unitSize);
+  void drawPipes(sf::RenderWindow& window, const sf::Texture& wholeTexture, const sf::Vector2i tileSize, const float unitSize);
 
 private:
 
@@ -55,7 +55,7 @@ public:
    * @param window The window. Only needed for the size
    * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void makeWalls(sf::RenderWindow& window, float unitSize);
+  void makeWalls(const sf::RenderWindow& window, const float unitSize);
 
   /**
    * @brief Generates a new BounyObject
@@ -64,7 +64,7 @@ public:
    * @param cor Coefficient of restitution, which is the factor that the speed gets multiplied with upon colision
    * @param orientation The orientation of the object. This is a vector pointing to the right edge of the object
    */
-  void makeBO(const std::vector<sf::Vector2f>& points, float cor, const sf::Vector2f orientation = sf::Vector2f(1,0));
+  void makeBO(const std::vector<sf::Vector2f>& points, const float cor, const sf::Vector2f orientation = sf::Vector2f(1,0));
 
   /**
    * @brief Loads and generates the BouncyObjects from a level file (*.ql)
@@ -72,7 +72,7 @@ public:
    * @param path The path to the level file
    * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void loadFromFile(std::filesystem::path path, float unitSize);
+  void loadFromFile(const std::filesystem::path path, const float unitSize);
 
   /**
    * @brief Get the list of BouncyObjects
@@ -95,7 +95,7 @@ public:
    * 
    * @param filePath The path to the level file (.ql extension)
    */
-  Level(std::filesystem::path filePath) : levelFilePath(filePath) {};
+  Level(const std::filesystem::path filePath) : levelFilePath(filePath) {};
 
   /**
    * @brief Get the Tilemap object
@@ -117,7 +117,7 @@ public:
    * @param window The window it needs to be drawn on
    * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void initLevel(sf::RenderWindow& window, float unitSize, sf::Texture& walls, sf::Texture& props, sf::Texture& pipes);
+  void initLevel(sf::RenderWindow& window, const float unitSize, const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes);
 
 private:
 

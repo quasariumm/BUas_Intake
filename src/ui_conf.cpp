@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+#include "../include/build.hpp"
+
 UIElements::Global global;
 
 void UIElements::Global::initFont() {
@@ -34,7 +36,7 @@ void UIElements::Global::initFont() {
   }
 }
 
-bool UIElements::Button::intersect(sf::Vector2i pos) {
+bool UIElements::Button::intersect(const sf::Vector2i pos) {
   return (pos.x >= this->position.x && pos.x <= this->position.x + this->size.x && pos.y >= this->position.y && pos.y <= this->position.y + this->size.y);
 }
 
@@ -77,15 +79,20 @@ void UIElements::InventoryButton::draw(sf::RenderWindow& window) {
     sf::Vector2f innerSize = this->itemSize * static_cast<sf::Vector2f>(this->getSize());
     sf::Vector2f factors;
     if (lockAspect) {
-      unsigned short smallestSide = (this->getSize().x < this->getSize().y) ? this->getSize().x : this->getSize().y;
-      smallestSide *= this->itemSize;
+      float smallestSide = (this->getSize().x < this->getSize().y) ? this->getSize().x : this->getSize().y;
+      smallestSide *= this->itemSize * (innerSprite.getTexture().getSize().y / static_cast<float>(innerSprite.getTexture().getSize().x));
       const float yToXAspect = innerTexture.getSize().x / static_cast<float>(innerTexture.getSize().y);
       factors = sf::Vector2f((smallestSide * yToXAspect) / static_cast<float>(innerTexture.getSize().x), smallestSide / static_cast<float>(innerTexture.getSize().y));
     } else {
       factors = sf::Vector2f(innerSize.x / static_cast<float>(innerTexture.getSize().x), innerSize.y / static_cast<float>(innerTexture.getSize().y));
     }
     innerSprite.setScale(factors);
-    innerSprite.setPosition(this->getPosition() + 0.5f * (1.f - this->itemSize) * static_cast<sf::Vector2f>(this->getSize()));
+    sf::Vector2f basePos = this->getPosition() + 0.5f * (1.f - this->itemSize) * static_cast<sf::Vector2f>(this->getSize());
+    if (innerTexture.getSize().x != innerTexture.getSize().y) {
+      innerSprite.setPosition(basePos + sf::Vector2f(0, 0.5f * (innerSize.y - (innerTexture.getSize().y * innerSprite.getScale().y))));
+    } else {
+      innerSprite.setPosition(basePos);
+    }
     window.draw(innerSprite);
   }
 
@@ -106,7 +113,7 @@ void UIElements::InventoryButton::draw(sf::RenderWindow& window) {
 }
 
 void UIElements::InventoryButton::onClick() {
-  std::clog << this->count << std::endl;
+  UserObjects::initBuilding(this->innerSize, this->innerPath);
 }
 
 UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
@@ -117,7 +124,7 @@ UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = newCounts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }
 
@@ -137,7 +144,7 @@ void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = this->counts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }
 
@@ -155,7 +162,7 @@ void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
   for (unsigned short i = 0; i < this->items.size(); ++i) {
     uint8_t item = this->items[i];
     int16_t count = newCounts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }
 

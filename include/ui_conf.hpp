@@ -59,7 +59,7 @@ namespace UIElements {
      * 
      * @param newText The new text
      */
-    void setText(std::string newText) {text = newText;};
+    void setText(const std::string newText) {text = newText;};
 
     /**
      * @brief Get the text
@@ -73,7 +73,7 @@ namespace UIElements {
      * 
      * @param newPos The new position
      */
-    void setPosition(sf::Vector2f newPos) {position = newPos;};
+    void setPosition(const sf::Vector2f newPos) {position = newPos;};
 
     /**
      * @brief Get the position
@@ -87,7 +87,7 @@ namespace UIElements {
      * 
      * @param newSize The new size
      */
-    void setSize(sf::Vector2u newSize) {size = newSize;};
+    void setSize(const sf::Vector2u newSize) {size = newSize;};
 
     /**
      * @brief Get the size
@@ -101,7 +101,7 @@ namespace UIElements {
      * 
      * @param newTexture 
      */
-    void setOuterTexture(sf::Texture newTexture) {outer = newTexture;};
+    void setOuterTexture(const sf::Texture& newTexture) {outer = newTexture;};
     
     /**
      * @brief Get the outer texture
@@ -117,7 +117,7 @@ namespace UIElements {
      * @return true The point is in the button
      * @return false The point is not in the button
      */
-    bool intersect(sf::Vector2i pos);
+    bool intersect(const sf::Vector2i pos);
     
     /**
      * @brief Draws the button
@@ -160,10 +160,9 @@ namespace UIElements {
      * @param lockAspectRario Locks the aspect ratio of the item sprite
      */
     InventoryButton(
-      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner, const sf::Vector2f& itemRealSize,
       int16_t newCount = -1, bool lockAspectRario = false
-    ) :
-    Button(tOuter, vPos, vSize), innerPath(pathInner), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f) {};
+    ) : Button(tOuter, vPos, vSize), innerPath(pathInner), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), innerSize(itemRealSize) {};
 
     /**
      * @brief Get the path of the texture of the item
@@ -205,6 +204,8 @@ namespace UIElements {
     float itemSize;
 
     std::filesystem::path innerPath;
+    sf::Vector2f innerSize;
+
     bool lockAspect;
     int16_t count; // Diaplyed at the bottom right of the button if needed (-1 to turn off)
 
@@ -282,9 +283,15 @@ namespace UIElements {
     std::string spritePath = std::string(RESOURCES_PATH) + "sprites/";
 
     std::map<uint8_t, std::filesystem::path> itemIdToPath = {
-      {0, std::filesystem::path(spritePath + "ball.png")},
+      {0, std::filesystem::path(spritePath + "bouncePad.png")},
       {1, std::filesystem::path(spritePath + "ball.png")},
       {2, std::filesystem::path(spritePath + "ball.png")},
+    };
+
+    std::map<uint8_t, sf::Vector2f> itemIdToSize = { // ! The size is in units. Multiply by unitSize before displaying
+      {0, sf::Vector2f(2, 1)},
+      {1, sf::Vector2f(1, 1)},
+      {2, sf::Vector2f(1, 1)}
     };
 
   };

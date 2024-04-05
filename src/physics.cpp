@@ -34,7 +34,7 @@ void printv(sf::Vector2f vec) {
   std::cout << "(" << vec.x << "," << vec.y << ")" << std::endl;
 }
 
-void PhysicsObjects::Ball::applyForce(float deltaTime, float F, sf::Vector2f direction) {
+void PhysicsObjects::Ball::applyForce(const float deltaTime, const float F, sf::Vector2f direction) {
 
   // Get the acceleraion from the formula F = m * a
   float acceleraion = F / mass;
@@ -47,7 +47,7 @@ void PhysicsObjects::Ball::applyForce(float deltaTime, float F, sf::Vector2f dir
 
 }
 
-PhysicsObjects::Ball::Ball(sf::Texture& texture, sf::Vector2f mid, float m, float r) :
+PhysicsObjects::Ball::Ball(const sf::Texture& texture, const sf::Vector2f mid, const float m, const float r) :
       mass(m), radius(r), midpoint(mid), Ball::Sprite(texture)
 {
   float factor = (2 * r) / static_cast<float>(texture.getSize().x);
@@ -55,7 +55,7 @@ PhysicsObjects::Ball::Ball(sf::Texture& texture, sf::Vector2f mid, float m, floa
   this->setPosition(mid - sf::Vector2f(r, r));
 }
 
-void PhysicsObjects::Ball::setRadius(float newRadius) {
+void PhysicsObjects::Ball::setRadius(const float newRadius) {
   radius = newRadius;
   float factor = (2 * newRadius) / static_cast<float>(this->getTexture().getSize().x);
   this->setScale({factor, factor});
@@ -63,7 +63,7 @@ void PhysicsObjects::Ball::setRadius(float newRadius) {
   this->setPosition(this->midpoint - sf::Vector2f(newRadius, newRadius));
 }
 
-void PhysicsObjects::Ball::updatePoistion(float deltaTime) {
+void PhysicsObjects::Ball::updatePoistion(const float deltaTime) {
 
   // Because the SFML coordinate system has (0,0) top-left, the y has to be -='ed. I want to have my physics be normal, but "down is up" in SFML...
   this->midpoint.x += this->velocityVector.x * deltaTime;
@@ -100,7 +100,7 @@ unsigned short getBestSide(PhysicsObjects::Ball& ball, std::vector<Side>& sides,
   return collSides[0];
 }
 
-int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball, float unitSize) {
+int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball, const float unitSize) {
 
   // This collision system is very sketchy, but that's game dev for you. No need to be fully realistic ;).
   // For each side, get the formula of the line and check if its distance to the midpoint of the ball is smaller than the radius of the ball.
@@ -206,7 +206,7 @@ int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball,
 
 }
 
-void PhysicsObjects::BouncyObject::bounce(Ball& ball, int side) {
+void PhysicsObjects::BouncyObject::bounce(PhysicsObjects::Ball& ball, const int side) {
 
   // Take the inverse of the velocity vector of the ball and mirror it relative to this object's normal.
   sf::Vector2f invVelocity = -(ball.getDirection() * ball.getVelocity());

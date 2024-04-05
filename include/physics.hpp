@@ -20,7 +20,7 @@ namespace PhysicsObjects {
      * @param m Mass
      * @param r Radius
      */
-    Ball(sf::Texture& texture, sf::Vector2f mid, float m = 1, float r = 50);
+    Ball(const sf::Texture& texture, const sf::Vector2f mid, const float m = 1, const float r = 50);
     
     /**
      * @brief Set the mass
@@ -92,14 +92,14 @@ namespace PhysicsObjects {
      * @param F The force
      * @param direction The direction
      */
-    void applyForce(float deltaTime, float F, sf::Vector2f direction);
+    void applyForce(const float deltaTime, const float F, sf::Vector2f direction);
 
     /**
      * @brief Updates the position based on the current velocity.
      *
      * @param deltaTime The time passed between the last frame and now
      */
-    void updatePoistion(float deltaTime);
+    void updatePoistion(const float deltaTime);
 
   private:
 
@@ -158,7 +158,7 @@ namespace PhysicsObjects {
      * @param unitSize The size of a unit. This is defined in @a main.cpp
      * @return int The (most likely) side on which the ball collides
      */
-    int checkBallCollision(Ball& ball, float unitSize);
+    int checkBallCollision(Ball& ball, const float unitSize);
 
     /**
      * @brief Bounces the ball. It calcuates the needed force based on the COR of the surface and appies it
@@ -166,14 +166,14 @@ namespace PhysicsObjects {
      * @param ball A reference to the ball
      * @param side The side to bounce the ball of
      */
-    void bounce(Ball& ball, int side);
+    void bounce(Ball& ball, const int side);
 
     /**
      * @brief Set justBounced
      * 
      * @param jb The new justBounced
      */
-    void setJustBounced(short jb) {justBounced = jb;};
+    void setJustBounced(const short jb) {justBounced = jb;};
 
     /**
      * @brief Get justBounced

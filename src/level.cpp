@@ -30,7 +30,7 @@ const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;
 const unsigned short NUM_PROPS = 0;
 
-void Tilemap::loadFromFile(std::filesystem::path path) {
+void Tilemap::loadFromFile(const std::filesystem::path path) {
 
   std::ifstream file;
   file.open(path, std::ios::in);
@@ -69,7 +69,7 @@ void Tilemap::loadFromFile(std::filesystem::path path) {
 
 }
 
-void Tilemap::drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::Texture& props, sf::Vector2i tileSize, float unitSize) {
+void Tilemap::drawPropsWalls(sf::RenderWindow& window, const sf::Texture& walls, const sf::Texture& props, const sf::Vector2i tileSize, const float unitSize) {
   
   unsigned short wallsCols = walls.getSize().x / tileSize.x;
   
@@ -111,7 +111,7 @@ void Tilemap::drawPropsWalls(sf::RenderWindow& window, sf::Texture& walls, sf::T
 
 }
 
-void Tilemap::drawPipes(sf::RenderWindow& window, sf::Texture& wholeTexture, sf::Vector2i tileSize, float unitSize) {
+void Tilemap::drawPipes(sf::RenderWindow& window, const sf::Texture& wholeTexture, const sf::Vector2i tileSize, const float unitSize) {
 
   unsigned short pipesCols = wholeTexture.getSize().x / tileSize.x;
 
@@ -139,7 +139,7 @@ void Tilemap::drawPipes(sf::RenderWindow& window, sf::Texture& wholeTexture, sf:
 
 }
 
-void BouncyObjects::makeWalls(sf::RenderWindow& window, float unitSize) {
+void BouncyObjects::makeWalls(const sf::RenderWindow& window, const float unitSize) {
 
   sf::Vector2u windowSize = window.getSize();
 
@@ -185,7 +185,7 @@ void BouncyObjects::makeWalls(sf::RenderWindow& window, float unitSize) {
 
 }
 
-void BouncyObjects::makeBO(const std::vector<sf::Vector2f>& points, float cor, const sf::Vector2f orientation) {
+void BouncyObjects::makeBO(const std::vector<sf::Vector2f>& points, const float cor, const sf::Vector2f orientation) {
 
   PhysicsObjects::BouncyObject obj;
   obj.setPoints(points);
@@ -196,7 +196,7 @@ void BouncyObjects::makeBO(const std::vector<sf::Vector2f>& points, float cor, c
 
 }
 
-void BouncyObjects::loadFromFile(std::filesystem::path path, float unitSize) {
+void BouncyObjects::loadFromFile(const std::filesystem::path path, const float unitSize) {
 
   std::ifstream file;
   file.open(path, std::ios::in);
@@ -258,7 +258,7 @@ void BouncyObjects::loadFromFile(std::filesystem::path path, float unitSize) {
 
 }
 
-void Level::initLevel(sf::RenderWindow& window, float unitSize, sf::Texture& walls, sf::Texture& props, sf::Texture& pipes) {
+void Level::initLevel(sf::RenderWindow& window, const float unitSize, const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes) {
 
   this->tilemap.loadFromFile(this->levelFilePath);
   this->tilemap.drawPropsWalls(window, walls, props, sf::Vector2i(128, 128), unitSize);

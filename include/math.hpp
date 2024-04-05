@@ -11,7 +11,7 @@
  *
  * @return The distance between the two points
  */
-float getDistance(sf::Vector2f a, sf::Vector2f b);
+float getDistance(const sf::Vector2f a, const sf::Vector2f b);
 
 /**
  * @brief Caclucates the distance from a point to a line
@@ -23,6 +23,6 @@ float getDistance(sf::Vector2f a, sf::Vector2f b);
  *
  * @return float Distance between the point and the line
  */
-float getDistance(float a, float b, float c, sf::Vector2f point);
+float getDistance(const float a, const float b, const float c, const sf::Vector2f point);
 
 #endif //MATH_H_
