@@ -47,8 +47,10 @@ sf::Texture propsTexture;
 sf::Texture pipesTexture;
 
 std::vector<UIElements::Button*> buttons;
+UserObjects::EditableObjectList editableObjects;
 
 std::string modifier; // The modifier pressed ("Ctrl", "Shift", "Alt" or empty)
+bool rotate;
 
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
@@ -56,10 +58,19 @@ void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.updatePoistion(deltaTime);
 }
 
+void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& ball, const float unitSize) {
+  short collisionSide = object.checkBallCollision(ball, unitSize);
+  if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
+    object.bounce(ball, collisionSide);
+  } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
+    // This prevents the ball from inevitably staying in the first object it made contact with
+    object.setJustBounced(NULL_VALUE);
+  }
+}
+
 void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime) {
 
   sf::Event event;
-  bool rotate;
   while (window.pollEvent(event)) {
 
     switch (event.type) {
@@ -71,6 +82,9 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       case sf::Event::MouseButtonPressed:
         if (event.mouseButton.button != sf::Mouse::Button::Left) break;
         // Check if the mouse clicked on any of the registered buttons
+        if (UserObjects::getBuilding()->getSize().length() != 0) {
+          UserObjects::getBuilding()->place(window, unitSize, editableObjects);
+        }
         for (UIElements::Button* pButton : buttons) {
           if (!pButton->intersect(sf::Mouse::getPosition(window))) continue;
           pButton->onClick();
@@ -114,13 +128,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   applyForces(ball, deltaTime);
 
   for (PhysicsObjects::BouncyObject& object : level.getBouncyObjects().getList()) {
-    short collisionSide = object.checkBallCollision(ball, unitSize);
-    if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
-      object.bounce(ball, collisionSide);
-    } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
-      // This prevents the ball from inevitably staying in the first object it made contact with
-      object.setJustBounced(NULL_VALUE);
-    }
+    checkCollision(object, ball, unitSize);
   }
 
   level.getTilemap().drawPropsWalls(window, wallsTexture, propsTexture, sf::Vector2i(128, 128), unitSize);
@@ -128,6 +136,14 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   window.draw(ball);
 
   level.getTilemap().drawPipes(window, pipesTexture, sf::Vector2i(128, 128), unitSize);
+
+  // Display the user's objects
+  for (UserObjects::EditableObject* obj : editableObjects.getObjects()) {
+    obj->draw(window, unitSize);
+    if (obj->hasBouncyObject()) {
+      checkCollision(obj->getBouncyObject(), ball, unitSize);
+    }
+  }
 
   inventory.draw(window, unitSize);
 
