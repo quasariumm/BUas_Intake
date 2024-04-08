@@ -34,4 +34,5 @@ Got the placement working fine, then the rotation was a fixed value all of the t
 
 ## 2024-04-08
 Fixed the rotation issue. Turned out that the constructor of `UserObjects::EditableObject` had the following order `..., const float unitSize, const float newRotation = 0, ...` and I gave those two arguments in the wrong order, leading to it rotating the object at a constant angle equal to the unit size.  
-Got to work on the `PhysicsObject::BouncyObject` that is inside of the bounce pad. 
+Got to work on the `PhysicsObject::BouncyObject` that is inside of the bounce pad.  
+Made a money bag sprite.

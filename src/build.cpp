@@ -92,7 +92,7 @@ void UserObjects::GhostObject::place(sf::RenderWindow& window, const float unitS
   bool bouncy = false;
   if (this->texturePath.filename() == "bouncePad.png") bouncy = true;
 
-  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(window), this->size, this->texturePath, unitSize, this->rotation, bouncy, (this->texturePath.filename() == "bouncePad") ? 0.95f : 0.8f));
+  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(window), this->size, this->texturePath, unitSize, this->rotation, bouncy, (this->texturePath.filename() == "bouncePad.png") ? 0.95f : 0.8f));
   clearBuilding();
 }
 
@@ -119,10 +119,10 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
     //          .rotate(sf::degrees(this->rotation))
     //          .scale(sf::Vector2f((this->size.x * unitSize) / this->texture.getSize().x, (this->size.y * unitSize) / this->texture.getSize().y));
     bo.setPoints({
-      transform.transformPoint(rect.getPoint(0)),
       transform.transformPoint(rect.getPoint(1)),
       transform.transformPoint(rect.getPoint(2)),
-      transform.transformPoint(rect.getPoint(3))
+      transform.transformPoint(rect.getPoint(3)),
+      transform.transformPoint(rect.getPoint(0))
     });
   }
 };
