@@ -87,6 +87,43 @@ private:
 
 };
 
+class MoneyBag {
+public:
+  
+  /**
+   * @brief Construct a new Money Bag object
+   * 
+   * @param newPos The new position
+   * @param newValue The amount of money in the bag. Default is €500.000,-
+   */
+  MoneyBag(const sf::Vector2f& newPos, const long newValue = 500000);
+  
+  /**
+   * @brief Checks collision between the ball and the money bag.
+   * 
+   * @param ball The ball
+   * @param unitSize The size of one unit. This is defined in @a main.cpp
+   * @returns whether of or the ball hits the money bag
+   */
+  bool instersect(PhysicsObjects::Ball& ball, const float unitSize);
+
+  /**
+   * @brief Draws the money bag on the screen
+   * 
+   * @param window The window it needs to be drawn on
+   * @param unitSize The size of one unit. This is defined in @a main.cpp
+   */
+  void draw(sf::RenderWindow& window, const float unitSize);
+
+private:
+
+  sf::Vector2f pos;
+  long value;
+
+  sf::Texture texture;
+
+};
+
 class Level {
 public:
 
@@ -96,6 +133,12 @@ public:
    * @param filePath The path to the level file (.ql extension)
    */
   Level(const std::filesystem::path filePath) : levelFilePath(filePath) {};
+
+  /**
+   * @brief Destroy the Level object
+   * 
+   */
+  ~Level();
 
   /**
    * @brief Get the Tilemap object
@@ -112,6 +155,13 @@ public:
   BouncyObjects& getBouncyObjects() {return bouncyObjects;};
 
   /**
+   * @brief Get the money bag vector
+   * 
+   * @return std::vector<MoneyBag*>&
+   */
+  std::vector<MoneyBag*>& getMoneyBags() {return moneyBags;};
+
+  /**
    * @brief Initiates the level's tilemap and BouncyObjects
    * 
    * @param window The window it needs to be drawn on
@@ -124,6 +174,7 @@ private:
   std::filesystem::path levelFilePath;
   Tilemap tilemap;
   BouncyObjects bouncyObjects;
+  std::vector<MoneyBag*> moneyBags;
 
 };
 

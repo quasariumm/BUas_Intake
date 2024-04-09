@@ -147,6 +147,11 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     }
   }
 
+  // Display the money bags
+  for (MoneyBag* bag : level.getMoneyBags()) {
+    bag->draw(window, unitSize);
+  }
+
   inventory.draw(window, unitSize);
 
   // Determine if the player is building something. If so, call the ghost object's loop()

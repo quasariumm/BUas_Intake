@@ -10,7 +10,6 @@
  */
 
 #include "../include/level.hpp"
-#include "physics.hpp"
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -25,6 +24,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#include "../include/physics.hpp"
+#include "../include/math.hpp"
 
 const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;
@@ -258,6 +260,104 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path, const float u
 
 }
 
+MoneyBag::MoneyBag(const sf::Vector2f& newPos, const long newValue) : pos(newPos), value(newValue) {
+  std::filesystem::path texturePath = RESOURCES_PATH;
+  texturePath.append("sprites/moneyBag.png");
+  if (!this->texture.loadFromFile(texturePath)) {
+    throw std::runtime_error("Couldn't load the money bag sprite.");
+  }
+}
+
+bool MoneyBag::instersect(PhysicsObjects::Ball& ball, const float unitSize) {
+  std::vector<sf::Vector2f> points = {
+    this->pos + sf::Vector2f(-0.3f * unitSize, 0.5f * unitSize),
+    this->pos + sf::Vector2f(0.3f * unitSize, 0.5f * unitSize),
+    this->pos + sf::Vector2f(0.3f * unitSize, -0.5f * unitSize),
+    this->pos + sf::Vector2f(-0.3f * unitSize, -0.5f * unitSize),
+  };
+  // Now, I just use a more simple version of the collision system in physics.cpp
+  for (unsigned short i = 0; i < 4; ++i) {
+    // Get the formula
+    // The a and b can be filled in by using the normal of the side.
+
+    sf::Vector2f point1 = points[i];
+    sf::Vector2f point2 = points[(i+1)%4];
+
+    sf::Vector2f direction_vector = (point2 - point1).normalized();
+    sf::Vector2f normal = direction_vector.perpendicular();
+
+    float a, b, c;
+
+    a = normal.x;
+    b = normal.y;
+
+    c = -1 * (a * point1.x + b * point1.y);
+
+    float distanceToMidpoint = getDistance(a, b, c, ball.getMidpoint());
+
+    if (distanceToMidpoint >= ball.getRadius()) {
+      return false;
+    }
+    // Hurray, at least the line is in the circle.
+    // Now to check if it is in the actual object, I multiply the normal with the distance and add it to the midpoint.
+    // If that point is on the line and not outside the side, it collides.
+
+    sf::Vector2f checkPoint = ball.getMidpoint() + distanceToMidpoint * normal;
+    if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
+      // If xDirection is true, the side is more horizontal than vertical
+      bool xDirection = std::abs(point2.x - point1.x) > std::abs(point2.y - point1.y);
+      // Get the smallest and the biggest point based on the x or y coordinate (depending on xDirection).
+      sf::Vector2f smallest = 
+        (xDirection)
+        ? ((point1.x < point2.x) ? point1 : point2)
+        : ((point1.y < point2.y) ? point1 : point2);
+      sf::Vector2f biggest = (smallest == point1) ? point2 : point1;
+      // Check if the point is between the edges, thus in the object. If so, we collided with the side.
+      if (
+        (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
+        (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
+      ) {
+        return true;
+      }
+    }
+
+    checkPoint = ball.getMidpoint() + distanceToMidpoint * -normal;
+    // This is the same as the if-statement above.
+    if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
+      // If xDirection is true, the side is more horizontal than vertical
+      bool xDirection = std::abs(point2.x - point1.x) > std::abs(point2.y - point1.y);
+      // Get the smallest and the biggest point based on the x or y coordinate (depending on xDirection).
+      sf::Vector2f smallest = 
+        (xDirection)
+        ? ((point1.x < point2.x) ? point1 : point2)
+        : ((point1.y < point2.y) ? point1 : point2);
+      sf::Vector2f biggest = (smallest == point1) ? point2 : point1;
+      // Check if the point is between the edges, thus in the object. If so, we collided with the side.
+      if (
+        (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
+        (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+void MoneyBag::draw(sf::RenderWindow& window, const float unitSize) {
+  sf::Sprite moneyBagSprite(this->texture);
+  moneyBagSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(this->texture.getSize()));
+  moneyBagSprite.setScale(sf::Vector2f(unitSize / this->texture.getSize().x, unitSize / this->texture.getSize().y));
+  moneyBagSprite.setPosition(this->pos);
+  window.draw(moneyBagSprite);
+}
+
+Level::~Level() {
+  for (MoneyBag* bag : this->moneyBags) {
+    delete bag;
+  }
+}
+
 void Level::initLevel(sf::RenderWindow& window, const float unitSize, const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes) {
 
   this->tilemap.loadFromFile(this->levelFilePath);
@@ -265,6 +365,41 @@ void Level::initLevel(sf::RenderWindow& window, const float unitSize, const sf::
   
   this->bouncyObjects.makeWalls(window, unitSize);
   this->bouncyObjects.loadFromFile(this->levelFilePath, unitSize);
+
+  // Load the money bags from the level file
+  std::ifstream levelStream;
+  levelStream.open(this->levelFilePath, std::ios::in);
+
+  if (!levelStream.is_open()) {
+    throw std::runtime_error("Couldn't open the level file.");
+  }
+
+  std::string lineStr;
+  bool foundMoneyBagHeader = false;
+
+  while (std::getline(levelStream, lineStr)) {
+    
+    if (lineStr.find("[MoneyBags]") != std::string::npos) {
+      foundMoneyBagHeader = true;
+      continue;
+    }
+
+    if (!foundMoneyBagHeader) {
+      continue;
+    }
+    if (lineStr.empty()) {
+      break;
+    }
+
+    sf::Vector2f pos;
+    int one = lineStr.find_first_of('(');
+    pos.x = unitSize * std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
+    pos.y = unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
+
+    MoneyBag* bag = new MoneyBag(pos);
+    this->moneyBags.push_back(bag);
+  
+  }
 
   // ! This is just for testing. The following is temporaty
   float windowYSize = window.getSize().y;
