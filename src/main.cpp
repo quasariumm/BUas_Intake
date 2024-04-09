@@ -127,7 +127,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
 
   applyForces(ball, deltaTime);
 
-  std::clog << "\033[K\rBall speed: " << ball.getVelocity() << " pixels per second." << std::flush;
+  // std::clog << "\033[K\rBall speed: " << ball.getVelocity() << " pixels per second." << std::flush;
 
   for (PhysicsObjects::BouncyObject& object : level.getBouncyObjects().getList()) {
     checkCollision(object, ball, unitSize);

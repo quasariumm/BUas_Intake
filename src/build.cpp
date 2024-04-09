@@ -107,7 +107,7 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
   if (bouncy) {
     bo = PhysicsObjects::BouncyObject();
     bo.setCOR(cor);
-    bo.setOrientation(sf::Vector2f(1,0).rotatedBy(sf::degrees(newRotation)));
+    bo.setOrientation(sf::Vector2f(1,0).rotatedBy(sf::degrees(90.f - newRotation)));
 
     // For the points of the BouncyObject I use a RectangleShape and get its points
     sf::RectangleShape rect(newSize * unitSize);
