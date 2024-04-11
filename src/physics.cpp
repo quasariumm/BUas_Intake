@@ -37,7 +37,7 @@ void printv(sf::Vector2f vec) {
 void PhysicsObjects::Ball::applyForce(const float deltaTime, const float F, sf::Vector2f direction) {
 
   // Get the acceleraion from the formula F = m * a
-  float acceleraion = F / mass;
+  float acceleraion = F / this->mass;
 
   // Multiply the acceleration by deltaTime (a = dv/dt) and multiply the result by the direction
   direction *= static_cast<float>(acceleraion * deltaTime);

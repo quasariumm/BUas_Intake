@@ -36,3 +36,13 @@ Got the placement working fine, then the rotation was a fixed value all of the t
 Fixed the rotation issue. Turned out that the constructor of `UserObjects::EditableObject` had the following order `..., const float unitSize, const float newRotation = 0, ...` and I gave those two arguments in the wrong order, leading to it rotating the object at a constant angle equal to the unit size.  
 Got to work on the `PhysicsObject::BouncyObject` that is inside of the bounce pad.  
 Made a money bag sprite.
+
+## 2024-04-09
+Fixed the fact that the angle at which the ball bounced from the BouncePad was wrong by setting the orientation's angle to `sf::degrees(90.f - newRotation)` instead of `sf::degrees(newRotation)`.  
+Added money bags to the level file and implemented a system to read them from the file and draw them on the screen.
+
+## 2024-04-10
+Implemented the collision of the money bags. Tried to make them fall with no collision using threads, which didn't work.
+
+## 2024-04-11
+Made them fall. Standard threads worked while SFML threads didn't.

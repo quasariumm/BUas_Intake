@@ -105,7 +105,34 @@ public:
    * @param unitSize The size of one unit. This is defined in @a main.cpp
    * @returns whether of or the ball hits the money bag
    */
-  bool instersect(PhysicsObjects::Ball& ball, const float unitSize);
+  bool intersect(PhysicsObjects::Ball& ball, const float unitSize);
+
+  /**
+   * @brief Set collected
+   * 
+   * @param newCollected The new value of collected
+   */
+  void setCollected(const bool newCollected) {collected = newCollected;};
+
+  /**
+   * @brief Get the value of collected
+   * 
+   */
+  bool getCollected() {return collected;};
+
+  /**
+   * @brief Set the value of the bag
+   * 
+   * @param newValue The new value in euro (€)
+   */
+  void setValue(const long& newValue) {value = newValue;};
+  
+  /**
+   * @brief Get the value of the bag
+   * 
+   * @return long& 
+   */
+  long& getValue() {return value;};
 
   /**
    * @brief Draws the money bag on the screen
@@ -115,12 +142,22 @@ public:
    */
   void draw(sf::RenderWindow& window, const float unitSize);
 
+  /**
+   * @brief Makes the money bag fall. Stops when it is outside of the screen
+   * @attention Make sure you use a thread on this, as this uses a while-loop and must be run asynchronously
+   * 
+   * @param ball The ball
+   */
+  void fall(PhysicsObjects::Ball& ball, const unsigned windowHeight, const float unitSize);
+
 private:
 
   sf::Vector2f pos;
   long value;
 
   sf::Texture texture;
+
+  bool collected;
 
 };
 

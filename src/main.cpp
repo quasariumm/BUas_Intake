@@ -23,9 +23,11 @@
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <filesystem>
+#include <functional>
 #include <stdexcept>
 #include <iostream>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "../include/physics.hpp"
@@ -42,15 +44,24 @@ float unitSize = 80.f; // The conversion factor from SFML coordinates to meters
 
 sf::Vector2u windowSize;
 
+// Textures
 sf::Texture wallsTexture;
 sf::Texture propsTexture;
 sf::Texture pipesTexture;
 
+// Things that the player can click on
 std::vector<UIElements::Button*> buttons;
 UserObjects::EditableObjectList editableObjects;
 
+// Keyboard-specific variables
 std::string modifier; // The modifier pressed ("Ctrl", "Shift", "Alt" or empty)
 bool rotate;
+
+// Score
+long score;
+
+// Threading
+std::vector<std::thread> threads;
 
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
@@ -147,9 +158,18 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     }
   }
 
-  // Display the money bags
+  // Display the money bags and check if the ball hits the bag.
+  // If the ball hits the bag, increase the score and make it fall.
   for (MoneyBag* bag : level.getMoneyBags()) {
     bag->draw(window, unitSize);
+    if (!bag->intersect(ball, unitSize) || bag->getCollected()) {
+      continue;
+    }
+    bag->setCollected(true);
+    
+    threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y, unitSize));
+    threads.back().detach();
+    std::clog << "The ball hit a bag!" << std::endl;
   }
 
   inventory.draw(window, unitSize);
@@ -203,7 +223,7 @@ int main() {
 
   ballTexture.setSmooth(true);
 
-  PhysicsObjects::Ball ball{ballTexture, {75.f,75.f}, 0.1, 0.25f * unitSize};
+  PhysicsObjects::Ball ball{ballTexture, {75.f,75.f}, 0.1f, 0.25f * unitSize};
 
   // std::cout << "Ball midpoint: " << ball.getMidpoint().x << "," << ball.getMidpoint().y << std::endl;
   // std::cout << "Ball radius: " << ball.getRadius()<< std::endl;

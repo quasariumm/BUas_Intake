@@ -27,6 +27,8 @@
 
 #include "../include/physics.hpp"
 #include "../include/math.hpp"
+#include "SFML/System/Sleep.hpp"
+#include "SFML/System/Time.hpp"
 
 const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;
@@ -260,7 +262,7 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path, const float u
 
 }
 
-MoneyBag::MoneyBag(const sf::Vector2f& newPos, const long newValue) : pos(newPos), value(newValue) {
+MoneyBag::MoneyBag(const sf::Vector2f& newPos, const long newValue) : pos(newPos), value(newValue), collected(false) {
   std::filesystem::path texturePath = RESOURCES_PATH;
   texturePath.append("sprites/moneyBag.png");
   if (!this->texture.loadFromFile(texturePath)) {
@@ -268,7 +270,7 @@ MoneyBag::MoneyBag(const sf::Vector2f& newPos, const long newValue) : pos(newPos
   }
 }
 
-bool MoneyBag::instersect(PhysicsObjects::Ball& ball, const float unitSize) {
+bool MoneyBag::intersect(PhysicsObjects::Ball& ball, const float unitSize) {
   std::vector<sf::Vector2f> points = {
     this->pos + sf::Vector2f(-0.3f * unitSize, 0.5f * unitSize),
     this->pos + sf::Vector2f(0.3f * unitSize, 0.5f * unitSize),
@@ -350,6 +352,25 @@ void MoneyBag::draw(sf::RenderWindow& window, const float unitSize) {
   moneyBagSprite.setScale(sf::Vector2f(unitSize / this->texture.getSize().x, unitSize / this->texture.getSize().y));
   moneyBagSprite.setPosition(this->pos);
   window.draw(moneyBagSprite);
+}
+
+void MoneyBag::fall(PhysicsObjects::Ball& ball, const unsigned windowHeight, const float unitSize) {
+  sf::Vector2f speed = 2.f * ball.getDirection();
+  const float mass = 0.1f;
+  const float acceleraion = 9.81f;
+
+  while (this->pos.y <= windowHeight + 0.5f * unitSize) {
+    // Multiply the acceleration by deltaTime (a = dv/dt) and multiply the result by the direction
+    sf::Vector2f direction(0, -0.01f * acceleraion);
+
+    speed += direction;
+
+    this->pos.x += speed.x;
+    this->pos.y -= speed.y;
+
+    sf::sleep(sf::milliseconds(10));
+
+  }
 }
 
 Level::~Level() {
