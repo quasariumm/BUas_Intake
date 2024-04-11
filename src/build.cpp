@@ -24,11 +24,11 @@
 #include <SFML/System/Angle.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <filesystem>
-#include <iostream>
 #include <stdexcept>
 #include <string>
 
 #include "../include/physics.hpp"
+#include "../include/globals.hpp"
 
 #define Key sf::Keyboard::Key
 
@@ -48,7 +48,7 @@ UserObjects::GhostObject* UserObjects::getBuilding() {
   return &building;
 }
 
-void UserObjects::GhostObject::loop(sf::RenderWindow& window, const bool rotateKeyPressed, const std::string modifier, const float unitSize) {
+void UserObjects::GhostObject::loop(const bool rotateKeyPressed, const std::string modifier) {
 
   if (rotateKeyPressed) {
     float rotateAngle = 0;
@@ -66,7 +66,7 @@ void UserObjects::GhostObject::loop(sf::RenderWindow& window, const bool rotateK
   }
 
   // Place the points to match the orientation and position
-  sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+  sf::Vector2i mousePos = sf::Mouse::getPosition(*Globals::window);
   
   sf::Texture ghostTexture;
   if (!ghostTexture.loadFromFile(this->texturePath)) {
@@ -78,25 +78,25 @@ void UserObjects::GhostObject::loop(sf::RenderWindow& window, const bool rotateK
   sf::Sprite ghostSprite(ghostTexture);
   ghostSprite.setOrigin(0.5f * ghostTextureSize);
   ghostSprite.setRotation(sf::degrees(this->rotation));
-  ghostSprite.setScale(sf::Vector2f((this->size.x * unitSize) / ghostTextureSize.x, (this->size.y * unitSize) / ghostTextureSize.y));
+  ghostSprite.setScale(sf::Vector2f((this->size.x * Globals::unitSize) / ghostTextureSize.x, (this->size.y * Globals::unitSize) / ghostTextureSize.y));
   ghostSprite.setPosition(static_cast<sf::Vector2f>(mousePos) + 0.5f * this->size);
 
   // Set the ghost sprite to be transparent
   ghostSprite.setColor(sf::Color(255, 255, 255, 128));
 
-  window.draw(ghostSprite);
+  Globals::window->draw(ghostSprite);
 
 }
 
-void UserObjects::GhostObject::place(sf::RenderWindow& window, const float unitSize, UserObjects::EditableObjectList& objList) {
+void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList) {
   bool bouncy = false;
   if (this->texturePath.filename() == "bouncePad.png") bouncy = true;
 
-  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(window), this->size, this->texturePath, unitSize, this->rotation, bouncy, (this->texturePath.filename() == "bouncePad.png") ? 0.95f : 0.8f));
+  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(*Globals::window), this->size, this->texturePath, this->rotation, bouncy, (this->texturePath.filename() == "bouncePad.png") ? 0.95f : 0.8f));
   clearBuilding();
 }
 
-UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const float unitSize, const float newRotation, const bool bouncy, const float cor) 
+UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const float newRotation, const bool bouncy, const float cor) 
 : pos(newPos), size(newSize), texturePath(newTexturePath), rotation(newRotation), bouncyObject(bouncy), cor(cor) {
   // Load the texture and store it
   if (!this->texture.loadFromFile(newTexturePath)) {
@@ -110,8 +110,8 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
     bo.setOrientation(sf::Vector2f(1,0).rotatedBy(sf::degrees(90.f - newRotation)));
 
     // For the points of the BouncyObject I use a RectangleShape and get its points
-    sf::RectangleShape rect(newSize * unitSize);
-    rect.setOrigin(0.5f * unitSize * newSize);
+    sf::RectangleShape rect(newSize * Globals::unitSize);
+    rect.setOrigin(0.5f * Globals::unitSize * newSize);
     rect.setRotation(sf::degrees(newRotation));
     rect.setPosition(static_cast<sf::Vector2f>(newPos));
     sf::Transform transform = rect.getTransform();
@@ -138,15 +138,15 @@ bool UserObjects::EditableObject::intersect(const sf::Vector2i pos) {
   return rectBounds.contains(static_cast<sf::Vector2f>(pos));
 }
 
-void UserObjects::EditableObject::draw(sf::RenderWindow& window, const float unitSize) {
+void UserObjects::EditableObject::draw() {
   sf::Sprite objSprite(this->texture);
   objSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(this->texture.getSize()));
-  objSprite.setScale(sf::Vector2f((this->size.x * unitSize) / static_cast<float>(this->texture.getSize().x), (this->size.y * unitSize) / static_cast<float>(this->texture.getSize().y)));
+  objSprite.setScale(sf::Vector2f((this->size.x * Globals::unitSize) / static_cast<float>(this->texture.getSize().x), (this->size.y * Globals::unitSize) / static_cast<float>(this->texture.getSize().y)));
   // The `+ 0.5f * this->size` can't be added when the object is created, because otherwise when editing its position will be wrong
   objSprite.setPosition(static_cast<sf::Vector2f>(this->pos) + 0.5f * this->size);
   objSprite.setRotation(sf::degrees(this->rotation));
 
-  window.draw(objSprite);
+  Globals::window->draw(objSprite);
 }
 
 UserObjects::EditableObjectList::~EditableObjectList() {

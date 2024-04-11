@@ -2,7 +2,6 @@
 #define BUILD_H_
 
 #include <SFML/Window/Event.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <filesystem>
@@ -22,7 +21,7 @@ namespace UserObjects {
      * @param newTexturePath The path to the texture file of the object
      * @param newRotation The angle at which the object needs to be rotated
      */
-    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const float unitSize, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f);
+    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f);
     
     /**
      * @brief Returns whether or not the object has a BouncyObject "linked to" it.
@@ -49,10 +48,8 @@ namespace UserObjects {
     /**
      * @brief Draws the object on the screen
      * 
-     * @param window The window it needs to be drawn on
-     * @param unitSize The size of one unit. This is defined in @a main.cpp
      */
-    void draw(sf::RenderWindow& window, const float unitSize);
+    void draw();
 
   private:
 
@@ -140,20 +137,17 @@ namespace UserObjects {
     /**
      * @brief A function that is called on the main loop. It updates the position and rotation if the correct key is pressed
      * 
-     * @param window The window the ghost object needs to be drawn on
      * @param rotateKeyPressed Whether or not one of the rotate keys is pressed
      * @param modifier The pressed modifier key. If no modifier keys are pressed, this is empty
      */
-    void loop(sf::RenderWindow& window, const bool rotateKeyPressed, const std::string modifier, const float unitSize);
+    void loop(const bool rotateKeyPressed, const std::string modifier);
 
     /**
      * @brief Places the object that is currently bein built
      * 
-     * @param window The window it needs to be drawn on
-     * @param unitSize The size of one unit. This is defined in @a main.cpp
      * @param objList The list of EditableObjects
      */
-    void place(sf::RenderWindow& window, const float unitSize, UserObjects::EditableObjectList& objList);
+    void place(UserObjects::EditableObjectList& objList);
 
   private:
 

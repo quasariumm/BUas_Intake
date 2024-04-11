@@ -3,7 +3,6 @@
 
 #include "../include/physics.hpp"
 
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <filesystem>
@@ -22,23 +21,19 @@ public:
   /**
    * @brief Does what the name implies
    * 
-   * @param window The window on which it needs to be drawn
    * @param walls The wall texture atlas
    * @param props The props texture atlas
    * @param tileSize The size in pixels of a single texture in the atlas
-   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void drawPropsWalls(sf::RenderWindow& window, const sf::Texture& walls, const sf::Texture& props, const sf::Vector2i tileSize, const float unitSize);
+  void drawPropsWalls(const sf::Texture& walls, const sf::Texture& props, const sf::Vector2i tileSize);
 
   /**
    * @brief Does what the name implies
    * 
-   * @param window The window on which it needs to be drawn
    * @param wholeTexture The pipe texture atlas
    * @param tileSize The size in pixels of a single texture in the atlas
-   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void drawPipes(sf::RenderWindow& window, const sf::Texture& wholeTexture, const sf::Vector2i tileSize, const float unitSize);
+  void drawPipes(const sf::Texture& wholeTexture, const sf::Vector2i tileSize);
 
 private:
 
@@ -52,10 +47,8 @@ public:
   /**
    * @brief Generates the walls
    * 
-   * @param window The window. Only needed for the size
-   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void makeWalls(const sf::RenderWindow& window, const float unitSize);
+  void makeWalls();
 
   /**
    * @brief Generates a new BounyObject
@@ -70,9 +63,8 @@ public:
    * @brief Loads and generates the BouncyObjects from a level file (*.ql)
    * 
    * @param path The path to the level file
-   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void loadFromFile(const std::filesystem::path path, const float unitSize);
+  void loadFromFile(const std::filesystem::path path);
 
   /**
    * @brief Get the list of BouncyObjects
@@ -102,10 +94,9 @@ public:
    * @brief Checks collision between the ball and the money bag.
    * 
    * @param ball The ball
-   * @param unitSize The size of one unit. This is defined in @a main.cpp
    * @returns whether of or the ball hits the money bag
    */
-  bool intersect(PhysicsObjects::Ball& ball, const float unitSize);
+  bool intersect(PhysicsObjects::Ball& ball);
 
   /**
    * @brief Set collected
@@ -137,18 +128,17 @@ public:
   /**
    * @brief Draws the money bag on the screen
    * 
-   * @param window The window it needs to be drawn on
-   * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void draw(sf::RenderWindow& window, const float unitSize);
+  void draw();
 
   /**
    * @brief Makes the money bag fall. Stops when it is outside of the screen
    * @attention Make sure you use a thread on this, as this uses a while-loop and must be run asynchronously
    * 
    * @param ball The ball
+   * @param windowHeight The height of the window
    */
-  void fall(PhysicsObjects::Ball& ball, const unsigned windowHeight, const float unitSize);
+  void fall(PhysicsObjects::Ball& ball, const unsigned windowHeight);
 
 private:
 
@@ -204,7 +194,7 @@ public:
    * @param window The window it needs to be drawn on
    * @param unitSize The size of one unit. This is defined in @a main.cpp
    */
-  void initLevel(sf::RenderWindow& window, const float unitSize, const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes);
+  void initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes);
 
 private:
 

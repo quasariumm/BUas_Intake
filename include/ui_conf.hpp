@@ -6,7 +6,6 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Font.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <filesystem>
@@ -15,28 +14,6 @@
 #include <vector>
 
 namespace UIElements {
-
-  class Global {
-  public:
-
-    /**
-     * @brief Initializes the font
-     * 
-     */
-    void initFont();
-
-    /**
-     * @brief Get the font
-     * 
-     * @return sf::Font& A reference to the font
-     */
-    sf::Font& getFont() {return font;};
-
-  private:
-
-    sf::Font font;
-
-  };
 
   class Button {
   public:
@@ -122,9 +99,8 @@ namespace UIElements {
     /**
      * @brief Draws the button
      *
-     * @param window The window on which it needs to be drawn
      */
-    virtual void draw(sf::RenderWindow& window);
+    virtual void draw();
 
     /**
      * @brief The function to call when the button gets clicked
@@ -188,9 +164,8 @@ namespace UIElements {
     /**
      * @brief Draws the button
      * 
-     * @param window The window on which it needs to be drawn
      */
-    void draw(sf::RenderWindow& window) override;
+    void draw() override;
 
     /**
      * @brief The function to call when the button gets clicked
@@ -267,10 +242,8 @@ namespace UIElements {
     /**
      * @brief Draws the inventory by drawing all of the individual buttons
      * 
-     * @param window The window on which it needs to be drawn
-     * @param unitSize The size of a unit. This is defined in @a main.cpp
      */
-    void draw(sf::RenderWindow& window, const float unitSize);
+    void draw();
   
   private:
 

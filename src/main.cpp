@@ -34,6 +34,7 @@
 #include "../include/level.hpp"
 #include "../include/ui_conf.hpp"
 #include "../include/build.hpp"
+#include "../include/globals.hpp"
 
 #define Key sf::Keyboard::Key
 
@@ -69,8 +70,8 @@ void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.updatePoistion(deltaTime);
 }
 
-void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& ball, const float unitSize) {
-  short collisionSide = object.checkBallCollision(ball, unitSize);
+void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& ball) {
+  short collisionSide = object.checkBallCollision(ball);
   if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
     object.bounce(ball, collisionSide);
   } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
@@ -94,7 +95,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
         if (event.mouseButton.button != sf::Mouse::Button::Left) break;
         // Check if the mouse clicked on any of the registered buttons
         if (UserObjects::getBuilding()->getSize().length() != 0) {
-          UserObjects::getBuilding()->place(window, unitSize, editableObjects);
+          UserObjects::getBuilding()->place(editableObjects);
         }
         for (UIElements::Button* pButton : buttons) {
           if (!pButton->intersect(sf::Mouse::getPosition(window))) continue;
@@ -141,42 +142,42 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   // std::clog << "\033[K\rBall speed: " << ball.getVelocity() << " pixels per second." << std::flush;
 
   for (PhysicsObjects::BouncyObject& object : level.getBouncyObjects().getList()) {
-    checkCollision(object, ball, unitSize);
+    checkCollision(object, ball);
   }
 
-  level.getTilemap().drawPropsWalls(window, wallsTexture, propsTexture, sf::Vector2i(128, 128), unitSize);
+  level.getTilemap().drawPropsWalls(wallsTexture, propsTexture, sf::Vector2i(128, 128));
   
   window.draw(ball);
 
-  level.getTilemap().drawPipes(window, pipesTexture, sf::Vector2i(128, 128), unitSize);
+  level.getTilemap().drawPipes(pipesTexture, sf::Vector2i(128, 128));
 
   // Display the user's objects
   for (UserObjects::EditableObject* obj : editableObjects.getObjects()) {
-    obj->draw(window, unitSize);
+    obj->draw();
     if (obj->hasBouncyObject()) {
-      checkCollision(obj->getBouncyObject(), ball, unitSize);
+      checkCollision(obj->getBouncyObject(), ball);
     }
   }
 
   // Display the money bags and check if the ball hits the bag.
   // If the ball hits the bag, increase the score and make it fall.
   for (MoneyBag* bag : level.getMoneyBags()) {
-    bag->draw(window, unitSize);
-    if (!bag->intersect(ball, unitSize) || bag->getCollected()) {
+    bag->draw();
+    if (!bag->intersect(ball) || bag->getCollected()) {
       continue;
     }
     bag->setCollected(true);
     
-    threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y, unitSize));
+    threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y));
     threads.back().detach();
     std::clog << "The ball hit a bag!" << std::endl;
   }
 
-  inventory.draw(window, unitSize);
+  inventory.draw();
 
   // Determine if the player is building something. If so, call the ghost object's loop()
   if (UserObjects::getBuilding()->getSize().length() != 0) {
-    UserObjects::getBuilding()->loop(window, rotate, modifier, unitSize);
+    UserObjects::getBuilding()->loop(rotate, modifier);
   }
   
   window.display();
@@ -218,6 +219,11 @@ int main() {
   std::cout << "Unit size is: " << unitSize <<std::endl;
   windowSize = window.getSize();
 
+  // Set the window-related global variables and initialise the global font
+  Globals::unitSize = unitSize;
+  Globals::window = &window;
+  Globals::initFont();
+
   sf::Texture ballTexture;
   loadTexture("sprites/ball.png", ballTexture);
 
@@ -248,7 +254,7 @@ int main() {
   sf::Texture buttonOuter;
   loadTexture("sprites/buttonBackground.png", buttonOuter);
 
-  tmpLevel.initLevel(window, unitSize, wallsTexture, propsTexture, pipesTexture);
+  tmpLevel.initLevel(wallsTexture, propsTexture, pipesTexture);
   std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
 
   // Create the inventory

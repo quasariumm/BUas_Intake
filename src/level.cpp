@@ -16,6 +16,8 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Sleep.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <filesystem>
@@ -27,8 +29,7 @@
 
 #include "../include/physics.hpp"
 #include "../include/math.hpp"
-#include "SFML/System/Sleep.hpp"
-#include "SFML/System/Time.hpp"
+#include "../include/globals.hpp"
 
 const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;
@@ -73,7 +74,7 @@ void Tilemap::loadFromFile(const std::filesystem::path path) {
 
 }
 
-void Tilemap::drawPropsWalls(sf::RenderWindow& window, const sf::Texture& walls, const sf::Texture& props, const sf::Vector2i tileSize, const float unitSize) {
+void Tilemap::drawPropsWalls(const sf::Texture& walls, const sf::Texture& props, const sf::Vector2i tileSize) {
   
   unsigned short wallsCols = walls.getSize().x / tileSize.x;
   
@@ -106,16 +107,16 @@ void Tilemap::drawPropsWalls(sf::RenderWindow& window, const sf::Texture& walls,
         );
       }
 
-      tile.setScale({unitSize / tileSize.x, unitSize / tileSize.y});
-      tile.setPosition({j * unitSize - 0.5f * unitSize, i * unitSize - 0.5f * unitSize});
+      tile.setScale({Globals::unitSize / tileSize.x, Globals::unitSize / tileSize.y});
+      tile.setPosition({j * Globals::unitSize - 0.5f * Globals::unitSize, i * Globals::unitSize - 0.5f * Globals::unitSize});
 
-      window.draw(tile);
+      Globals::window->draw(tile);
     }
   }
 
 }
 
-void Tilemap::drawPipes(sf::RenderWindow& window, const sf::Texture& wholeTexture, const sf::Vector2i tileSize, const float unitSize) {
+void Tilemap::drawPipes(const sf::Texture& wholeTexture, const sf::Vector2i tileSize) {
 
   unsigned short pipesCols = wholeTexture.getSize().x / tileSize.x;
 
@@ -134,55 +135,55 @@ void Tilemap::drawPipes(sf::RenderWindow& window, const sf::Texture& wholeTextur
         tileSize
       ));
 
-      tile.setScale({unitSize / tileSize.x, unitSize / tileSize.y});
-      tile.setPosition({j * unitSize - 0.5f * unitSize, i * unitSize - 0.5f * unitSize});
+      tile.setScale({Globals::unitSize / tileSize.x, Globals::unitSize / tileSize.y});
+      tile.setPosition({j * Globals::unitSize - 0.5f * Globals::unitSize, i * Globals::unitSize - 0.5f * Globals::unitSize});
 
-      window.draw(tile);
+      Globals::window->draw(tile);
     }
   }
 
 }
 
-void BouncyObjects::makeWalls(const sf::RenderWindow& window, const float unitSize) {
+void BouncyObjects::makeWalls() {
 
-  sf::Vector2u windowSize = window.getSize();
+  sf::Vector2u windowSize = Globals::window->getSize();
 
   PhysicsObjects::BouncyObject floor;
   floor.setPoints({
-    sf::Vector2f(0.5f * unitSize, windowSize.y - 0.5f * unitSize), 
-    sf::Vector2f(windowSize.x - 0.5f * unitSize, windowSize.y - 0.5f * unitSize), 
-    sf::Vector2f(windowSize.x - 0.5f * unitSize, windowSize.y + 100),
-    sf::Vector2f(0.5f * unitSize, windowSize.y + 100)
+    sf::Vector2f(0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize), 
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize), 
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, windowSize.y + 100),
+    sf::Vector2f(0.5f * Globals::unitSize, windowSize.y + 100)
   });
   floor.setCOR(0.8f);
   this->bo_list.push_back(floor);
 
   PhysicsObjects::BouncyObject right_wall;
   right_wall.setPoints({
-    sf::Vector2f(windowSize.x - 0.5f * unitSize, 0.5f * unitSize), 
-    sf::Vector2f(windowSize.x + 100, 0.5f * unitSize),
-    sf::Vector2f(windowSize.x + 100, windowSize.y - 0.5f * unitSize),
-    sf::Vector2f(windowSize.x - 0.5f * unitSize, windowSize.y - 0.5f * unitSize)
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
+    sf::Vector2f(windowSize.x + 100, 0.5f * Globals::unitSize),
+    sf::Vector2f(windowSize.x + 100, windowSize.y - 0.5f * Globals::unitSize),
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize)
   });
   right_wall.setCOR(0.8f);
   this->bo_list.push_back(right_wall);
 
   PhysicsObjects::BouncyObject ceiling;
   ceiling.setPoints({
-    sf::Vector2f(0.5f * unitSize, 0.5f * unitSize), 
-    sf::Vector2f(windowSize.x - 0.5f * unitSize, 0.5f * unitSize),
-    sf::Vector2f(windowSize.x - 0.5f * unitSize, -100),
-    sf::Vector2f(0.5f * unitSize, -100)
+    sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, 0.5f * Globals::unitSize),
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, -100),
+    sf::Vector2f(0.5f * Globals::unitSize, -100)
   });
   ceiling.setCOR(0.8f);
   this->bo_list.push_back(ceiling);
 
   PhysicsObjects::BouncyObject left_wall;
   left_wall.setPoints({
-    sf::Vector2f(0.5f * unitSize, 0.5f * unitSize), 
-    sf::Vector2f(-100, 0.5f * unitSize),
-    sf::Vector2f(-100, windowSize.y - 0.5f * unitSize),
-    sf::Vector2f(0.5f * unitSize, windowSize.y - 0.5f * unitSize)
+    sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
+    sf::Vector2f(-100, 0.5f * Globals::unitSize),
+    sf::Vector2f(-100, windowSize.y - 0.5f * Globals::unitSize),
+    sf::Vector2f(0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize)
   });
   left_wall.setCOR(0.8f);
   this->bo_list.push_back(left_wall);
@@ -200,7 +201,7 @@ void BouncyObjects::makeBO(const std::vector<sf::Vector2f>& points, const float 
 
 }
 
-void BouncyObjects::loadFromFile(const std::filesystem::path path, const float unitSize) {
+void BouncyObjects::loadFromFile(const std::filesystem::path path) {
 
   std::ifstream file;
   file.open(path, std::ios::in);
@@ -229,19 +230,19 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path, const float u
     std::vector<sf::Vector2f> points;
     int one = lineStr.find_first_of('(');
     sf::Vector2f startPoint;
-    startPoint.x = unitSize * std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
-    startPoint.y = unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
+    startPoint.x = Globals::unitSize * std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
+    startPoint.y = Globals::unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
 
-    startPoint -= sf::Vector2f(0.5f * unitSize, 0.5f * unitSize);
+    startPoint -= sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize);
 
     one = lineStr.find_first_of(')');
 
     sf::Vector2f endPoint;
     int two = lineStr.find_first_of('(', one);
-    endPoint.x = unitSize * std::stoi(lineStr.substr(two + 1, lineStr.find_first_of(',', two) - two)) + unitSize;
-    endPoint.y = unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',', two) + 1, lineStr.find_first_of(')', two) - lineStr.find_first_of(',', two))) + unitSize;
+    endPoint.x = Globals::unitSize * std::stoi(lineStr.substr(two + 1, lineStr.find_first_of(',', two) - two)) + Globals::unitSize;
+    endPoint.y = Globals::unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',', two) + 1, lineStr.find_first_of(')', two) - lineStr.find_first_of(',', two))) + Globals::unitSize;
     
-    endPoint -= sf::Vector2f(0.5f * unitSize, 0.5f * unitSize);
+    endPoint -= sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize);
 
     points = {sf::Vector2f(startPoint.x, startPoint.y), sf::Vector2f(endPoint.x, startPoint.y), sf::Vector2f(endPoint.x, endPoint.y), sf::Vector2f(startPoint.x, endPoint.y)};
 
@@ -270,12 +271,12 @@ MoneyBag::MoneyBag(const sf::Vector2f& newPos, const long newValue) : pos(newPos
   }
 }
 
-bool MoneyBag::intersect(PhysicsObjects::Ball& ball, const float unitSize) {
+bool MoneyBag::intersect(PhysicsObjects::Ball& ball) {
   std::vector<sf::Vector2f> points = {
-    this->pos + sf::Vector2f(-0.3f * unitSize, 0.5f * unitSize),
-    this->pos + sf::Vector2f(0.3f * unitSize, 0.5f * unitSize),
-    this->pos + sf::Vector2f(0.3f * unitSize, -0.5f * unitSize),
-    this->pos + sf::Vector2f(-0.3f * unitSize, -0.5f * unitSize),
+    this->pos + sf::Vector2f(-0.3f * Globals::unitSize, 0.5f * Globals::unitSize),
+    this->pos + sf::Vector2f(0.3f * Globals::unitSize, 0.5f * Globals::unitSize),
+    this->pos + sf::Vector2f(0.3f * Globals::unitSize, -0.5f * Globals::unitSize),
+    this->pos + sf::Vector2f(-0.3f * Globals::unitSize, -0.5f * Globals::unitSize),
   };
   // Now, I just use a more simple version of the collision system in physics.cpp
   for (unsigned short i = 0; i < 4; ++i) {
@@ -346,20 +347,20 @@ bool MoneyBag::intersect(PhysicsObjects::Ball& ball, const float unitSize) {
   return false;
 }
 
-void MoneyBag::draw(sf::RenderWindow& window, const float unitSize) {
+void MoneyBag::draw() {
   sf::Sprite moneyBagSprite(this->texture);
   moneyBagSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(this->texture.getSize()));
-  moneyBagSprite.setScale(sf::Vector2f(unitSize / this->texture.getSize().x, unitSize / this->texture.getSize().y));
+  moneyBagSprite.setScale(sf::Vector2f(Globals::unitSize / this->texture.getSize().x, Globals::unitSize / this->texture.getSize().y));
   moneyBagSprite.setPosition(this->pos);
-  window.draw(moneyBagSprite);
+  Globals::window->draw(moneyBagSprite);
 }
 
-void MoneyBag::fall(PhysicsObjects::Ball& ball, const unsigned windowHeight, const float unitSize) {
+void MoneyBag::fall(PhysicsObjects::Ball& ball, const unsigned windowHeight) {
   sf::Vector2f speed = 2.f * ball.getDirection();
   const float mass = 0.1f;
   const float acceleraion = 9.81f;
 
-  while (this->pos.y <= windowHeight + 0.5f * unitSize) {
+  while (this->pos.y <= windowHeight + 0.5f * Globals::unitSize) {
     // Multiply the acceleration by deltaTime (a = dv/dt) and multiply the result by the direction
     sf::Vector2f direction(0, -0.01f * acceleraion);
 
@@ -379,13 +380,13 @@ Level::~Level() {
   }
 }
 
-void Level::initLevel(sf::RenderWindow& window, const float unitSize, const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes) {
+void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes) {
 
   this->tilemap.loadFromFile(this->levelFilePath);
-  this->tilemap.drawPropsWalls(window, walls, props, sf::Vector2i(128, 128), unitSize);
+  this->tilemap.drawPropsWalls(walls, props, sf::Vector2i(128, 128));
   
-  this->bouncyObjects.makeWalls(window, unitSize);
-  this->bouncyObjects.loadFromFile(this->levelFilePath, unitSize);
+  this->bouncyObjects.makeWalls();
+  this->bouncyObjects.loadFromFile(this->levelFilePath);
 
   // Load the money bags from the level file
   std::ifstream levelStream;
@@ -414,8 +415,8 @@ void Level::initLevel(sf::RenderWindow& window, const float unitSize, const sf::
 
     sf::Vector2f pos;
     int one = lineStr.find_first_of('(');
-    pos.x = unitSize * std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
-    pos.y = unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
+    pos.x = Globals::unitSize * std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
+    pos.y = Globals::unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
 
     MoneyBag* bag = new MoneyBag(pos);
     this->moneyBags.push_back(bag);
@@ -423,7 +424,7 @@ void Level::initLevel(sf::RenderWindow& window, const float unitSize, const sf::
   }
 
   // ! This is just for testing. The following is temporaty
-  float windowYSize = window.getSize().y;
+  float windowYSize = Globals::window->getSize().y;
   this->bouncyObjects.makeBO({
     sf::Vector2f(0, windowYSize - 70),
     sf::Vector2f(200, windowYSize - 30),

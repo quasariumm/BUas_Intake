@@ -155,10 +155,9 @@ namespace PhysicsObjects {
      * @brief Checks if the ball collides with this shape
      * 
      * @param ball A reference to the ball
-     * @param unitSize The size of a unit. This is defined in @a main.cpp
      * @return int The (most likely) side on which the ball collides
      */
-    int checkBallCollision(Ball& ball, const float unitSize);
+    int checkBallCollision(Ball& ball);
 
     /**
      * @brief Bounces the ball. It calcuates the needed force based on the COR of the surface and appies it

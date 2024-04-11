@@ -10,13 +10,16 @@
  */
 
 #include "../include/physics.hpp"
-#include "../include/math.hpp"
+
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Angle.hpp>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <vector>
+
+#include "../include/math.hpp"
+#include "../include/globals.hpp"
 
 /**
  * @brief A way to represent a side as a line of the format ax+by=c. Also includes the side index.
@@ -100,7 +103,7 @@ unsigned short getBestSide(PhysicsObjects::Ball& ball, std::vector<Side>& sides,
   return collSides[0];
 }
 
-int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball, const float unitSize) {
+int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball) {
 
   // This collision system is very sketchy, but that's game dev for you. No need to be fully realistic ;).
   // For each side, get the formula of the line and check if its distance to the midpoint of the ball is smaller than the radius of the ball.
@@ -187,7 +190,7 @@ int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball,
     if (!(distances[i] <= ball.getRadius() && distances[i-1] <= ball.getRadius())) {
       continue;
     }
-    if (std::abs(distances[i] - distances[i-1]) <= 0.1f * unitSize) {
+    if (std::abs(distances[i] - distances[i-1]) <= 0.1f * Globals::unitSize) {
       std::vector<Side> sides = std::vector<Side>({allSides[i-1], allSides[i]});
       return getBestSide(ball, sides, distances);
     }

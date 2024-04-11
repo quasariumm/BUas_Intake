@@ -25,34 +25,25 @@
 #include <vector>
 
 #include "../include/build.hpp"
-
-UIElements::Global global;
-
-void UIElements::Global::initFont() {
-  std::filesystem::path fontPath = RESOURCES_PATH;
-  fontPath += "font/Roboto.ttf";
-  if (!this->font.loadFromFile(fontPath)) {
-    throw std::runtime_error("Failed to load the font.");
-  }
-}
+#include "../include/globals.hpp"
 
 bool UIElements::Button::intersect(const sf::Vector2i pos) {
   return (pos.x >= this->position.x && pos.x <= this->position.x + this->size.x && pos.y >= this->position.y && pos.y <= this->position.y + this->size.y);
 }
 
-void UIElements::Button::draw(sf::RenderWindow& window) {
+void UIElements::Button::draw() {
   sf::Sprite outerSprite(this->outer);
 
-  sf::Text text(global.getFont(), this->text);
+  sf::Text text(Globals::mainFont, this->text);
 
   outerSprite.setScale(sf::Vector2f(this->size.x / static_cast<float>(this->outer.getSize().x), this->size.y / static_cast<float>(this->outer.getSize().y)));
   outerSprite.setPosition(this->position);
-  window.draw(outerSprite);
+  Globals::window->draw(outerSprite);
 
   if (!this->text.empty()) {
     text.setCharacterSize((static_cast<sf::Vector2f>(this->size) * this->textSize).x / this->text.length());
     text.setPosition(this->position + 0.5f * (1.f - this->textSize) * static_cast<sf::Vector2f>(this->size));
-    window.draw(text);
+    Globals::window->draw(text);
   }
 }
 
@@ -60,7 +51,7 @@ void UIElements::Button::onClick() {
   std::clog << "Button click" << std::endl;
 }
 
-void UIElements::InventoryButton::draw(sf::RenderWindow& window) {
+void UIElements::InventoryButton::draw() {
   sf::Sprite outerSprite(this->getOuterTexture());
   
   sf::Texture innerTexture;
@@ -73,7 +64,7 @@ void UIElements::InventoryButton::draw(sf::RenderWindow& window) {
 
   outerSprite.setScale(sf::Vector2f(this->getSize().x / static_cast<float>(this->getOuterTexture().getSize().x), this->getSize().y / static_cast<float>(this->getOuterTexture().getSize().y)));
   outerSprite.setPosition(this->getPosition());
-  window.draw(outerSprite);
+  Globals::window->draw(outerSprite);
 
   if (innerTexture.getSize().x != 0 && innerTexture.getSize().y != 0) {
     sf::Vector2f innerSize = this->itemSize * static_cast<sf::Vector2f>(this->getSize());
@@ -93,12 +84,12 @@ void UIElements::InventoryButton::draw(sf::RenderWindow& window) {
     } else {
       innerSprite.setPosition(basePos);
     }
-    window.draw(innerSprite);
+    Globals::window->draw(innerSprite);
   }
 
   if (this->count > -1) {
     std::string countStr = std::to_string(this->count);
-    sf::Text countText(global.getFont(), countStr);
+    sf::Text countText(Globals::mainFont, countStr);
     countText.setCharacterSize(0.25 * this->getSize().x);
     sf::Vector2f sizeF = static_cast<sf::Vector2f>(this->getSize());
 
@@ -108,7 +99,7 @@ void UIElements::InventoryButton::draw(sf::RenderWindow& window) {
 
     countText.setFillColor(sf::Color(255, 255, 255));
 
-    window.draw(countText);
+    Globals::window->draw(countText);
   }
 }
 
@@ -118,9 +109,6 @@ void UIElements::InventoryButton::onClick() {
 
 UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
 : items(newItems), counts(newCounts), outerTexture(buttonOuter) {
-  // Initialise the font
-  global.initFont();
-
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = newCounts[i];
@@ -166,17 +154,17 @@ void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
   }
 }
 
-void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize) {
+void UIElements::Inventory::draw() {
   // Update the position of the buttons to display the items properly in the center of the screen.
   // If the number of items is odd, make one item the middle one and offset the rest accordingly.
   // If the number of items is even, set the middle to the middle of the screen and offset the items accordingly.
-  sf::Vector2u windowSize = window.getSize();
+  sf::Vector2u windowSize = Globals::window->getSize();
 
   sf::Vector2f middle = sf::Vector2f(windowSize.x / 2.f, windowSize.y * 0.9f);
   float offset = 0.f;
-  const float PADDING = 0.3f * unitSize;
+  const float PADDING = 0.3f * Globals::unitSize;
 
-  const sf::Vector2u SIZE = sf::Vector2u(1.5f * unitSize, 1.5f * unitSize);
+  const sf::Vector2u SIZE = sf::Vector2u(1.5f * Globals::unitSize, 1.5f * Globals::unitSize);
 
   std::vector<UIElements::InventoryButton*>::iterator left, right;
   if (this->items.size() % 2 == 0) {
@@ -191,7 +179,7 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
     std::vector<UIElements::InventoryButton*>::iterator middleButton = this->buttons.begin() + floor(static_cast<float>(this->buttons.size()) / 2.f);
     (*middleButton)->setSize(SIZE);
     (*middleButton)->setPosition(middle - 0.5f * static_cast<sf::Vector2f>(SIZE));
-    (*middleButton)->draw(window);
+    (*middleButton)->draw();
 
     offset = SIZE.x + PADDING;
 
@@ -205,10 +193,10 @@ void UIElements::Inventory::draw(sf::RenderWindow& window, const float unitSize)
   for (;left >= this->buttons.begin() && right != this->buttons.end(); left--, right++, count++) {
     (*left)->setSize(SIZE);
     (*left)->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
-    (*left)->draw(window);
+    (*left)->draw();
 
     (*right)->setSize(SIZE);
     (*right)->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
-    (*right)->draw(window);
+    (*right)->draw();
   }
 }
