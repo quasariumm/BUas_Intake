@@ -20,12 +20,15 @@
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "../include/build.hpp"
 #include "../include/globals.hpp"
+
+sf::Texture tmpTexture;
 
 bool UIElements::Button::intersect(const sf::Vector2i pos) {
   return (pos.x >= this->position.x && pos.x <= this->position.x + this->size.x && pos.y >= this->position.y && pos.y <= this->position.y + this->size.y);
@@ -199,4 +202,58 @@ void UIElements::Inventory::draw() {
     (*right)->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
     (*right)->draw();
   }
+}
+
+UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture) {};
+
+UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath)
+ : text(newText), pos(newPos), size(newSize), Text(Globals::mainFont, newText), Sprite(tmpTexture) {
+  if (!this->background.loadFromFile(backgroundPath)) {
+    throw std::runtime_error("Couldn't load the background of a TextLabel.");
+  }
+  this->setTexture(this->background);
+
+  const float TEXT_SIZE = 0.9f; // Relative to the background
+  this->setCharacterSize(static_cast<int>(TEXT_SIZE * newSize.y));
+}
+
+void UIElements::TextLabel::setText(const std::wstring newString) {
+  this->setString(newString);
+  this->text = newString;
+}
+
+void UIElements::TextLabel::draw() {
+  // Set the right size and position
+  sf::Sprite* sprite = static_cast<sf::Sprite*>(this);
+  sf::Text* text = static_cast<sf::Text*>(this);
+
+  const float TEXT_SIZE = 0.9f; // Relative to the background
+  
+  sprite->setScale(sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
+  text->setOrigin(sf::Vector2f(0.5f * text->getLocalBounds().width, 0));
+  sprite->setPosition(this->pos);
+  text->setPosition(this->pos + 0.5f * (1.f - TEXT_SIZE) * text->getLocalBounds().getSize());
+
+  // Globals::window->draw(*sprite);
+  Globals::window->draw(*text);
+}
+
+std::wstring moneyScore(const uint8_t score) {
+  std::wstring base(L"Money: $");
+
+  std::wstringstream moneyStream;
+  moneyStream << score * 100000;
+  std::wstring money = moneyStream.str();
+
+  for (int i = money.length() - 3; i > 0; i -= 3) {
+    money.insert(i, L",");
+  }
+
+  return base + money;
+}
+
+void UIElements::ScoreLabel::setScore(const uint8_t newScore) {
+  this->score = newScore;
+
+  this->setText(moneyScore(newScore));
 }

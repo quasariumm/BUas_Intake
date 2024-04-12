@@ -20,6 +20,7 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -263,7 +264,7 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path) {
 
 }
 
-MoneyBag::MoneyBag(const sf::Vector2f& newPos, const long newValue) : pos(newPos), value(newValue), collected(false) {
+MoneyBag::MoneyBag(const sf::Vector2f& newPos, const uint8_t newValue) : pos(newPos), value(newValue), collected(false) {
   std::filesystem::path texturePath = RESOURCES_PATH;
   texturePath.append("sprites/moneyBag.png");
   if (!this->texture.loadFromFile(texturePath)) {
@@ -422,6 +423,11 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
     this->moneyBags.push_back(bag);
   
   }
+
+  // Init the ScoreLabel
+  std::filesystem::path scoreLabelBackground = RESOURCES_PATH;
+  scoreLabelBackground += "sprites/blank.png";
+  this->scoreLabel = UIElements::ScoreLabel(std::wstring(L"Money: $0"), sf::Vector2f(0.5f * Globals::window->getSize().x, 0), sf::Vector2f(Globals::window->getSize().x, Globals::unitSize), scoreLabelBackground);
 
   // ! This is just for testing. The following is temporaty
   float windowYSize = Globals::window->getSize().y;

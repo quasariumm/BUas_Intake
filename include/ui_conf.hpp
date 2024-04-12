@@ -5,6 +5,8 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
@@ -266,6 +268,132 @@ namespace UIElements {
       {1, sf::Vector2f(1, 1)},
       {2, sf::Vector2f(1, 1)}
     };
+
+  };
+
+  class TextLabel : public sf::Text, public sf::Sprite {
+  public:
+
+    /**
+     * @brief Construct a new Text Label object
+     * @attention This is a minimal constructor for the TextLabel class. Please use the other constructor if possible.
+     * 
+     */
+    TextLabel();
+    
+    /**
+     * @brief Construct a new Text Label object
+     * 
+     * @param newText The text that needs to be displayed
+     * @param newPos The position of the label
+     * @param newSize The size of the label
+     * @param backgroundPath The path to the background texture
+     */
+    TextLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath);
+
+    /**
+     * @brief Set the text
+     * 
+     * @param newText The new text
+     */
+    void setText(const std::wstring newText);
+
+    /**
+     * @brief Get the Text object
+     * 
+     * @return std::string 
+     */
+    std::wstring getText() {return text;};
+
+    /**
+     * @brief Set the position
+     * 
+     * @param newPos The new position
+     */
+    void setPos(const sf::Vector2f& newPos) {pos = newPos;};
+
+    /**
+     * @brief Get the position
+     * 
+     * @return sf::Vector2f& 
+     */
+    sf::Vector2f& getPos() {return pos;};
+
+    /**
+     * @brief Set the size
+     * 
+     * @param newSize The new size
+     */
+    void setSize(const sf::Vector2f& newSize) {size = newSize;};
+
+    /**
+     * @brief Get the size
+     * 
+     * @return sf::Vector2f& 
+     */
+    sf::Vector2f& getSize() {return size;};
+
+    /**
+     * @brief Get the background texture
+     * 
+     * @return sf::Texture& 
+     */
+    sf::Texture& getBackground() {return background;};
+
+    /**
+     * @brief Draws the text label on the screen
+     * 
+     */
+    void draw();
+
+  private:
+
+    sf::Texture background;
+    
+    std::wstring text;
+    sf::Vector2f pos;
+    sf::Vector2f size;
+
+  };
+
+  class ScoreLabel : public TextLabel {
+  public:
+
+    /**
+     * @brief Construct a new Score Label object
+     * @attention This is a minimal constructor for the ScoreLabel class. Please use the other constructor if possible.
+     * 
+     */
+    ScoreLabel() = default;
+    
+    /**
+     * @brief Construct a new Score Label object
+     * 
+     * @param newText The text that needs to be displayed
+     * @param newPos The position of the label
+     * @param newSize The size of the label
+     * @param backgroundPath The path to thebackground texture
+     *
+     */
+    ScoreLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath) : TextLabel(newText, newPos, newSize, backgroundPath) {};
+
+    /**
+     * @brief Set the score
+     * 
+     * @param newScore The new score
+     */
+    void setScore(const uint8_t newScore);
+
+    /**
+     * @brief Get the score
+     * 
+     * @return uint8_t 
+     */
+    uint8_t getScore() {return score;};
+  
+  private:
+
+    uint8_t score = 0;
 
   };
 

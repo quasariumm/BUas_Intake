@@ -167,13 +167,16 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       continue;
     }
     bag->setCollected(true);
+    level.getScoreLabel().setScore(level.getScoreLabel().getScore() + bag->getValue());
     
     threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y));
     threads.back().detach();
     std::clog << "The ball hit a bag!" << std::endl;
   }
 
+  // Draw the UI
   inventory.draw();
+  level.getScoreLabel().draw();
 
   // Determine if the player is building something. If so, call the ghost object's loop()
   if (UserObjects::getBuilding()->getSize().length() != 0) {

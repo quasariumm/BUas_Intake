@@ -5,8 +5,11 @@
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <cstdint>
 #include <filesystem>
 #include <vector>
+
+#include "../include/ui_conf.hpp"
 
 class Tilemap {
 public:
@@ -86,9 +89,9 @@ public:
    * @brief Construct a new Money Bag object
    * 
    * @param newPos The new position
-   * @param newValue The amount of money in the bag. Default is €500.000,-
+   * @param newValue The amount of money in the bag. The actual value is this variable times $100.000,-
    */
-  MoneyBag(const sf::Vector2f& newPos, const long newValue = 500000);
+  MoneyBag(const sf::Vector2f& newPos, const uint8_t newValue = 5);
   
   /**
    * @brief Checks collision between the ball and the money bag.
@@ -114,16 +117,16 @@ public:
   /**
    * @brief Set the value of the bag
    * 
-   * @param newValue The new value in euro (€)
+   * @param newValue The new value in dollar ($)
    */
-  void setValue(const long& newValue) {value = newValue;};
+  void setValue(const uint8_t& newValue) {value = newValue;};
   
   /**
    * @brief Get the value of the bag
    * 
-   * @return long& 
+   * @return uint8_t& 
    */
-  long& getValue() {return value;};
+  uint8_t& getValue() {return value;};
 
   /**
    * @brief Draws the money bag on the screen
@@ -143,7 +146,7 @@ public:
 private:
 
   sf::Vector2f pos;
-  long value;
+  uint8_t value;
 
   sf::Texture texture;
 
@@ -189,6 +192,13 @@ public:
   std::vector<MoneyBag*>& getMoneyBags() {return moneyBags;};
 
   /**
+   * @brief Get the ScoreLabel
+   * 
+   * @return UIElements::ScoreLabel& 
+   */
+  UIElements::ScoreLabel& getScoreLabel() {return scoreLabel;};
+
+  /**
    * @brief Initiates the level's tilemap and BouncyObjects
    * 
    * @param window The window it needs to be drawn on
@@ -202,6 +212,7 @@ private:
   Tilemap tilemap;
   BouncyObjects bouncyObjects;
   std::vector<MoneyBag*> moneyBags;
+  UIElements::ScoreLabel scoreLabel;
 
 };
 

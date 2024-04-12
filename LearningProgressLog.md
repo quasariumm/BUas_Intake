@@ -45,4 +45,9 @@ Added money bags to the level file and implemented a system to read them from th
 Implemented the collision of the money bags. Tried to make them fall with no collision using threads, which didn't work.
 
 ## 2024-04-11
-Made them fall. Standard threads worked while SFML threads didn't.
+Made them fall. Standard threads worked while SFML threads didn't.  
+Made a global source and header file and changed some variables in all files to the global ones. This makes it easier to access the most common parameters like the unit size or the game window
+
+## 2024-04-12
+Made the score label and made it add money once a money bag is hit. The size of the text is still a bit large.  
+Changed the currency from euro to dollar to match the symbol on the money bag.
