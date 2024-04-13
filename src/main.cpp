@@ -45,6 +45,9 @@ float unitSize = 80.f; // The conversion factor from SFML coordinates to meters
 
 sf::Vector2u windowSize;
 
+// Ball origin
+sf::Vector2f ballOrigin;
+
 // Textures
 sf::Texture wallsTexture;
 sf::Texture propsTexture;
@@ -139,10 +142,19 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
 
   if (Globals::simulationOn) applyForces(ball, deltaTime);
 
-  // std::clog << "\033[K\rBall speed: " << ball.getVelocity() << " pixels per second." << std::flush;
 
   for (PhysicsObjects::BouncyObject& object : level.getBouncyObjects().getList()) {
     checkCollision(object, ball);
+    // Stop the simulation right before the ball falls through the ground
+    // or when the ball has glitched through a wall of the floor and is outside of the level
+    if (
+      (ball.getVelocity() < 25.f && object.getJustBounced() != -1 && Globals::simulationOn)
+      || (ball.getPosition().x < 0 || ball.getPosition().x > window.getSize().x || ball.getPosition().y < 0 || ball.getPosition().y > window.getSize().y)
+    ) {
+      Globals::simulationOn = false;
+      ball.setPosition(ballOrigin);
+      level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
+    }
   }
 
   level.getTilemap().drawPropsWalls(wallsTexture, propsTexture, sf::Vector2i(128, 128));
@@ -156,6 +168,14 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     obj->draw();
     if (obj->hasBouncyObject()) {
       checkCollision(obj->getBouncyObject(), ball);
+      if (
+        (ball.getVelocity() < 25.f && obj->getBouncyObject().getJustBounced() != -1 && Globals::simulationOn)
+        || (ball.getPosition().x < 0 || ball.getPosition().x > window.getSize().x || ball.getPosition().y < 0 || ball.getPosition().y > window.getSize().y)
+      ) {
+        Globals::simulationOn = false;
+        ball.setPosition(ballOrigin);
+        level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
+      }
     }
   }
 
@@ -228,12 +248,15 @@ int main() {
   Globals::window = &window;
   Globals::initFont();
 
+  // Set the ball origin
+  ballOrigin = {1.5f * unitSize, 1.5f * unitSize};
+
   sf::Texture ballTexture;
   loadTexture("sprites/ball.png", ballTexture);
 
   ballTexture.setSmooth(true);
 
-  PhysicsObjects::Ball ball{ballTexture, {75.f,75.f}, 0.1f, 0.25f * unitSize};
+  PhysicsObjects::Ball ball{ballTexture, ballOrigin, 0.1f, 0.25f * unitSize};
 
   // std::cout << "Ball midpoint: " << ball.getMidpoint().x << "," << ball.getMidpoint().y << std::endl;
   // std::cout << "Ball radius: " << ball.getRadius()<< std::endl;
