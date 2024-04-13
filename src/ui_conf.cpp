@@ -44,8 +44,10 @@ void UIElements::Button::draw() {
   Globals::window->draw(outerSprite);
 
   if (!this->text.empty()) {
-    text.setCharacterSize((static_cast<sf::Vector2f>(this->size) * this->textSize).x / this->text.length());
-    text.setPosition(this->position + 0.5f * (1.f - this->textSize) * static_cast<sf::Vector2f>(this->size));
+    text.setFillColor(this->textColor);
+    text.setOrigin(sf::Vector2f(0.5f * text.getLocalBounds().width, 0));
+    text.setCharacterSize(this->size.y * this->textSize);
+    text.setPosition(this->position + sf::Vector2f(0.5f * this->size.x, 0));
     Globals::window->draw(text);
   }
 }
@@ -219,7 +221,6 @@ UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f&
     throw std::runtime_error("Couldn't load the background of a TextLabel.");
   }
   this->setTexture(this->background, true);
-  std::clog << ((sf::Sprite*)this)->getLocalBounds().getSize().x << "," << ((sf::Sprite*)this)->getLocalBounds().getSize().y << std::endl;
 
   const float TEXT_SIZE = 0.7f; // Relative to the background
   this->setCharacterSize(static_cast<int>(TEXT_SIZE * newSize.y));

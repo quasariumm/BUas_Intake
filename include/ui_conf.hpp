@@ -36,9 +36,9 @@ namespace UIElements {
      * @param buttonText Text that needs to be displayed on the button (optional)
      */
     Button(
-      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = ""
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = "", const sf::Color& newColor = sf::Color::Black
     ) :
-    outer(tOuter), text(buttonText), position(vPos), size(vSize), textSize(0.6f) {};
+    outer(tOuter), text(buttonText), position(vPos), size(vSize), textSize(0.8f), textColor(newColor) {};
 
     /**
      * @brief Set the text
@@ -53,6 +53,20 @@ namespace UIElements {
      * @return std::string& 
      */
     std::string& getText() {return text;};
+
+    /**
+     * @brief Set the text color
+     * 
+     * @param newColor The new text color
+     */
+    void setTextColor(const sf::Color& newColor) {textColor = newColor;};
+
+    /**
+     * @brief Get the text color
+     * 
+     * @return sf::Color& 
+     */
+    sf::Color& getTextColor() {return textColor;};
     
     /**
      * @brief Set the position
@@ -124,6 +138,7 @@ namespace UIElements {
 
     sf::Texture outer;
     std::string text;
+    sf::Color textColor;
 
     sf::Vector2f position;
     sf::Vector2u size;
@@ -149,8 +164,8 @@ namespace UIElements {
      * @param buttonText Text that needs to be displayed on the button (optional)
      */
     RunButton(
-      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = "Run"
-    ) : Button(tOuter, vPos, vSize, buttonText) {};
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = "Run", const sf::Color& newColor = sf::Color::Black
+    ) : Button(tOuter, vPos, vSize, buttonText, newColor) {};
 
     /**
      * @brief The function to call then the button gets clicked
