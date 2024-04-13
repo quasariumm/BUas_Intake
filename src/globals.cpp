@@ -28,3 +28,5 @@ void Globals::initFont() {
 
 sf::RenderWindow* Globals::window;
 float Globals::unitSize;
+
+bool Globals::simulationOn = false;

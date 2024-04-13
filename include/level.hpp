@@ -199,6 +199,13 @@ public:
   UIElements::ScoreLabel& getScoreLabel() {return scoreLabel;};
 
   /**
+   * @brief Get the run button
+   * 
+   * @return UIElements::RunButton& 
+   */
+  UIElements::RunButton& getRunButton() {return runButton;};
+
+  /**
    * @brief Initiates the level's tilemap and BouncyObjects
    * 
    * @param window The window it needs to be drawn on
@@ -213,6 +220,9 @@ private:
   BouncyObjects bouncyObjects;
   std::vector<MoneyBag*> moneyBags;
   UIElements::ScoreLabel scoreLabel;
+  UIElements::RunButton runButton;
+
+  sf::Texture runButtonOuter;
 
 };
 

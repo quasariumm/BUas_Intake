@@ -21,6 +21,13 @@ namespace UIElements {
   public:
     
     /**
+     * @brief Construct a new Button object
+     * @attention This is a minimal constructor for the Button class. Please use the other constructor if possible.
+     * 
+     */
+    Button() = default;
+    
+    /**
      * @brief Construct a new Button object, either an image button or a text button
      * 
      * @param tOuter The outer texture of the button
@@ -120,6 +127,36 @@ namespace UIElements {
 
     sf::Vector2f position;
     sf::Vector2u size;
+
+  };
+
+  class RunButton : public Button {
+  public:
+
+    /**
+     * @brief Construct a new Run Button object
+     * @attention This is a minimal constructor for the RunButton class. Please use the other constructor if possible.
+     * 
+     */
+    RunButton() = default;
+
+    /**
+     * @brief Construct a new Button object, either an image button or a text button
+     * 
+     * @param tOuter The outer texture of the button
+     * @param vPos The position of the button
+     * @param vSize The size of the button
+     * @param buttonText Text that needs to be displayed on the button (optional)
+     */
+    RunButton(
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = "Run"
+    ) : Button(tOuter, vPos, vSize, buttonText) {};
+
+    /**
+     * @brief The function to call then the button gets clicked
+     * 
+     */
+    void onClick() override;
 
   };
 
@@ -305,13 +342,6 @@ namespace UIElements {
      * @return std::string 
      */
     std::wstring getText() {return text;};
-
-    /**
-     * @brief Set the color of the text
-     * 
-     * @param newColor The new color
-     */
-    void setTextColor(const sf::Color& newColor);
 
     /**
      * @brief Set the position

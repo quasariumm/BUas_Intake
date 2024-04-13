@@ -54,6 +54,13 @@ void UIElements::Button::onClick() {
   std::clog << "Button click" << std::endl;
 }
 
+void UIElements::RunButton::onClick() {
+  // Set the physics of the ball 'on'
+  Globals::simulationOn = true;
+  // Make the button 'disappear'
+  this->setPosition(this->getPosition() + sf::Vector2f(0, -1e3));
+}
+
 void UIElements::InventoryButton::draw() {
   sf::Sprite outerSprite(this->getOuterTexture());
   
@@ -223,10 +230,6 @@ UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f&
 void UIElements::TextLabel::setText(const std::wstring newString) {
   this->setString(newString);
   this->text = newString;
-}
-
-void UIElements::TextLabel::setTextColor(const sf::Color& newColor) {
-  this->setFillColor(newColor);
 }
 
 void UIElements::TextLabel::draw() {

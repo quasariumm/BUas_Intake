@@ -137,7 +137,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     deltaTime = 0;
   }
 
-  applyForces(ball, deltaTime);
+  if (Globals::simulationOn) applyForces(ball, deltaTime);
 
   // std::clog << "\033[K\rBall speed: " << ball.getVelocity() << " pixels per second." << std::flush;
 
@@ -177,6 +177,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   // Draw the UI
   inventory.draw();
   level.getScoreLabel().draw();
+  level.getRunButton().draw();
 
   // Determine if the player is building something. If so, call the ghost object's loop()
   if (UserObjects::getBuilding()->getSize().length() != 0) {
@@ -265,6 +266,9 @@ int main() {
   for (UIElements::InventoryButton* button : inventory.getButtons()) {
     buttons.push_back(button);
   }
+
+  // Add the run button to buttons
+  buttons.push_back(&tmpLevel.getRunButton());
 
   sf::Clock dt_clock;
 

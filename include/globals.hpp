@@ -11,6 +11,8 @@ namespace Globals {
   
   extern sf::RenderWindow* window;
   extern float unitSize;
+
+  extern bool simulationOn;
 }
 
 #endif //GLOBALS_H_

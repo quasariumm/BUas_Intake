@@ -429,6 +429,16 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
   scoreLabelBackground += "sprites/scoreLabelBackground.png";
   this->scoreLabel = UIElements::ScoreLabel(std::wstring(L"Money: $0"), sf::Vector2f(0.5f * Globals::window->getSize().x, 0), sf::Vector2f(5.5f * Globals::unitSize, 0.65f * Globals::unitSize), scoreLabelBackground, sf::Color::Black);
 
+  // Init the run button
+  std::filesystem::path runButtonBackground = RESOURCES_PATH;
+  runButtonBackground += "sprites/runButtonBackground.png";
+
+  if (!this->runButtonOuter.loadFromFile(runButtonBackground)) {
+    throw std::runtime_error("Couldn't load the run button background.");
+  }
+
+  this->runButton = UIElements::RunButton(this->runButtonOuter, sf::Vector2f(0.5f * Globals::window->getSize().x - Globals::unitSize, 0.8f * Globals::unitSize ), sf::Vector2u(2.f * Globals::unitSize, 0.5f * Globals::unitSize));
+
   // ! This is just for testing. The following is temporaty
   float windowYSize = Globals::window->getSize().y;
   this->bouncyObjects.makeBO({
