@@ -206,15 +206,18 @@ void UIElements::Inventory::draw() {
 
 UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture) {};
 
-UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath)
+UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor)
  : text(newText), pos(newPos), size(newSize), Text(Globals::mainFont, newText), Sprite(tmpTexture) {
   if (!this->background.loadFromFile(backgroundPath)) {
     throw std::runtime_error("Couldn't load the background of a TextLabel.");
   }
-  this->setTexture(this->background);
+  this->setTexture(this->background, true);
+  std::clog << ((sf::Sprite*)this)->getLocalBounds().getSize().x << "," << ((sf::Sprite*)this)->getLocalBounds().getSize().y << std::endl;
 
-  const float TEXT_SIZE = 0.9f; // Relative to the background
+  const float TEXT_SIZE = 0.7f; // Relative to the background
   this->setCharacterSize(static_cast<int>(TEXT_SIZE * newSize.y));
+
+  this->setFillColor(textColor);
 }
 
 void UIElements::TextLabel::setText(const std::wstring newString) {
@@ -222,19 +225,26 @@ void UIElements::TextLabel::setText(const std::wstring newString) {
   this->text = newString;
 }
 
+void UIElements::TextLabel::setTextColor(const sf::Color& newColor) {
+  this->setFillColor(newColor);
+}
+
 void UIElements::TextLabel::draw() {
   // Set the right size and position
   sf::Sprite* sprite = static_cast<sf::Sprite*>(this);
   sf::Text* text = static_cast<sf::Text*>(this);
 
-  const float TEXT_SIZE = 0.9f; // Relative to the background
-  
-  sprite->setScale(sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
-  text->setOrigin(sf::Vector2f(0.5f * text->getLocalBounds().width, 0));
-  sprite->setPosition(this->pos);
-  text->setPosition(this->pos + 0.5f * (1.f - TEXT_SIZE) * text->getLocalBounds().getSize());
+  const float TEXT_SIZE = 0.7f; // Relative to the background
 
-  // Globals::window->draw(*sprite);
+  sprite->setTexture(this->background, true);
+  
+  sprite->setOrigin(sf::Vector2f(0.5f * sprite->getLocalBounds().getSize().x, 0));
+  text->setOrigin(sf::Vector2f(0.5f * text->getLocalBounds().width, 0));
+  sprite->setScale(sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
+  sprite->setPosition(this->pos);
+  text->setPosition(this->pos);
+
+  Globals::window->draw(*sprite);
   Globals::window->draw(*text);
 }
 
@@ -245,7 +255,7 @@ std::wstring moneyScore(const uint8_t score) {
   moneyStream << score * 100000;
   std::wstring money = moneyStream.str();
 
-  for (int i = money.length() - 3; i > 0; i -= 3) {
+  for (int i = money.length() - 3; i > 0; ------i) {
     money.insert(i, L",");
   }
 

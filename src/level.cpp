@@ -426,8 +426,8 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
 
   // Init the ScoreLabel
   std::filesystem::path scoreLabelBackground = RESOURCES_PATH;
-  scoreLabelBackground += "sprites/blank.png";
-  this->scoreLabel = UIElements::ScoreLabel(std::wstring(L"Money: $0"), sf::Vector2f(0.5f * Globals::window->getSize().x, 0), sf::Vector2f(Globals::window->getSize().x, Globals::unitSize), scoreLabelBackground);
+  scoreLabelBackground += "sprites/scoreLabelBackground.png";
+  this->scoreLabel = UIElements::ScoreLabel(std::wstring(L"Money: $0"), sf::Vector2f(0.5f * Globals::window->getSize().x, 0), sf::Vector2f(5.5f * Globals::unitSize, 0.65f * Globals::unitSize), scoreLabelBackground, sf::Color::Black);
 
   // ! This is just for testing. The following is temporaty
   float windowYSize = Globals::window->getSize().y;

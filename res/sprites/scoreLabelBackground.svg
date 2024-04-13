@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="55.524998mm"
+   height="10.524999mm"
+   viewBox="0 0 55.524998 10.524999"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="scoreLabelBackground.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   inkscape:export-filename="scoreLabelBackground.png"
+   inkscape:export-xdpi="250"
+   inkscape:export-ydpi="250"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="4.0416191"
+     inkscape:cx="99.5888"
+     inkscape:cy="30.680773"
+     inkscape:window-width="1920"
+     inkscape:window-height="1006"
+     inkscape:window-x="1680"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0.68749901,0.68749901)">
+    <path
+       id="rect1"
+       style="fill:#808080;stroke:#ffffff;stroke-width:0.524999;stroke-opacity:1"
+       d="m 3.531337,-0.4249995 h 47.087328 3.956336 V 5.618664 c 0,2.1918104 -1.764526,3.9563365 -3.956336,3.9563365 H 3.531337 c -2.1918104,0 -3.9563365,-1.7645261 -3.9563365,-3.9563365 v -6.0436635 z"
+       sodipodi:nodetypes="sscsssscs" />
+  </g>
+</svg>
