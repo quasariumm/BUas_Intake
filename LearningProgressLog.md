@@ -51,3 +51,7 @@ Made a global source and header file and changed some variables in all files to 
 ## 2024-04-12
 Made the score label and made it add money once a money bag is hit. The size of the text is still a bit large.  
 Changed the currency from euro to dollar to match the symbol on the money bag.
+
+## 2024-04-13
+Added a background to the score label. In the process I learned about how to deal with drawing an object that inherits from mutliple `sf::Drawable` classes.  
+Made a run button to start the simulation. I also made it so that the simulation resets once the ball is unable to move on or is outside of the map due to some collision thing.

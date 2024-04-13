@@ -149,10 +149,12 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     // or when the ball has glitched through a wall of the floor and is outside of the level
     if (
       (ball.getVelocity() < 25.f && object.getJustBounced() != -1 && Globals::simulationOn)
-      || (ball.getPosition().x < 0 || ball.getPosition().x > window.getSize().x || ball.getPosition().y < 0 || ball.getPosition().y > window.getSize().y)
+      || (ball.getMidpoint().x < 0 || ball.getMidpoint().x > window.getSize().x || ball.getMidpoint().y < 0 || ball.getMidpoint().y > window.getSize().y)
     ) {
       Globals::simulationOn = false;
-      ball.setPosition(ballOrigin);
+      ball.setPosition(ballOrigin - 0.5f * ball.getGlobalBounds().getSize());
+      ball.setMidpoint(ballOrigin);
+      ball.setVelocity(sf::Vector2f());
       level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
     }
   }
@@ -170,10 +172,12 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       checkCollision(obj->getBouncyObject(), ball);
       if (
         (ball.getVelocity() < 25.f && obj->getBouncyObject().getJustBounced() != -1 && Globals::simulationOn)
-        || (ball.getPosition().x < 0 || ball.getPosition().x > window.getSize().x || ball.getPosition().y < 0 || ball.getPosition().y > window.getSize().y)
+        || (ball.getMidpoint().x < 0 || ball.getMidpoint().x > window.getSize().x || ball.getMidpoint().y < 0 || ball.getMidpoint().y > window.getSize().y)
       ) {
         Globals::simulationOn = false;
-        ball.setPosition(ballOrigin);
+        ball.setPosition(ballOrigin - 0.5f * ball.getGlobalBounds().getSize());
+        ball.setMidpoint(ballOrigin);
+        ball.setVelocity(sf::Vector2f());
         level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
       }
     }
