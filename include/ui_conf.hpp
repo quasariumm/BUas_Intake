@@ -182,16 +182,18 @@ namespace UIElements {
     /**
      * @brief Construct a new Button object, either an image button or a text button
      * 
+     * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
      * @param tOuter The outer texture of the button
      * @param vPos The position of the button
      * @param vSize The size of the button
      * @param pathInner The path to the image file of the item (optional)
+     * @param itemRealSize The size that the item has to be when built.
      * @param newCount How many of the item the player has (optional)
      * @param lockAspectRario Locks the aspect ratio of the item sprite
      */
     InventoryButton(
-      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner, const sf::Vector2f& itemRealSize,
-      int16_t newCount = -1, bool lockAspectRario = false
+      const uint8_t itemId, const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
+      const sf::Vector2f& itemRealSize, int16_t newCount = -1, bool lockAspectRario = false
     ) : Button(tOuter, vPos, vSize), innerPath(pathInner), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), innerSize(itemRealSize) {};
 
     /**
@@ -229,6 +231,8 @@ namespace UIElements {
 
   private:
 
+    uint8_t itemId;
+    
     // Percentage/margin for the inner sprite
     float itemSize;
 
@@ -448,6 +452,19 @@ namespace UIElements {
   private:
 
     uint8_t score = 0;
+
+  };
+
+  class EditGUI : public TextLabel {
+  public:
+
+    /**
+     * @brief Construct a new Edit GUI object
+     * 
+     * @param newPos The new position
+     * @param newSize The new size
+     */
+    EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize);
 
   };
 

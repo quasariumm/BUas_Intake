@@ -36,6 +36,10 @@ const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;
 const unsigned short NUM_PROPS = 0;
 
+//////////////////////////////////////
+// Tilemap
+//////////////////////////////////////
+
 void Tilemap::loadFromFile(const std::filesystem::path path) {
 
   std::ifstream file;
@@ -144,6 +148,10 @@ void Tilemap::drawPipes(const sf::Texture& wholeTexture, const sf::Vector2i tile
   }
 
 }
+
+//////////////////////////////////////
+// BouncyObjects
+//////////////////////////////////////
 
 void BouncyObjects::makeWalls() {
 
@@ -264,6 +272,10 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path) {
 
 }
 
+//////////////////////////////////////
+// MoneyBag
+//////////////////////////////////////
+
 MoneyBag::MoneyBag(const sf::Vector2f& newPos, const uint8_t newValue) : pos(newPos), value(newValue), collected(false) {
   std::filesystem::path texturePath = RESOURCES_PATH;
   texturePath.append("sprites/moneyBag.png");
@@ -374,6 +386,10 @@ void MoneyBag::fall(PhysicsObjects::Ball& ball, const unsigned windowHeight) {
 
   }
 }
+
+//////////////////////////////////////
+// Level
+//////////////////////////////////////
 
 Level::~Level() {
   for (MoneyBag* bag : this->moneyBags) {

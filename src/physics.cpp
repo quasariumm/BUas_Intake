@@ -37,6 +37,10 @@ void printv(sf::Vector2f vec) {
   std::cout << "(" << vec.x << "," << vec.y << ")" << std::endl;
 }
 
+//////////////////////////////////////
+// Ball
+//////////////////////////////////////
+
 void PhysicsObjects::Ball::applyForce(const float deltaTime, const float F, sf::Vector2f direction) {
 
   // Get the acceleraion from the formula F = m * a
@@ -81,6 +85,10 @@ sf::Vector2f PhysicsObjects::Ball::getDirection() {
   }
   return velocityVector.normalized();
 }
+
+//////////////////////////////////////
+// BouncyObject
+//////////////////////////////////////
 
 unsigned short getBestSide(PhysicsObjects::Ball& ball, std::vector<Side>& sides, std::vector<float>& distances) {
   // Get the distance to both sides. Grab the smallest distance (x) and get the position of the ball x-1 pixels back.

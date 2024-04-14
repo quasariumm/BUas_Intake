@@ -32,10 +32,10 @@
 
 #define Key sf::Keyboard::Key
 
-UserObjects::GhostObject building{sf::Vector2f(), RESOURCES_PATH};
+UserObjects::GhostObject building{sf::Vector2f(), RESOURCES_PATH, 0};
 
-void UserObjects::initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath) {
-  building = UserObjects::GhostObject{newSize, texturePath};
+void UserObjects::initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const uint8_t itemId) {
+  building = UserObjects::GhostObject{newSize, texturePath, itemId};
 }
 
 void UserObjects::clearBuilding() {
@@ -47,6 +47,10 @@ void UserObjects::clearBuilding() {
 UserObjects::GhostObject* UserObjects::getBuilding() {
   return &building;
 }
+
+//////////////////////////////////////
+// GhostObject
+//////////////////////////////////////
 
 void UserObjects::GhostObject::loop(const bool rotateKeyPressed, const std::string modifier) {
 
@@ -92,12 +96,16 @@ void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList) {
   bool bouncy = false;
   if (this->texturePath.filename() == "bouncePad.png") bouncy = true;
 
-  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(*Globals::window), this->size, this->texturePath, this->rotation, bouncy, (this->texturePath.filename() == "bouncePad.png") ? 0.95f : 0.8f));
+  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(*Globals::window), this->size, this->texturePath, this->itemID, this->rotation, bouncy, (this->texturePath.filename() == "bouncePad.png") ? 0.95f : 0.8f));
   clearBuilding();
 }
 
-UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const float newRotation, const bool bouncy, const float cor) 
-: pos(newPos), size(newSize), texturePath(newTexturePath), rotation(newRotation), bouncyObject(bouncy), cor(cor) {
+//////////////////////////////////////
+// EditableObject
+//////////////////////////////////////
+
+UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, uint8_t itemId, const float newRotation, const bool bouncy, const float cor) 
+: pos(newPos), size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(newRotation), bouncyObject(bouncy), cor(cor) {
   // Load the texture and store it
   if (!this->texture.loadFromFile(newTexturePath)) {
     throw std::runtime_error("Couldn't load the EditableObject's texture.");
@@ -149,6 +157,10 @@ void UserObjects::EditableObject::draw() {
 
   Globals::window->draw(objSprite);
 }
+
+//////////////////////////////////////
+// EditableObjectList
+//////////////////////////////////////
 
 UserObjects::EditableObjectList::~EditableObjectList() {
   for (UserObjects::EditableObject* pObj : this->editableObjects) {

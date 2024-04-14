@@ -30,6 +30,10 @@
 
 sf::Texture tmpTexture;
 
+//////////////////////////////////////
+// Button
+//////////////////////////////////////
+
 bool UIElements::Button::intersect(const sf::Vector2i pos) {
   return (pos.x >= this->position.x && pos.x <= this->position.x + this->size.x && pos.y >= this->position.y && pos.y <= this->position.y + this->size.y);
 }
@@ -56,12 +60,20 @@ void UIElements::Button::onClick() {
   std::clog << "Button click" << std::endl;
 }
 
+//////////////////////////////////////
+// RunButton => Button
+//////////////////////////////////////
+
 void UIElements::RunButton::onClick() {
   // Set the physics of the ball 'on'
   Globals::simulationOn = true;
   // Make the button 'disappear'
   this->setPosition(this->getPosition() + sf::Vector2f(0, -1e3));
 }
+
+//////////////////////////////////////
+// InventoryButton => Button
+//////////////////////////////////////
 
 void UIElements::InventoryButton::draw() {
   sf::Sprite outerSprite(this->getOuterTexture());
@@ -116,15 +128,19 @@ void UIElements::InventoryButton::draw() {
 }
 
 void UIElements::InventoryButton::onClick() {
-  UserObjects::initBuilding(this->innerSize, this->innerPath);
+  UserObjects::initBuilding(this->innerSize, this->innerPath, this->itemId);
 }
+
+//////////////////////////////////////
+// Inventory
+//////////////////////////////////////
 
 UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
 : items(newItems), counts(newCounts), outerTexture(buttonOuter) {
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = newCounts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(item, buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }
 
@@ -144,7 +160,7 @@ void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = this->counts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(item, this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }
 
@@ -162,7 +178,7 @@ void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
   for (unsigned short i = 0; i < this->items.size(); ++i) {
     uint8_t item = this->items[i];
     int16_t count = newCounts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(item, this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }
 
@@ -213,6 +229,10 @@ void UIElements::Inventory::draw() {
   }
 }
 
+//////////////////////////////////////
+// TextLabel
+//////////////////////////////////////
+
 UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture) {};
 
 UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor)
@@ -252,6 +272,10 @@ void UIElements::TextLabel::draw() {
   Globals::window->draw(*text);
 }
 
+//////////////////////////////////////
+// ScoreLabel => TextLabel
+//////////////////////////////////////
+
 std::wstring moneyScore(const uint8_t score) {
   std::wstring base(L"Money: $");
 
@@ -270,4 +294,12 @@ void UIElements::ScoreLabel::setScore(const uint8_t newScore) {
   this->score = newScore;
 
   this->setText(moneyScore(newScore));
+}
+
+//////////////////////////////////////
+// EditGUI => TextLabel
+//////////////////////////////////////
+
+UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel(L"", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
+  this->setText(L"F: Move/Rotate\nG: Delete");
 }

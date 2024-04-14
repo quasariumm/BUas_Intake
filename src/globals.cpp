@@ -20,7 +20,7 @@ sf::Font Globals::mainFont;
 
 void Globals::initFont() {
   std::filesystem::path fontPath = RESOURCES_PATH;
-  fontPath.append("font/Roboto.ttf");
+  fontPath.append("font/NotoSans-Regular.ttf");
   if (!mainFont.loadFromFile(fontPath)) {
     throw std::runtime_error("Couldn't load the font. Did you set the hardcoded variable right?");
   }

@@ -61,6 +61,9 @@ sf::Texture pipesTexture;
 std::vector<UIElements::Button*> buttons;
 UserObjects::EditableObjectList editableObjects;
 
+UserObjects::EditableObject* editing = nullptr;
+UIElements::EditGUI editGUI{sf::Vector2f(), sf::Vector2f()};
+
 // Keyboard-specific variables
 std::string modifier; // The modifier pressed ("Ctrl", "Shift", "Alt" or empty)
 bool rotate;
@@ -106,11 +109,20 @@ void mousePressedEvent(sf::Event& event) {
     pButton->onClick();
   }
   // Check click on EditableObjects
+  UserObjects::EditableObject* clicked = nullptr;
   for (UserObjects::EditableObject* obj : editableObjects.getObjects()) {
     if (obj->intersect(sf::Mouse::getPosition(*Globals::window))) {
-      std::clog << "Yay, clicked on an EditableObject" << std::endl;
+      clicked = obj;
     }
   }
+  if (editing != nullptr && clicked == nullptr) {
+    // Cancel the editing
+    editing = nullptr;
+  } else if (clicked != editing) {
+    editing = clicked;
+  }
+  std::clog << "Clicked address: " << clicked << std::endl;
+  std::clog << "Editing address: " << editing << std::endl;
 }
 
 void keyPressedEvent() {
@@ -236,6 +248,8 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   level.getScoreLabel().draw();
   level.getRunButton().draw();
 
+  if (editing != nullptr) editGUI.draw();
+
   // Determine if the player is building something. If so, call the ghost object's loop()
   if (UserObjects::getBuilding()->getSize().length() != 0) {
     UserObjects::getBuilding()->loop(rotate, modifier);
@@ -287,6 +301,9 @@ int main() {
 
   // Set the ball origin
   ballOrigin = {1.5f * unitSize, 1.5f * unitSize};
+
+  // Init the editGUI
+  editGUI = UIElements::EditGUI(sf::Vector2f(2.5f * unitSize, 14.f * unitSize), sf::Vector2f(.8f * unitSize, .8f * unitSize));
 
   sf::Texture ballTexture;
   loadTexture("sprites/ball.png", ballTexture);

@@ -17,11 +17,15 @@ namespace UserObjects {
     /**
      * @brief Construct a new Editable Object object
      * 
+     * @param newPos The new position
      * @param newSize The size of the object
      * @param newTexturePath The path to the texture file of the object
+     * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
      * @param newRotation The angle at which the object needs to be rotated
+     * @param bouncy Whether or not the item is bouncy and should have a @a PhysicsObjects::BouncyObject in it
+     * @param cor The coefficient of restitution. Determines with what factor the speed will be multiplied when the ball bounces
      */
-    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f);
+    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const uint8_t itemId, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f);
     
     /**
      * @brief Returns whether or not the object has a BouncyObject "linked to" it.
@@ -52,6 +56,8 @@ namespace UserObjects {
     void draw();
 
   private:
+
+    uint8_t itemID;
 
     sf::Vector2i pos;
     sf::Vector2f size;
@@ -103,8 +109,10 @@ namespace UserObjects {
      * @brief Construct a new Ghost Object
      * 
      * @param newSize The size of the ghost object
+     * @param newTexturePath The path to the texture file
+     * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
      */
-    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath) : size(newSize), texturePath(newTexturePath) {};
+    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const uint8_t itemId) : size(newSize), texturePath(newTexturePath), itemID(itemId) {};
     
     /**
      * @brief Set the size
@@ -151,6 +159,8 @@ namespace UserObjects {
 
   private:
 
+    uint8_t itemID;
+
     sf::Vector2f size;
     std::filesystem::path texturePath;
     float rotation = 0;
@@ -162,8 +172,9 @@ namespace UserObjects {
    * 
    * @param newSize The size of the object
    * @param texturePath The path to the texture of the object
+   * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
    */
-  void initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath);
+  void initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const uint8_t itemId);
 
   /**
    * @brief Clears the currently building object
