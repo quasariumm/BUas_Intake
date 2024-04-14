@@ -128,10 +128,11 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
 };
 
 bool UserObjects::EditableObject::intersect(const sf::Vector2i pos) {
-  // I'm not going to do a very complicated way od knowing if it intersects.
+  // I'm not going to do a very complicated way of knowing if it intersects.
   // I'm just going to get the global bounds and use its contain function
   // Fist, make a temporary RectangleShape to get the global bounds of
-  sf::RectangleShape rect(this->size);
+  sf::RectangleShape rect(this->size * Globals::unitSize);
+  rect.setOrigin(0.5f * Globals::unitSize * this->size);
   rect.setPosition(static_cast<sf::Vector2f>(this->pos));
   rect.setRotation(sf::degrees(this->rotation));
   sf::FloatRect rectBounds = rect.getGlobalBounds();

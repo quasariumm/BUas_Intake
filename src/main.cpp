@@ -36,6 +36,10 @@
 #include "../include/build.hpp"
 #include "../include/globals.hpp"
 
+//////////////////////////////////////
+// Variables
+//////////////////////////////////////
+
 #define Key sf::Keyboard::Key
 
 const float WINDOW_SIZE_FACTOR = 0.9f;
@@ -67,6 +71,12 @@ long score;
 // Threading
 std::vector<std::thread> threads;
 
+//////////////////////////////////////
+// Functions
+//////////////////////////////////////
+
+// Ball-related functions
+
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
   ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
 
@@ -83,7 +93,51 @@ void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& 
   }
 }
 
+// Event functions
+
+void mousePressedEvent(sf::Event& event) {
+  if (event.mouseButton.button != sf::Mouse::Button::Left) return;
+  // Check if the mouse clicked on any of the registered buttons
+  if (UserObjects::getBuilding()->getSize().length() != 0) {
+    UserObjects::getBuilding()->place(editableObjects);
+  }
+  for (UIElements::Button* pButton : buttons) {
+    if (!pButton->intersect(sf::Mouse::getPosition(*Globals::window))) continue;
+    pButton->onClick();
+  }
+  // Check click on EditableObjects
+  for (UserObjects::EditableObject* obj : editableObjects.getObjects()) {
+    if (obj->intersect(sf::Mouse::getPosition(*Globals::window))) {
+      std::clog << "Yay, clicked on an EditableObject" << std::endl;
+    }
+  }
+}
+
+void keyPressedEvent() {
+  if (sf::Keyboard::isKeyPressed(Key::LControl)) {
+    modifier = "Ctrl";
+  } else if (sf::Keyboard::isKeyPressed(Key::LShift)) {
+    modifier = "Shift";
+  } else if (sf::Keyboard::isKeyPressed(Key::LAlt)) {
+    modifier = "Alt";
+  } else if (sf::Keyboard::isKeyPressed(Key::R) || sf::Keyboard::isKeyPressed(Key::T)) {
+    rotate = true;
+  }
+}
+
+void keyReleasedEvent() {
+  if (!sf::Keyboard::isKeyPressed(Key::LShift) && !sf::Keyboard::isKeyPressed(Key::LControl) && !sf::Keyboard::isKeyPressed(Key::LAlt)) {
+    modifier = "";
+  } else if (!sf::Keyboard::isKeyPressed(Key::R) && !sf::Keyboard::isKeyPressed(Key::T)) {
+    rotate = false;
+  }
+}
+
+// Loop
+
 void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime) {
+  
+  window.clear();
 
   sf::Event event;
   while (window.pollEvent(event)) {
@@ -95,35 +149,15 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
         break;
       
       case sf::Event::MouseButtonPressed:
-        if (event.mouseButton.button != sf::Mouse::Button::Left) break;
-        // Check if the mouse clicked on any of the registered buttons
-        if (UserObjects::getBuilding()->getSize().length() != 0) {
-          UserObjects::getBuilding()->place(editableObjects);
-        }
-        for (UIElements::Button* pButton : buttons) {
-          if (!pButton->intersect(sf::Mouse::getPosition(window))) continue;
-          pButton->onClick();
-        }
+        mousePressedEvent(event);
         break;
       
       case sf::Event::KeyPressed:
-        if (sf::Keyboard::isKeyPressed(Key::LControl)) {
-          modifier = "Ctrl";
-        } else if (sf::Keyboard::isKeyPressed(Key::LShift)) {
-          modifier = "Shift";
-        } else if (sf::Keyboard::isKeyPressed(Key::LAlt)) {
-          modifier = "Alt";
-        } else if (sf::Keyboard::isKeyPressed(Key::R) || sf::Keyboard::isKeyPressed(Key::T)) {
-          rotate = true;
-        }
+        keyPressedEvent();
         break;
       
       case sf::Event::KeyReleased:
-        if (!sf::Keyboard::isKeyPressed(Key::LShift) && !sf::Keyboard::isKeyPressed(Key::LControl) && !sf::Keyboard::isKeyPressed(Key::LAlt)) {
-          modifier = "";
-        } else if (!sf::Keyboard::isKeyPressed(Key::R) && !sf::Keyboard::isKeyPressed(Key::T)) {
-          rotate = false;
-        }
+        keyReleasedEvent();
         break;
       
       default:
@@ -132,7 +166,6 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     }
 
   }
-  window.clear();
 
   // Just for debugging's sake. Stops the bal from abruptly teleporting down due to lag at the start.
   if (deltaTime > 1) {
