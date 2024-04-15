@@ -137,11 +137,12 @@ void UIElements::InventoryButton::onClick() {
 // Inventory
 //////////////////////////////////////
 
-UIElements::Inventory::Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
+UIElements::Inventory::Inventory(const std::vector<int8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter)
 : items(newItems), counts(newCounts), outerTexture(buttonOuter) {
   for (unsigned short i = 0; i < newItems.size(); ++i) {
-    uint8_t item = newItems[i];
+    int8_t item = newItems[i];
     int16_t count = newCounts[i];
+    std::clog << static_cast<int>(item) << " " << count << std::endl;
     this->buttons.push_back(new UIElements::InventoryButton(item, buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }
@@ -152,7 +153,7 @@ UIElements::Inventory::~Inventory() {
   }
 }
 
-void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
+void UIElements::Inventory::setItems(std::vector<int8_t>& newItems) {
   this->items = newItems;
 
   for (UIElements::InventoryButton* button : this->buttons) {
@@ -162,7 +163,7 @@ void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
   this->buttons.clear();
 
   for (unsigned short i = 0; i < newItems.size(); ++i) {
-    uint8_t item = newItems[i];
+    int8_t item = newItems[i];
     int16_t count = this->counts[i];
     this->buttons.push_back(new UIElements::InventoryButton(item, this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
@@ -180,9 +181,9 @@ void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
   }
 }
 
-void UIElements::Inventory::changeCount(uint8_t itemId, int8_t difference) {
+void UIElements::Inventory::changeCount(int8_t itemId, int8_t difference) {
   auto itemIter = std::find(this->items.begin(), this->items.end(), itemId);
-  uint8_t itemIndex = std::distance(this->items.begin(), itemIter);
+  long itemIndex = std::distance(this->items.begin(), itemIter);
     
   this->counts[itemIndex] += difference;
 

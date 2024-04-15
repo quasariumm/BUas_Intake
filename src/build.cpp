@@ -35,7 +35,7 @@
 
 UserObjects::GhostObject building{sf::Vector2f(), RESOURCES_PATH, 0};
 
-void UserObjects::initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const uint8_t itemId) {
+void UserObjects::initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const int8_t itemId) {
   building = UserObjects::GhostObject{newSize, texturePath, itemId};
 }
 
@@ -108,7 +108,7 @@ void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList, U
 // EditableObject
 //////////////////////////////////////
 
-UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const uint8_t itemId, const float newRotation, const bool bouncy, const float cor) 
+UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation, const bool bouncy, const float cor) 
 : pos(newPos), size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(newRotation), bouncyObject(bouncy), cor(cor) {
   // Load the texture and store it
   if (!this->texture.loadFromFile(newTexturePath)) {

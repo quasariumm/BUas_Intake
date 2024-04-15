@@ -192,9 +192,9 @@ namespace UIElements {
      * @param lockAspectRario Locks the aspect ratio of the item sprite
      */
     InventoryButton(
-      const uint8_t itemId, const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
+      const int8_t itemId, const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
       const sf::Vector2f& itemRealSize, int16_t newCount = -1, bool lockAspectRario = false
-    ) : Button(tOuter, vPos, vSize), innerPath(pathInner), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), innerSize(itemRealSize) {};
+    ) : Button(tOuter, vPos, vSize), itemId(itemId), innerPath(pathInner), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), innerSize(itemRealSize) {};
 
     /**
      * @brief Get the path of the texture of the item
@@ -231,7 +231,7 @@ namespace UIElements {
 
   private:
 
-    uint8_t itemId;
+    int8_t itemId;
     
     // Percentage/margin for the inner sprite
     float itemSize;
@@ -254,7 +254,7 @@ namespace UIElements {
      * @param newCounts A list of all the item's count
      * @param buttonOuter The texture for the background of the button
      */
-    Inventory(const std::vector<uint8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter);
+    Inventory(const std::vector<int8_t>& newItems, const std::vector<int16_t>& newCounts, sf::Texture& buttonOuter);
 
     /**
      * @brief Destroy the Inventory object
@@ -267,14 +267,14 @@ namespace UIElements {
      * 
      * @param newItems The new items
      */
-    void setItems(std::vector<uint8_t>& newItems);
+    void setItems(std::vector<int8_t>& newItems);
 
     /**
      * @brief Get the item list
      * 
-     * @return std::vector<uint8_t>& A reference to the item list
+     * @return std::vector<int8_t>& A reference to the item list
      */
-    std::vector<uint8_t>& getItems() {return items;};
+    std::vector<int8_t>& getItems() {return items;};
 
     /**
      * @brief Set the counts
@@ -297,7 +297,7 @@ namespace UIElements {
      * @param itemId 
      * @param difference 
      */
-    void changeCount(uint8_t itemId, int8_t difference);
+    void changeCount(int8_t itemId, int8_t difference);
 
     /**
      * @brief Get the buttons
@@ -314,7 +314,7 @@ namespace UIElements {
   
   private:
 
-    std::vector<uint8_t> items;
+    std::vector<int8_t> items;
     std::vector<int16_t> counts;
     std::vector<UIElements::InventoryButton*> buttons;
 
@@ -322,13 +322,13 @@ namespace UIElements {
 
     std::string spritePath = std::string(RESOURCES_PATH) + "sprites/";
 
-    std::map<uint8_t, std::filesystem::path> itemIdToPath = {
+    std::map<int8_t, std::filesystem::path> itemIdToPath = {
       {0, std::filesystem::path(spritePath + "bouncePad.png")},
       {1, std::filesystem::path(spritePath + "ball.png")},
       {2, std::filesystem::path(spritePath + "ball.png")},
     };
 
-    std::map<uint8_t, sf::Vector2f> itemIdToSize = { // ! The size is in units. Multiply by unitSize before displaying
+    std::map<int8_t, sf::Vector2f> itemIdToSize = { // ! The size is in units. Multiply by unitSize before displaying
       {0, sf::Vector2f(2, 1)},
       {1, sf::Vector2f(1, 1)},
       {2, sf::Vector2f(1, 1)}

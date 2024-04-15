@@ -58,3 +58,7 @@ Made a run button to start the simulation. I also made it so that the simulation
 
 ## 2024-04-14
 Made a way to edit objects. Still need to make the inventory work and make it so that you can move objects.
+
+## 2024-04-15
+Made the inventory counts work. Every time you build an object, that item's value will decrease. It lead to a segmentation fault, that was caused bu the fact that I had not initialised a value in a constructor.  
+Also made it so you can cancel building.

@@ -26,7 +26,7 @@ namespace UserObjects {
      * @param bouncy Whether or not the item is bouncy and should have a @a PhysicsObjects::BouncyObject in it
      * @param cor The coefficient of restitution. Determines with what factor the speed will be multiplied when the ball bounces
      */
-    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const uint8_t itemId, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f);
+    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f);
     
     /**
      * @brief Returns whether or not the object has a BouncyObject "linked to" it.
@@ -46,7 +46,7 @@ namespace UserObjects {
      * 
      * @return uint8_t 
      */
-    uint8_t getItemId() {return itemID;};
+    int8_t getItemId() {return itemID;};
 
     /**
      * @brief Set the position
@@ -100,7 +100,7 @@ namespace UserObjects {
 
   private:
 
-    uint8_t itemID;
+    int8_t itemID;
 
     sf::Vector2i pos;
     sf::Vector2f size;
@@ -155,7 +155,7 @@ namespace UserObjects {
      * @param newTexturePath The path to the texture file
      * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
      */
-    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const uint8_t itemId) : size(newSize), texturePath(newTexturePath), itemID(itemId) {};
+    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId) : size(newSize), texturePath(newTexturePath), itemID(itemId) {};
     
     /**
      * @brief Set the size
@@ -203,7 +203,7 @@ namespace UserObjects {
 
   private:
 
-    uint8_t itemID;
+    int8_t itemID;
 
     sf::Vector2f size;
     std::filesystem::path texturePath;
@@ -218,7 +218,7 @@ namespace UserObjects {
    * @param texturePath The path to the texture of the object
    * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
    */
-  void initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const uint8_t itemId);
+  void initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const int8_t itemId);
 
   /**
    * @brief Clears the currently building object
