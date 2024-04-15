@@ -55,3 +55,6 @@ Changed the currency from euro to dollar to match the symbol on the money bag.
 ## 2024-04-13
 Added a background to the score label. In the process I learned about how to deal with drawing an object that inherits from mutliple `sf::Drawable` classes.  
 Made a run button to start the simulation. I also made it so that the simulation resets once the ball is unable to move on or is outside of the map due to some collision thing.
+
+## 2024-04-14
+Made a way to edit objects. Still need to make the inventory work and make it so that you can move objects.

@@ -291,6 +291,15 @@ namespace UIElements {
     std::vector<int16_t>& getCounts() {return counts;};
 
     /**
+     * @brief Changes a count of a certain item ID
+     * @attention The function works with a difference, not a new count value
+     * 
+     * @param itemId 
+     * @param difference 
+     */
+    void changeCount(uint8_t itemId, int8_t difference);
+
+    /**
      * @brief Get the buttons
      * 
      * @return std::vector<UIElements::Button>& 

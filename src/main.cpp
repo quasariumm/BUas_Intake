@@ -21,6 +21,7 @@
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <functional>
@@ -58,7 +59,6 @@ sf::Texture propsTexture;
 sf::Texture pipesTexture;
 
 // Things that the player can click on
-std::vector<UIElements::Button*> buttons;
 UserObjects::EditableObjectList editableObjects;
 
 UserObjects::EditableObject* editing = nullptr;
@@ -98,13 +98,21 @@ void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& 
 
 // Event functions
 
-void mousePressedEvent(sf::Event& event) {
+void mousePressedEvent(sf::Event& event, UIElements::Inventory& inventory, Level& level) {
   if (event.mouseButton.button != sf::Mouse::Button::Left) return;
   // Check if the mouse clicked on any of the registered buttons
   if (UserObjects::getBuilding()->getSize().length() != 0) {
-    UserObjects::getBuilding()->place(editableObjects);
+    UserObjects::getBuilding()->place(editableObjects, inventory);
   }
-  for (UIElements::Button* pButton : buttons) {
+
+  std::vector<UIElements::Button*> allButtons;
+  allButtons.push_back(static_cast<UIElements::Button*>(&level.getRunButton()));
+  for (UIElements::InventoryButton* button : inventory.getButtons()) {
+    allButtons.push_back(static_cast<UIElements::Button*>(button));
+  }
+
+
+  for (UIElements::Button* pButton : allButtons) {
     if (!pButton->intersect(sf::Mouse::getPosition(*Globals::window))) continue;
     pButton->onClick();
   }
@@ -121,11 +129,9 @@ void mousePressedEvent(sf::Event& event) {
   } else if (clicked != editing) {
     editing = clicked;
   }
-  std::clog << "Clicked address: " << clicked << std::endl;
-  std::clog << "Editing address: " << editing << std::endl;
 }
 
-void keyPressedEvent() {
+void keyPressedEvent(UIElements::Inventory& inventory) {
   if (sf::Keyboard::isKeyPressed(Key::LControl)) {
     modifier = "Ctrl";
   } else if (sf::Keyboard::isKeyPressed(Key::LShift)) {
@@ -134,6 +140,43 @@ void keyPressedEvent() {
     modifier = "Alt";
   } else if (sf::Keyboard::isKeyPressed(Key::R) || sf::Keyboard::isKeyPressed(Key::T)) {
     rotate = true;
+  } else if (sf::Keyboard::isKeyPressed(Key::F) && editing != nullptr) {
+    // Delete the object and enter building mode
+    
+    uint8_t itemId = editing->getItemId();
+
+    UserObjects::initBuilding(editing->getSize(), editing->getTexturePath(), itemId);
+
+    // Don't touch this line. If the line beneath this line is placed at the end of the if-statement, it breaks.
+    auto tmpEditing = editing;
+    
+    editing = nullptr;
+
+    std::vector<UserObjects::EditableObject*>::iterator it;
+    if ((it = std::find(editableObjects.getObjects().begin(), editableObjects.getObjects().end(), tmpEditing)) != editableObjects.getObjects().end()) {
+      delete *it;
+      editableObjects.getObjects().erase(it);
+    }
+
+    inventory.changeCount(itemId, 1);
+
+  } else if (sf::Keyboard::isKeyPressed(Key::G) && editing != nullptr) {
+    // Delete the object and add one to the count in the inventory
+    uint8_t itemId = editing->getItemId();
+
+    // Don't touch this line. If the line beneath this line is placed at the end of the if-statement, it breaks.
+    auto tmpEditing = editing;
+
+    editing = nullptr;
+
+    std::vector<UserObjects::EditableObject*>::iterator it;
+    if ((it = std::find(editableObjects.getObjects().begin(), editableObjects.getObjects().end(), tmpEditing)) != editableObjects.getObjects().end()) {
+      delete *it;
+      editableObjects.getObjects().erase(it);
+    }
+    
+    inventory.changeCount(itemId, 1);
+
   }
 }
 
@@ -161,11 +204,11 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
         break;
       
       case sf::Event::MouseButtonPressed:
-        mousePressedEvent(event);
+        mousePressedEvent(event, inventory, level);
         break;
       
       case sf::Event::KeyPressed:
-        keyPressedEvent();
+        keyPressedEvent(inventory);
         break;
       
       case sf::Event::KeyReleased:
@@ -340,12 +383,6 @@ int main() {
 
   // Create the inventory
   UIElements::Inventory inventory{std::vector<uint8_t>{0, 1, 2}, std::vector<int16_t>{5, 6, 12}, buttonOuter};
-  for (UIElements::InventoryButton* button : inventory.getButtons()) {
-    buttons.push_back(button);
-  }
-
-  // Add the run button to buttons
-  buttons.push_back(&tmpLevel.getRunButton());
 
   sf::Clock dt_clock;
 

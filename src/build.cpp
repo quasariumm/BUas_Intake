@@ -29,6 +29,7 @@
 
 #include "../include/physics.hpp"
 #include "../include/globals.hpp"
+#include "ui_conf.hpp"
 
 #define Key sf::Keyboard::Key
 
@@ -92,7 +93,10 @@ void UserObjects::GhostObject::loop(const bool rotateKeyPressed, const std::stri
 
 }
 
-void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList) {
+void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList, UIElements::Inventory& inventory) {
+  // Decrement the count in the inventory
+  inventory.changeCount(this->itemID, -1);
+
   bool bouncy = false;
   if (this->texturePath.filename() == "bouncePad.png") bouncy = true;
 
@@ -104,7 +108,7 @@ void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList) {
 // EditableObject
 //////////////////////////////////////
 
-UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, uint8_t itemId, const float newRotation, const bool bouncy, const float cor) 
+UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const uint8_t itemId, const float newRotation, const bool bouncy, const float cor) 
 : pos(newPos), size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(newRotation), bouncyObject(bouncy), cor(cor) {
   // Load the texture and store it
   if (!this->texture.loadFromFile(newTexturePath)) {

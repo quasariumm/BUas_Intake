@@ -9,6 +9,7 @@
 #include <string>
 
 #include "../include/physics.hpp"
+#include "../include/ui_conf.hpp"
 
 namespace UserObjects {
   class EditableObject {
@@ -39,6 +40,48 @@ namespace UserObjects {
      * @return PhysicsObjects::BouncyObject& 
      */
     PhysicsObjects::BouncyObject& getBouncyObject() {return bo;};
+
+    /**
+     * @brief Get the item ID
+     * 
+     * @return uint8_t 
+     */
+    uint8_t getItemId() {return itemID;};
+
+    /**
+     * @brief Set the position
+     * 
+     * @param newPos The new position
+     */
+    void setPos(const sf::Vector2i& newPos) {pos = newPos;};
+    
+    /**
+     * @brief Get the position
+     * 
+     * @return sf::Vector2i
+     */
+    sf::Vector2i getPos() {return pos;};
+
+    /**
+     * @brief Set the size
+     * 
+     * @param newSize The new size
+     */
+    void setSize(const sf::Vector2f& newSize) {size = newSize;};
+    
+    /**
+     * @brief Get the size
+     * 
+     * @return sf::Vector2f
+     */
+    sf::Vector2f getSize() {return size;};
+
+    /**
+     * @brief Get the texture path
+     * 
+     * @return std::filesystem::path
+     */
+    std::filesystem::path getTexturePath() {return texturePath;};
     
     /**
      * @brief Checks if the editable object is clicked on
@@ -154,8 +197,9 @@ namespace UserObjects {
      * @brief Places the object that is currently bein built
      * 
      * @param objList The list of EditableObjects
+     * @param inventory The inventory
      */
-    void place(UserObjects::EditableObjectList& objList);
+    void place(UserObjects::EditableObjectList& objList, UIElements::Inventory& inventory);
 
   private:
 

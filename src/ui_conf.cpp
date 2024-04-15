@@ -16,6 +16,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
@@ -128,6 +129,7 @@ void UIElements::InventoryButton::draw() {
 }
 
 void UIElements::InventoryButton::onClick() {
+  if (this->count == 0) return;
   UserObjects::initBuilding(this->innerSize, this->innerPath, this->itemId);
 }
 
@@ -157,6 +159,8 @@ void UIElements::Inventory::setItems(std::vector<uint8_t>& newItems) {
     delete button;
   }
 
+  this->buttons.clear();
+
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     uint8_t item = newItems[i];
     int16_t count = this->counts[i];
@@ -171,15 +175,18 @@ void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
 
   this->counts = newCounts;
 
-  for (UIElements::InventoryButton* button : this->buttons) {
-    delete button;
+  for (uint8_t i = 0; i < this->buttons.size(); ++i) {
+    this->buttons[i]->setCount(newCounts[i]);
   }
+}
 
-  for (unsigned short i = 0; i < this->items.size(); ++i) {
-    uint8_t item = this->items[i];
-    int16_t count = newCounts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(item, this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
-  }
+void UIElements::Inventory::changeCount(uint8_t itemId, int8_t difference) {
+  auto itemIter = std::find(this->items.begin(), this->items.end(), itemId);
+  uint8_t itemIndex = std::distance(this->items.begin(), itemIter);
+    
+  this->counts[itemIndex] += difference;
+
+  this->buttons[itemIndex]->setCount(this->counts[itemIndex]);
 }
 
 void UIElements::Inventory::draw() {
