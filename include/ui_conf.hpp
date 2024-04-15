@@ -477,6 +477,19 @@ namespace UIElements {
 
   };
 
+  class BuildGUI : public TextLabel {
+  public:
+
+    /**
+     * @brief Construct a new Build GUI object
+     * 
+     * @param newPos The new position
+     * @param newSize The new size
+     */
+    BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize);
+
+  };
+
 };
 
 #endif //UI_CONF_H_

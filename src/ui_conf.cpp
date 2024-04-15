@@ -310,3 +310,11 @@ void UIElements::ScoreLabel::setScore(const uint8_t newScore) {
 UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel(L"", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
   this->setText(L"F: Move/Rotate\nG: Delete");
 }
+
+//////////////////////////////////////
+// BuildGUI => TextLabel
+//////////////////////////////////////
+
+UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel(L"", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
+  this->setText(L"R: Rotate CCW\nT: Rotate CW\nEsc: Cancel");
+}

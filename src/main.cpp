@@ -63,6 +63,7 @@ UserObjects::EditableObjectList editableObjects;
 
 UserObjects::EditableObject* editing = nullptr;
 UIElements::EditGUI editGUI{sf::Vector2f(), sf::Vector2f()};
+UIElements::BuildGUI buildGUI{sf::Vector2f(), sf::Vector2f()};
 
 // Keyboard-specific variables
 std::string modifier; // The modifier pressed ("Ctrl", "Shift", "Alt" or empty)
@@ -110,7 +111,6 @@ void mousePressedEvent(sf::Event& event, UIElements::Inventory& inventory, Level
   for (UIElements::InventoryButton* button : inventory.getButtons()) {
     allButtons.push_back(static_cast<UIElements::Button*>(button));
   }
-
 
   for (UIElements::Button* pButton : allButtons) {
     if (!pButton->intersect(sf::Mouse::getPosition(*Globals::window))) continue;
@@ -177,6 +177,11 @@ void keyPressedEvent(UIElements::Inventory& inventory) {
     
     inventory.changeCount(itemId, 1);
 
+  } else if (sf::Keyboard::isKeyPressed(Key::Escape)) {
+    // Cancel building or editing
+    if (UserObjects::getBuilding()->getSize().length() != 0) UserObjects::clearBuilding();
+
+    if (editing != nullptr) editing = nullptr;
   }
 }
 
@@ -292,6 +297,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   level.getRunButton().draw();
 
   if (editing != nullptr) editGUI.draw();
+  if (UserObjects::getBuilding()->getSize().length() != 0) buildGUI.draw();
 
   // Determine if the player is building something. If so, call the ghost object's loop()
   if (UserObjects::getBuilding()->getSize().length() != 0) {
@@ -347,6 +353,7 @@ int main() {
 
   // Init the editGUI
   editGUI = UIElements::EditGUI(sf::Vector2f(2.5f * unitSize, 14.f * unitSize), sf::Vector2f(.8f * unitSize, .8f * unitSize));
+  buildGUI = UIElements::BuildGUI(sf::Vector2f(2.5f * unitSize, 14.f * unitSize), sf::Vector2f(.8f * unitSize, .8f * unitSize));
 
   sf::Texture ballTexture;
   loadTexture("sprites/ball.png", ballTexture);
