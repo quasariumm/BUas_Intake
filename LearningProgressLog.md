@@ -62,3 +62,6 @@ Made a way to edit objects. Still need to make the inventory work and make it so
 ## 2024-04-15
 Made the inventory counts work. Every time you build an object, that item's value will decrease. It lead to a segmentation fault, that was caused bu the fact that I had not initialised a value in a constructor.  
 Also made it so you can cancel building.
+
+## 2024-04-16
+Made a booster sprite and put it in the inventory.

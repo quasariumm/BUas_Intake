@@ -25,8 +25,9 @@ namespace UserObjects {
      * @param newRotation The angle at which the object needs to be rotated
      * @param bouncy Whether or not the item is bouncy and should have a @a PhysicsObjects::BouncyObject in it
      * @param cor The coefficient of restitution. Determines with what factor the speed will be multiplied when the ball bounces
+     * @param booster Whether or not the item is a booster
      */
-    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f);
+    EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f, const bool booster = false);
     
     /**
      * @brief Returns whether or not the object has a BouncyObject "linked to" it.
@@ -112,6 +113,9 @@ namespace UserObjects {
     bool bouncyObject = false;
     float cor;
     PhysicsObjects::BouncyObject bo;
+
+    // Booster (optional)
+    bool booster = false;
 
   };
 

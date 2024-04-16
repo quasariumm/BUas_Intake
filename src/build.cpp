@@ -97,10 +97,11 @@ void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList, U
   // Decrement the count in the inventory
   inventory.changeCount(this->itemID, -1);
 
-  bool bouncy = false;
-  if (this->texturePath.filename() == "bouncePad.png") bouncy = true;
+  const bool BOUNCY = this->texturePath.filename() == "bouncePad.png";
 
-  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(*Globals::window), this->size, this->texturePath, this->itemID, this->rotation, bouncy, (this->texturePath.filename() == "bouncePad.png") ? 0.95f : 0.8f));
+  const bool BOOSTER = this->texturePath.filename() == "booster.png";
+
+  objList.addObject(new UserObjects::EditableObject(sf::Mouse::getPosition(*Globals::window), this->size, this->texturePath, this->itemID, this->rotation, BOUNCY, (this->texturePath.filename() == "bouncePad.png") ? 0.95f : 0.8f, BOOSTER));
   clearBuilding();
 }
 
@@ -108,8 +109,8 @@ void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList, U
 // EditableObject
 //////////////////////////////////////
 
-UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation, const bool bouncy, const float cor) 
-: pos(newPos), size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(newRotation), bouncyObject(bouncy), cor(cor) {
+UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation, const bool bouncy, const float cor, const bool booster) 
+: pos(newPos), size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(newRotation), bouncyObject(bouncy), cor(cor), booster(booster) {
   // Load the texture and store it
   if (!this->texture.loadFromFile(newTexturePath)) {
     throw std::runtime_error("Couldn't load the EditableObject's texture.");

@@ -10,4 +10,8 @@ CMakeLists.txt:
 * [https://github.com/SFML/cmake-sfml-project/blob/master/CMakeLists.txt](https://github.com/SFML/cmake-sfml-project/blob/master/CMakeLists.txt)
 * [https://github.com/SFML/SFML/issues/2289](https://github.com/SFML/SFML/issues/2289)
 
+BouncePad sprite: Using [https://www.svgrepo.com/svg/324985/bounce-right](https://www.svgrepo.com/svg/324985/bounce-right)
 Money bag sprite: [https://www.svgrepo.com/svg/234197/money-bag](https://www.svgrepo.com/svg/234197/money-bag) (Edited)
+Booster sprite: Using [https://www.svgrepo.com/svg/470503/lightning](https://www.svgrepo.com/svg/470503/lightning) and [https://www.svgrepo.com/svg/533612/arrow-narrow-up](https://www.svgrepo.com/svg/533612/arrow-narrow-up)
+
+Font: [https://fonts.google.com/noto/specimen/Noto+Sans](https://fonts.google.com/noto/specimen/Noto+Sans)

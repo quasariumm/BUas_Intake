@@ -324,13 +324,13 @@ namespace UIElements {
 
     std::map<int8_t, std::filesystem::path> itemIdToPath = {
       {0, std::filesystem::path(spritePath + "bouncePad.png")},
-      {1, std::filesystem::path(spritePath + "ball.png")},
+      {1, std::filesystem::path(spritePath + "booster.png")},
       {2, std::filesystem::path(spritePath + "ball.png")},
     };
 
     std::map<int8_t, sf::Vector2f> itemIdToSize = { // ! The size is in units. Multiply by unitSize before displaying
       {0, sf::Vector2f(2, 1)},
-      {1, sf::Vector2f(1, 1)},
+      {1, sf::Vector2f(2, 0.5f)},
       {2, sf::Vector2f(1, 1)}
     };
 
