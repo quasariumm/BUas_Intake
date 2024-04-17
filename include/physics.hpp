@@ -194,6 +194,59 @@ namespace PhysicsObjects {
 
   };
 
+  class Booster : public BouncyObject {
+  public:
+
+    /**
+     * @brief Construct a new Booster object
+     * @attention This is a minimal constructor for the Booster class. Please use the other constructor if possible.
+     * 
+     */
+    Booster() = default;
+    
+    /**
+     * @brief Construct a new Booster object
+     * 
+     * @param newPos The position
+     * @param newSize The size
+     * @param newRotation The rotation
+     * @param boostExtra The part of the speed of the ball that is added when the ball collides
+     */
+    Booster(const sf::Vector2i& newPos, const sf::Vector2f& newSize, const float newRotation, const float boostExtra = 0.5f);
+
+    /**
+     * @brief Increases the velocity of the ball based on its velocity direction and the boostFactor 
+     * 
+     * @param ball The ball
+     */
+    void boost(Ball& ball);
+
+    /**
+     * @brief Set the value of justBoosted. This prevents the ball from being repeatedly boosted when it collides
+     * 
+     * @param jb The new justBoosted value
+     */
+    void setJustBoosted(const bool jb) {justBoosted = jb;};
+
+    /**
+     * @brief Get the value of justBoosted
+     * 
+     * @returns bool justBoosted
+     */
+    bool getJustBoosted() {return justBoosted;};
+
+  private:
+
+    sf::Vector2i pos;
+    sf::Vector2f size;
+    float rotation;
+
+    float boostExtra;
+
+    bool justBoosted;
+
+  };
+
 }
 
 #endif // PHYSICS_H_

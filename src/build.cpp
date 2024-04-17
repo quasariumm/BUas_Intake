@@ -118,9 +118,9 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
   this->texture.setSmooth(true);
 
   if (bouncy) {
-    bo = PhysicsObjects::BouncyObject();
-    bo.setCOR(cor);
-    bo.setOrientation(sf::Vector2f(1,0).rotatedBy(sf::degrees(90.f - newRotation)));
+    this->bo = PhysicsObjects::BouncyObject();
+    this->bo.setCOR(cor);
+    this->bo.setOrientation(sf::Vector2f(1,0).rotatedBy(sf::degrees(90.f - newRotation)));
 
     // For the points of the BouncyObject I use a RectangleShape and get its points
     sf::RectangleShape rect(newSize * Globals::unitSize);
@@ -131,12 +131,15 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
     // transform.translate(static_cast<sf::Vector2f>(this->pos) + 0.5f * (this->size * unitSize))
     //          .rotate(sf::degrees(this->rotation))
     //          .scale(sf::Vector2f((this->size.x * unitSize) / this->texture.getSize().x, (this->size.y * unitSize) / this->texture.getSize().y));
-    bo.setPoints({
+    this->bo.setPoints({
       transform.transformPoint(rect.getPoint(1)),
       transform.transformPoint(rect.getPoint(2)),
       transform.transformPoint(rect.getPoint(3)),
       transform.transformPoint(rect.getPoint(0))
     });
+  }
+  if (booster) {
+    this->boost = PhysicsObjects::Booster(newPos, newSize, newRotation, 0.5f);
   }
 };
 

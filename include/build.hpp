@@ -30,7 +30,7 @@ namespace UserObjects {
     EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation = 0, const bool bouncy = false, const float cor = 0.8f, const bool booster = false);
     
     /**
-     * @brief Returns whether or not the object has a BouncyObject "linked to" it.
+     * @brief Returns whether or not the object has a BouncyObject "linked to" it
      *
      */
     bool hasBouncyObject() {return bouncyObject;};
@@ -41,6 +41,19 @@ namespace UserObjects {
      * @return PhysicsObjects::BouncyObject& 
      */
     PhysicsObjects::BouncyObject& getBouncyObject() {return bo;};
+
+    /**
+     * @brief Returns whether or not the object has a Booster "linked to" it
+     * 
+     */
+    bool hasBooster() {return booster;};
+
+    /**
+     * @brief Get the Booster object
+     * 
+     * @return PhysicsObjects::Booster& 
+     */
+    PhysicsObjects::Booster& getBooster() {return boost;};
 
     /**
      * @brief Get the item ID
@@ -116,6 +129,7 @@ namespace UserObjects {
 
     // Booster (optional)
     bool booster = false;
+    PhysicsObjects::Booster boost;
 
   };
 

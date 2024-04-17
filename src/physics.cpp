@@ -11,6 +11,7 @@
 
 #include "../include/physics.hpp"
 
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Angle.hpp>
 #include <algorithm>
@@ -226,4 +227,39 @@ void PhysicsObjects::BouncyObject::bounce(PhysicsObjects::Ball& ball, const int 
   ball.setVelocity(newVelocity);
   this->setJustBounced(side);
 
+}
+
+//////////////////////////////////////
+// Booster => BouncyObject
+//////////////////////////////////////
+
+PhysicsObjects::Booster::Booster(const sf::Vector2i& newPos, const sf::Vector2f& newSize, const float newRotation, const float boostExtra)
+: pos(newPos), size(newSize), rotation(newRotation), boostExtra(boostExtra), justBoosted(false) {
+  this->setOrientation(sf::Vector2f(1,0).rotatedBy(sf::degrees(90.f - newRotation)));
+
+  // For the points of the BouncyObject I use a RectangleShape and get its points
+  // Also used in build.cpp
+  sf::RectangleShape rect(newSize * Globals::unitSize);
+  rect.setOrigin(0.5f * Globals::unitSize * newSize);
+  rect.setRotation(sf::degrees(newRotation));
+  rect.setPosition(static_cast<sf::Vector2f>(newPos));
+  sf::Transform transform = rect.getTransform();
+  this->setPoints({
+    transform.transformPoint(rect.getPoint(1)),
+    transform.transformPoint(rect.getPoint(2)),
+    transform.transformPoint(rect.getPoint(3)),
+    transform.transformPoint(rect.getPoint(0))
+  });
+}
+
+void PhysicsObjects::Booster::boost(PhysicsObjects::Ball& ball) {
+  // To get the parallel velocity, I do the following:
+  // Get the angle between the velocity vector of the ball and this orientation
+  // Then, I take that as my angle φ (phi) and use the following formula to calculate the parallel speed
+  // $$ v_perp = v_tot * cos(φ) $$
+  const float phi = ball.getDirection().angleTo(this->getOrientation()).asRadians();
+  const float vPerp = ball.getVelocity() * std::cos(phi);
+  ball.setVelocity((ball.getVelocity() + boostExtra * vPerp) * ball.getDirection());
+
+  this->setJustBoosted(true);
 }

@@ -274,6 +274,14 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
         level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
       }
     }
+    if (obj->hasBooster()) {
+      short collSide = obj->getBooster().checkBallCollision(ball);
+      if (!obj->getBooster().getJustBoosted() && collSide != NULL_VALUE) {
+        obj->getBooster().boost(ball);
+      } else if (obj->getBooster().getJustBoosted() && collSide == NULL_VALUE) {
+        obj->getBooster().setJustBoosted(false);
+      }
+    }
   }
 
   // Display the money bags and check if the ball hits the bag.
