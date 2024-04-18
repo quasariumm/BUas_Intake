@@ -370,13 +370,12 @@ int main() {
 
   PhysicsObjects::Ball ball{ballTexture, ballOrigin, 0.1f, 0.25f * unitSize};
 
-  // std::cout << "Ball midpoint: " << ball.getMidpoint().x << "," << ball.getMidpoint().y << std::endl;
-  // std::cout << "Ball radius: " << ball.getRadius()<< std::endl;
-  // std::cout << "Ball origin: " << ball.getOrigin().x << "," << ball.getOrigin().y << std::endl;
-  // std::cout << "Ball bound offset: " << ball.getGlobalBounds().left << "," << ball.getGlobalBounds().top << std::endl;
-  // std::cout << "Ball bound offset (local): " << ball.getLocalBounds().left << "," << ball.getLocalBounds().top << std::endl;
-  // std::cout << "Ball bounds size: " << ball.getGlobalBounds().width << "," << ball.getGlobalBounds().height << std::endl;
-  // std::cout << "Ball bounds size (local): " << ball.getLocalBounds().width << "," << ball.getLocalBounds().height << std::endl;
+  // Initialise the button outer texture and the items
+  sf::Texture buttonOuter;
+  loadTexture("sprites/buttonBackground.png", buttonOuter);
+
+  // Create the inventory
+  UIElements::Inventory inventory{{0}, {0}, buttonOuter};
 
   // Initialise a test level
   std::filesystem::path tmppath = RESOURCES_PATH;
@@ -389,15 +388,8 @@ int main() {
   loadTexture("sprites/tilemapProps.png", propsTexture);
   loadTexture("sprites/tilemapPipes.png", pipesTexture);
 
-  // Initialise the button outer texture and the items
-  sf::Texture buttonOuter;
-  loadTexture("sprites/buttonBackground.png", buttonOuter);
-
-  tmpLevel.initLevel(wallsTexture, propsTexture, pipesTexture);
+  tmpLevel.initLevel(wallsTexture, propsTexture, pipesTexture, inventory);
   std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
-
-  // Create the inventory
-  UIElements::Inventory inventory{{0, 1, 2}, {5, 6, 12}, buttonOuter};
 
   sf::Clock dt_clock;
 

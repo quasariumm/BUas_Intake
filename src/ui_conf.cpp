@@ -142,7 +142,6 @@ UIElements::Inventory::Inventory(const std::vector<int8_t>& newItems, const std:
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     int8_t item = newItems[i];
     int16_t count = newCounts[i];
-    std::clog << static_cast<int>(item) << " " << count << std::endl;
     this->buttons.push_back(new UIElements::InventoryButton(item, buttonOuter, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
   }
 }

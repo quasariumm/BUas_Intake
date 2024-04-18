@@ -31,6 +31,7 @@
 #include "../include/physics.hpp"
 #include "../include/math.hpp"
 #include "../include/globals.hpp"
+#include "ui_conf.hpp"
 
 const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;
@@ -406,7 +407,7 @@ Level::~Level() {
   }
 }
 
-void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes) {
+void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes, UIElements::Inventory& inventory) {
 
   this->tilemap.loadFromFile(this->levelFilePath);
   this->tilemap.drawPropsWalls(walls, props, sf::Vector2i(128, 128));
@@ -423,13 +424,45 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
   }
 
   std::string lineStr;
+  bool foundInventoryHeader = false;
   bool foundMoneyBagHeader = false;
+
+  std::vector<int8_t> invItems;
+  std::vector<int16_t> invCounts;
+
+  // Init the inventory
+  while (std::getline(levelStream, lineStr)) {
+
+    if (lineStr.find("[Inventory]") != std::string::npos) {
+      foundInventoryHeader = true;
+      continue;
+    }
+
+    if (!foundInventoryHeader) {
+      continue;
+    }
+    if (lineStr.empty()) {
+      break;
+    }
+
+    int one = lineStr.find_first_of('(');
+    invItems.push_back(std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one)));
+    invCounts.push_back(std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(','))));
+
+  }
+
+  inventory.setItems(invItems);
+  inventory.setCounts(invCounts);
 
   while (std::getline(levelStream, lineStr)) {
     
     if (lineStr.find("[MoneyBags]") != std::string::npos) {
       foundMoneyBagHeader = true;
       continue;
+    } else if (lineStr.find("[MoneyBagsNeeded]") != std::string::npos) {
+      // Get the next line and set moneyBagsNeeded
+      std::getline(levelStream, lineStr);
+      this->moneyBagsNeeded = std::stoi(lineStr);
     }
 
     if (!foundMoneyBagHeader) {
@@ -441,8 +474,8 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
 
     sf::Vector2f pos;
     int one = lineStr.find_first_of('(');
-    pos.x = Globals::unitSize * std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
-    pos.y = Globals::unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
+    pos.x = Globals::unitSize * std::stof(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
+    pos.y = Globals::unitSize * std::stof(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
 
     MoneyBag* bag = new MoneyBag(pos);
     this->moneyBags.push_back(bag);

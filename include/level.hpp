@@ -208,17 +208,22 @@ public:
   /**
    * @brief Initiates the level's tilemap and BouncyObjects
    * 
-   * @param window The window it needs to be drawn on
-   * @param unitSize The size of one unit. This is defined in @a main.cpp
+   * @param walls The texture for the walls
+   * @param props The texture for the props
+   * @param pipes The texture for the pipes
+   * @param inventory The inventory
    */
-  void initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes);
+  void initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes, UIElements::Inventory& inventory);
 
 private:
 
   std::filesystem::path levelFilePath;
   Tilemap tilemap;
   BouncyObjects bouncyObjects;
+
   std::vector<MoneyBag*> moneyBags;
+  uint8_t moneyBagsNeeded;
+
   UIElements::ScoreLabel scoreLabel;
   UIElements::RunButton runButton;
 
