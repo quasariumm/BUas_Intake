@@ -129,6 +129,13 @@ public:
   uint8_t& getValue() {return value;};
 
   /**
+   * @brief Set the position
+   * 
+   * @param newPos The new position
+   */
+  void setPosition(const sf::Vector2f& newPos) {pos = newPos;};
+
+  /**
    * @brief Draws the money bag on the screen
    * 
    */
@@ -215,6 +222,12 @@ public:
    */
   void initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes, UIElements::Inventory& inventory);
 
+  /**
+   * @brief Resets the money bags and the score
+   * 
+   */
+  void resetMoneyBagPositions();
+
 private:
 
   std::filesystem::path levelFilePath;
@@ -228,6 +241,8 @@ private:
   UIElements::RunButton runButton;
 
   sf::Texture runButtonOuter;
+
+  uint16_t beginScore, neededScore;
 
 };
 

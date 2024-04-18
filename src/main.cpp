@@ -119,7 +119,7 @@ void mousePressedEvent(sf::Event& event, UIElements::Inventory& inventory, Level
   // Check click on EditableObjects
   UserObjects::EditableObject* clicked = nullptr;
   for (UserObjects::EditableObject* obj : editableObjects.getObjects()) {
-    if (obj->intersect(sf::Mouse::getPosition(*Globals::window))) {
+    if (obj->intersect(sf::Mouse::getPosition(*Globals::window)) && !Globals::simulationOn) {
       clicked = obj;
     }
   }
@@ -249,6 +249,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       ball.setMidpoint(ballOrigin);
       ball.setVelocity(sf::Vector2f());
       level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
+      level.resetMoneyBagPositions();
     }
   }
 
@@ -272,6 +273,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
         ball.setMidpoint(ballOrigin);
         ball.setVelocity(sf::Vector2f());
         level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
+        level.resetMoneyBagPositions();
       }
     }
     if (obj->hasBooster()) {
@@ -379,7 +381,7 @@ int main() {
 
   // Initialise a test level
   std::filesystem::path tmppath = RESOURCES_PATH;
-  tmppath += "levels/level0.ql";
+  tmppath += "levels/level1.ql";
 
   Level tmpLevel{tmppath};
   

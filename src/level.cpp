@@ -409,6 +409,8 @@ Level::~Level() {
 
 void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes, UIElements::Inventory& inventory) {
 
+  this->beginScore = this->scoreLabel.getScore();
+  
   this->tilemap.loadFromFile(this->levelFilePath);
   this->tilemap.drawPropsWalls(walls, props, sf::Vector2i(128, 128));
   
@@ -482,6 +484,8 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
   
   }
 
+  this->neededScore = this->beginScore + this->moneyBagsNeeded * this->moneyBags[0]->getValue();
+
   // Init the ScoreLabel
   std::filesystem::path scoreLabelBackground = RESOURCES_PATH;
   scoreLabelBackground += "sprites/scoreLabelBackground.png";
@@ -496,13 +500,42 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
   }
 
   this->runButton = UIElements::RunButton(this->runButtonOuter, sf::Vector2f(0.5f * Globals::window->getSize().x - Globals::unitSize, 0.8f * Globals::unitSize ), sf::Vector2u(2.f * Globals::unitSize, 0.5f * Globals::unitSize));
+}
 
-  // ! This is just for testing. The following is temporaty
-  float windowYSize = Globals::window->getSize().y;
-  this->bouncyObjects.makeBO({
-    sf::Vector2f(0, windowYSize - 70),
-    sf::Vector2f(200, windowYSize - 30),
-    sf::Vector2f(200, windowYSize + 100),
-    sf::Vector2f(0, windowYSize + 100),
-  }, 0.8f, sf::Vector2f(200, -40));
+void Level::resetMoneyBagPositions() {
+  this->scoreLabel.setScore(this->beginScore);
+
+  std::ifstream levelStream;
+  levelStream.open(this->levelFilePath, std::ios::in);
+
+  std::string lineStr;
+  bool foundMoneyBagHeader = false;
+
+  uint8_t ctr = 0;
+
+  while (std::getline(levelStream, lineStr)) {
+
+    if (lineStr.find("[MoneyBags]") != std::string::npos) {
+      foundMoneyBagHeader = true;
+      continue;
+    }
+
+    if (!foundMoneyBagHeader) {
+      continue;
+    }
+    if (lineStr.empty()) {
+      break;
+    }
+
+    sf::Vector2f pos;
+    int one = lineStr.find_first_of('(');
+    pos.x = Globals::unitSize * std::stof(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
+    pos.y = Globals::unitSize * std::stof(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
+
+    this->moneyBags[ctr]->setCollected(false);
+    this->moneyBags[ctr]->setPosition(pos);
+
+    ctr++;
+
+  }
 }
