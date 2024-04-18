@@ -91,6 +91,20 @@ namespace UserObjects {
     sf::Vector2f getSize() {return size;};
 
     /**
+     * @brief Set the rotation
+     * 
+     * @param newRotation The new rotation
+     */
+    void setRotation(const float newRotation) {rotation = newRotation;};
+
+    /**
+     * @brief Get the rotation
+     * 
+     * @return float 
+     */
+    float getRotation() {return rotation;};
+
+    /**
      * @brief Get the texture path
      * 
      * @return std::filesystem::path
@@ -172,8 +186,9 @@ namespace UserObjects {
      * @param newSize The size of the ghost object
      * @param newTexturePath The path to the texture file
      * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
+     * @param rotation (optional) The angle in degrees at which the object is rotated
      */
-    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId) : size(newSize), texturePath(newTexturePath), itemID(itemId) {};
+    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float rotation = 0.0f) : size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(rotation) {};
     
     /**
      * @brief Set the size
@@ -235,8 +250,9 @@ namespace UserObjects {
    * @param newSize The size of the object
    * @param texturePath The path to the texture of the object
    * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
+   * @param rotation (optional) The angle in degrees at which the object is rotated
    */
-  void initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const int8_t itemId);
+  void initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const int8_t itemId, const float rotation = 0.0f);
 
   /**
    * @brief Clears the currently building object

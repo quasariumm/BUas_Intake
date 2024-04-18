@@ -145,7 +145,7 @@ void keyPressedEvent(UIElements::Inventory& inventory) {
     
     uint8_t itemId = editing->getItemId();
 
-    UserObjects::initBuilding(editing->getSize(), editing->getTexturePath(), itemId);
+    UserObjects::initBuilding(editing->getSize(), editing->getTexturePath(), itemId, editing->getRotation());
 
     // Don't touch this line. If the line beneath this line is placed at the end of the if-statement, it breaks.
     auto tmpEditing = editing;
@@ -298,7 +298,6 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     
     threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y));
     threads.back().detach();
-    std::clog << "The ball hit a bag!" << std::endl;
   }
 
   // Draw the UI

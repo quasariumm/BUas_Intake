@@ -35,8 +35,8 @@
 
 UserObjects::GhostObject building{sf::Vector2f(), RESOURCES_PATH, 0};
 
-void UserObjects::initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const int8_t itemId) {
-  building = UserObjects::GhostObject{newSize, texturePath, itemId};
+void UserObjects::initBuilding(const sf::Vector2f newSize, const std::filesystem::path texturePath, const int8_t itemId, const float rotation) {
+  building = UserObjects::GhostObject{newSize, texturePath, itemId, rotation};
 }
 
 void UserObjects::clearBuilding() {
