@@ -357,7 +357,7 @@ int main() {
   Globals::initFont();
 
   // Set the ball origin
-  ballOrigin = {1.5f * unitSize, 1.5f * unitSize};
+  ballOrigin = {2.f * unitSize, 0.0f * unitSize};
 
   // Init the editGUI
   editGUI = UIElements::EditGUI(sf::Vector2f(2.5f * unitSize, 14.f * unitSize), sf::Vector2f(.8f * unitSize, .8f * unitSize));

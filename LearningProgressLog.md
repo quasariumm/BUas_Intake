@@ -65,3 +65,6 @@ Also made it so you can cancel building.
 
 ## 2024-04-16
 Made a booster sprite and put it in the inventory.
+
+## 2024-04-17
+Finished the boosters by checking if the ball collides and updating the speed accordingly. I update the speed by getting the parallel velocity using $$ v_{perp}=\left|\vec{v}\right|*cos(φ) $$ where φ is the angle between the direction vector of the ball and the direction vector of the booster.

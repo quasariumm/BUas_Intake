@@ -177,15 +177,24 @@ void BouncyObjects::makeWalls() {
   right_wall.setCOR(0.8f);
   this->bo_list.push_back(right_wall);
 
-  PhysicsObjects::BouncyObject ceiling;
-  ceiling.setPoints({
+  PhysicsObjects::BouncyObject ceiling1, ceiling2;
+  ceiling1.setPoints({
     sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
-    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, 0.5f * Globals::unitSize),
-    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, -100),
+    sf::Vector2f(1.5f * Globals::unitSize, 0.5f * Globals::unitSize),
+    sf::Vector2f(1.5f * Globals::unitSize, -100),
     sf::Vector2f(0.5f * Globals::unitSize, -100)
   });
-  ceiling.setCOR(0.8f);
-  this->bo_list.push_back(ceiling);
+  ceiling1.setCOR(0.8f);
+  this->bo_list.push_back(ceiling1);
+
+  ceiling2.setPoints({
+    sf::Vector2f(2.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, 0.5f * Globals::unitSize),
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, -100),
+    sf::Vector2f(2.5f * Globals::unitSize, -100)
+  });
+  ceiling2.setCOR(0.8f);
+  this->bo_list.push_back(ceiling2);
 
   PhysicsObjects::BouncyObject left_wall;
   left_wall.setPoints({
