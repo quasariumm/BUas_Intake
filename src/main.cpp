@@ -22,6 +22,7 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <filesystem>
 #include <functional>
@@ -36,6 +37,7 @@
 #include "../include/ui_conf.hpp"
 #include "../include/build.hpp"
 #include "../include/globals.hpp"
+#include "../include/dialogue.hpp"
 
 //////////////////////////////////////
 // Variables
@@ -305,6 +307,11 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   level.getScoreLabel().draw();
   level.getRunButton().draw();
 
+  // ! DEBUG
+  // Draw a test dialogue
+  TextBubble textBubble("Test dialogue system.\nAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAA");
+  textBubble.draw();
+
   if (editing != nullptr) editGUI.draw();
   if (UserObjects::getBuilding()->getSize().length() != 0) buildGUI.draw();
 
@@ -349,6 +356,7 @@ int main() {
 
   // Set the unit size (conversion from pixels to 'meters') to 1/18 (16x16 for the level, 1 on eacht side for the wall tiles) of the screen width
   unitSize = static_cast<float>(window.getSize().y) / 17.f;
+  unitSize = std::round(unitSize);
   std::cout << "Unit size is: " << unitSize <<std::endl;
   windowSize = window.getSize();
 
@@ -361,8 +369,8 @@ int main() {
   ballOrigin = {2.f * unitSize, 0.0f * unitSize};
 
   // Init the editGUI
-  editGUI = UIElements::EditGUI(sf::Vector2f(2.5f * unitSize, 14.f * unitSize), sf::Vector2f(.8f * unitSize, .8f * unitSize));
-  buildGUI = UIElements::BuildGUI(sf::Vector2f(2.5f * unitSize, 14.f * unitSize), sf::Vector2f(.8f * unitSize, .8f * unitSize));
+  editGUI = UIElements::EditGUI(sf::Vector2f(2.f * Globals::unitSize, 14.f * Globals::unitSize), sf::Vector2f(4.f * Globals::unitSize, 4.f * Globals::unitSize));
+  buildGUI = UIElements::BuildGUI(sf::Vector2f(2.f * Globals::unitSize, 14.f * Globals::unitSize), sf::Vector2f(4.f * Globals::unitSize, 4.f * Globals::unitSize));
 
   sf::Texture ballTexture;
   loadTexture("sprites/ball.png", ballTexture);

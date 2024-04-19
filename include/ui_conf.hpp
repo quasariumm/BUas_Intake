@@ -355,21 +355,21 @@ namespace UIElements {
      * @param backgroundPath The path to the background texture
      * @param textColor The color to fill the text with
      */
-    TextLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White);
+    TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White);
 
     /**
      * @brief Set the text
      * 
      * @param newText The new text
      */
-    void setText(const std::wstring newText);
+    void setText(const std::string newText);
 
     /**
      * @brief Get the Text object
      * 
      * @return std::string 
      */
-    std::wstring getText() {return text;};
+    std::string getText() {return text;};
 
     /**
      * @brief Set the position
@@ -416,7 +416,7 @@ namespace UIElements {
 
     sf::Texture background;
     
-    std::wstring text;
+    std::string text;
     sf::Vector2f pos;
     sf::Vector2f size;
 
@@ -441,7 +441,7 @@ namespace UIElements {
      * @param backgroundPath The path to thebackground texture
      * @param textColor The color to fill the text with
      */
-    ScoreLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White)
+    ScoreLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White)
     : TextLabel(newText, newPos, newSize, backgroundPath, textColor) {};
 
     /**

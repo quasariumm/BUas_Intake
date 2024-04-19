@@ -242,7 +242,7 @@ void UIElements::Inventory::draw() {
 
 UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture) {};
 
-UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor)
+UIElements::TextLabel::TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor)
  : text(newText), pos(newPos), size(newSize), Text(Globals::mainFont, newText), Sprite(tmpTexture) {
   if (!this->background.loadFromFile(backgroundPath)) {
     throw std::runtime_error("Couldn't load the background of a TextLabel.");
@@ -250,14 +250,27 @@ UIElements::TextLabel::TextLabel(const std::wstring newText, const sf::Vector2f&
   this->setTexture(this->background, true);
 
   const float TEXT_SIZE = 0.7f; // Relative to the background
-  this->setCharacterSize(static_cast<int>(TEXT_SIZE * newSize.y));
+  this->setCharacterSize(256);
+  sf::Vector2f textSize = static_cast<sf::Text*>(this)->getLocalBounds().getSize();
+
+  const float FACTOR = std::min(newSize.x / textSize.x, newSize.y / textSize.y);
+
+  static_cast<sf::Text*>(this)->setScale(sf::Vector2f(TEXT_SIZE * FACTOR, TEXT_SIZE * FACTOR));
 
   this->setFillColor(textColor);
 }
 
-void UIElements::TextLabel::setText(const std::wstring newString) {
+void UIElements::TextLabel::setText(const std::string newString) {
   this->setString(newString);
   this->text = newString;
+
+  const float TEXT_SIZE = 0.7f; // Relative to the background
+  this->setCharacterSize(256);
+  sf::Vector2f textSize = static_cast<sf::Text*>(this)->getLocalBounds().getSize();
+
+  const float FACTOR = std::min(this->size.x / textSize.x, this->size.y / textSize.y);
+
+  static_cast<sf::Text*>(this)->setScale(sf::Vector2f(TEXT_SIZE * FACTOR, TEXT_SIZE * FACTOR));
 }
 
 void UIElements::TextLabel::draw() {
@@ -283,15 +296,15 @@ void UIElements::TextLabel::draw() {
 // ScoreLabel => TextLabel
 //////////////////////////////////////
 
-std::wstring moneyScore(const uint8_t score) {
-  std::wstring base(L"Money: $");
+std::string moneyScore(const uint8_t score) {
+  std::string base("Money: $");
 
-  std::wstringstream moneyStream;
+  std::stringstream moneyStream;
   moneyStream << score * 100000;
-  std::wstring money = moneyStream.str();
+  std::string money = moneyStream.str();
 
   for (int i = money.length() - 3; i > 0; ------i) {
-    money.insert(i, L",");
+    money.insert(i, ",");
   }
 
   return base + money;
@@ -307,14 +320,14 @@ void UIElements::ScoreLabel::setScore(const uint8_t newScore) {
 // EditGUI => TextLabel
 //////////////////////////////////////
 
-UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel(L"", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
-  this->setText(L"F: Move/Rotate\nG: Delete");
+UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
+  this->setText("F: Move/Rotate\nG: Delete");
 }
 
 //////////////////////////////////////
 // BuildGUI => TextLabel
 //////////////////////////////////////
 
-UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel(L"", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
-  this->setText(L"R: Rotate CCW\nT: Rotate CW\nEsc: Cancel");
+UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
+  this->setText("R: Rotate CCW\nT: Rotate CW\nEsc: Cancel");
 }
