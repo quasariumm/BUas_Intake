@@ -16,6 +16,13 @@ public:
   TextBubble(const std::string text);
 
   /**
+   * @brief Gradually make the text appear.
+   * @attention This function has to be threaded
+   * 
+   */
+  void typewriterText();
+
+  /**
    * @brief 
    * 
    */

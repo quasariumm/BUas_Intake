@@ -68,3 +68,9 @@ Made a booster sprite and put it in the inventory.
 
 ## 2024-04-17
 Finished the boosters by checking if the ball collides and updating the speed accordingly. I update the speed by getting the parallel velocity using $$ v_{perp}=\left|\vec{v}\right|*cos(φ) $$ where φ is the angle between the direction vector of the ball and the direction vector of the booster.
+
+## 2024-04-18
+Made level 1 and made it so that the money bags reset when the level resets.
+
+## 2024-04-19
+Fixed the `UIElements::TextLabel` object, because the text was not properly scaled.

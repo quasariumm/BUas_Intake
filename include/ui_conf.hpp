@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include "../include/globals.hpp"
+
 namespace UIElements {
 
   class Button {
@@ -354,15 +356,17 @@ namespace UIElements {
      * @param newSize The size of the label
      * @param backgroundPath The path to the background texture
      * @param textColor The color to fill the text with
+     * @param font The font to use. Default is the main font.
      */
-    TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White);
+    TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White, const sf::Font& font = Globals::mainFont);
 
     /**
-     * @brief Set the text
+     * @brief Set the text and updates the size
      * 
      * @param newText The new text
+     * @param minimal If this is true, it doesn't also updat the size
      */
-    void setText(const std::string newText);
+    void setText(const std::string newText, const bool minimal = false);
 
     /**
      * @brief Get the Text object

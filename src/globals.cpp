@@ -17,12 +17,16 @@
 #include <stdexcept>
 
 sf::Font Globals::mainFont;
+sf::Font Globals::monoFont;
 
 void Globals::initFont() {
   std::filesystem::path fontPath = RESOURCES_PATH;
   fontPath.append("font/NotoSans-Regular.ttf");
   if (!mainFont.loadFromFile(fontPath)) {
     throw std::runtime_error("Couldn't load the font. Did you set the hardcoded variable right?");
+  }
+  if (!monoFont.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("font/NotoSansMono-Regular.ttf"))) {
+    throw std::runtime_error("Couldn't load the monospace font. Did you set the hardcoded variable right?");
   }
 }
 

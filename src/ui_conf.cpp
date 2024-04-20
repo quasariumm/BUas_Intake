@@ -242,8 +242,8 @@ void UIElements::Inventory::draw() {
 
 UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture) {};
 
-UIElements::TextLabel::TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor)
- : text(newText), pos(newPos), size(newSize), Text(Globals::mainFont, newText), Sprite(tmpTexture) {
+UIElements::TextLabel::TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor, const sf::Font& font)
+ : text(newText), pos(newPos), size(newSize), Text(font, newText), Sprite(tmpTexture) {
   if (!this->background.loadFromFile(backgroundPath)) {
     throw std::runtime_error("Couldn't load the background of a TextLabel.");
   }
@@ -260,9 +260,13 @@ UIElements::TextLabel::TextLabel(const std::string newText, const sf::Vector2f& 
   this->setFillColor(textColor);
 }
 
-void UIElements::TextLabel::setText(const std::string newString) {
+void UIElements::TextLabel::setText(const std::string newString, const bool minimal) {
   this->setString(newString);
   this->text = newString;
+
+  if (minimal) {
+    return;
+  }
 
   const float TEXT_SIZE = 0.7f; // Relative to the background
   this->setCharacterSize(256);

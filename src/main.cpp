@@ -197,7 +197,7 @@ void keyReleasedEvent() {
 
 // Loop
 
-void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime) {
+void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime, TextBubble& textBubble) {
   
   window.clear();
 
@@ -308,8 +308,6 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   level.getRunButton().draw();
 
   // ! DEBUG
-  // Draw a test dialogue
-  TextBubble textBubble("Test dialogue system.\nAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAA");
   textBubble.draw();
 
   if (editing != nullptr) editGUI.draw();
@@ -402,9 +400,15 @@ int main() {
 
   sf::Clock dt_clock;
 
+  // ! DEBUG
+  // Draw a test dialogue
+  TextBubble textBubble("Test dialogue system.\nAAAAAAAAAA     AAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAA");
+  threads.emplace_back(std::bind(&TextBubble::typewriterText, &textBubble));
+  threads.back().detach();
+
   while (window.isOpen()) {
     float deltaTime = dt_clock.restart().asSeconds();
-    loop(window, ball, tmpLevel, inventory, deltaTime);
+    loop(window, ball, tmpLevel, inventory, deltaTime, textBubble);
   }
 
   return 0;

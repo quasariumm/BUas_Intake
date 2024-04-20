@@ -6,6 +6,7 @@
 
 namespace Globals {
   extern sf::Font mainFont;
+  extern sf::Font monoFont;
 
   void initFont();
   
