@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "../include/ui_conf.hpp"
+#include "../include/dialogue.hpp"
 
 class Tilemap {
 public:
@@ -213,6 +214,13 @@ public:
   UIElements::RunButton& getRunButton() {return runButton;};
 
   /**
+   * @brief Get the Dialogue object
+   * 
+   * @return Dialogue& 
+   */
+  Dialogue& getDialogue() {return dialogue;};
+
+  /**
    * @brief Initiates the level's tilemap and BouncyObjects
    * 
    * @param walls The texture for the walls
@@ -243,6 +251,8 @@ private:
   sf::Texture runButtonOuter;
 
   uint16_t beginScore, neededScore;
+
+  Dialogue dialogue;
 
 };
 

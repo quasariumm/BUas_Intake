@@ -12,6 +12,13 @@ public:
 
   /**
    * @brief Construct a new Text Bubble object
+   * @attention This is a minial constructor for the TextBubble class. Please use the other constructor if possible.
+   * 
+   */
+  TextBubble() = default;
+  
+  /**
+   * @brief Construct a new Text Bubble object
    * 
    * @param text The text that the narrator should say
    */
@@ -23,6 +30,13 @@ public:
    * @param newMessage The new message
    */
   void setMessage(const std::string newMessage) {message = newMessage;};
+
+  /**
+   * @brief Set the value of enabled
+   * 
+   * @param newEnabled The new value
+   */
+  void setEnabled(const bool newEnabled) {enabled = newEnabled;};
 
   /**
    * @brief Gradually make the text appear.
@@ -41,6 +55,8 @@ private:
 
   std::string message;
 
+  bool enabled = false;
+
 };
 
 class Dialogue {
@@ -58,8 +74,9 @@ public:
    * @attention This function needs to be run in a thread
    * 
    * @param textBubble The text bubble to print the dialogue on
+   * @param textLabel A TextLabel for the TEXT instruction
    */
-  void play(TextBubble* textBubble);
+  void play(TextBubble* textBubble, UIElements::TextLabel* textLabel);
 
 private:
 

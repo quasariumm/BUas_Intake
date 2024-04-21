@@ -1,0 +1,15 @@
+SAY "Okay, just wait here and I'll get the item."
+WAIT 5
+SAY "Last year's theme was bounce, and this\nexperiment came out of it. It's a highly elastic\nbouce pad."
+WAIT 2
+SAY "Sadly this took a lot of money to develop, hence\nthe financial problems we're in."
+WAIT 2
+SAY "Just place these in such a way that you collect\nall the money bags."
+WAIT 1
+SAY "Once you have collected enough bags, you will\ncontinue to the next level."
+WAIT 2
+SAY "Whenever you're ready, I'll drop a ball through\nthat pipe in the top-left corner."
+WAIT 2
+SAY "So... good luck. I'll hear from you when you\nhave everything ready."
+WAIT 1
+CLEAR_DIALOGUE

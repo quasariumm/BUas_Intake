@@ -75,6 +75,10 @@ void TextBubble::typewriterText() {
 }
 
 void TextBubble::draw() {
+  if (!enabled) {
+    return;
+  }
+
   // Draw background
   sf::Texture backgrTexture;
   if (!backgrTexture.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/dialogueBackground.png"))) {
@@ -122,7 +126,9 @@ void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
   }
 }
 
-void Dialogue::play(TextBubble* textBubble) {
+void Dialogue::play(TextBubble* textBubble, UIElements::TextLabel* textLabel) {
+
+  textBubble->setEnabled(true);
 
   for (auto& [instruction, argument] : instructions) {
 
@@ -138,7 +144,19 @@ void Dialogue::play(TextBubble* textBubble) {
 
     } else if (instruction == "TEXT") {
     
+      textLabel->setText(argument.substr(1, argument.length() - 2));
 
+    } else if (instruction == "CLEAR_TEXT") {
+
+      textLabel->setText("");
+
+    } else if (instruction == "CLEAR_DIALOGUE") {
+
+      textBubble->setEnabled(false);
+
+    } else if (instruction == "ENABLE_DIALOGUE") {
+
+      textBubble->setEnabled(true);
 
     }
 

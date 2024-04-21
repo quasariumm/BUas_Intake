@@ -74,6 +74,9 @@ bool rotate;
 // Score
 long score;
 
+// Dialogue-specific variables
+UIElements::TextLabel dialogueTextLabel;
+
 // Threading
 std::vector<std::thread> threads;
 
@@ -307,6 +310,8 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   level.getScoreLabel().draw();
   level.getRunButton().draw();
 
+  dialogueTextLabel.draw();
+
   // ! DEBUG
   textBubble.draw();
 
@@ -403,9 +408,15 @@ int main() {
   // ! DEBUG
   // Draw a test dialogue
   TextBubble textBubble(std::string(48, ' '));
+  dialogueTextLabel = UIElements::TextLabel{
+    "",
+    sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().x - Globals::unitSize),
+    sf::Vector2f(10.f * Globals::unitSize, 4.f * Globals::unitSize),
+    std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")
+  };
   Dialogue dialogue;
-  dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/level1.qd"));
-  threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble));
+  dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/intro.qd"));
+  threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble, &dialogueTextLabel));
   threads.back().detach();
 
   while (window.isOpen()) {

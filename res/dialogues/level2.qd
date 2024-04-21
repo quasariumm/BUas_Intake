@@ -1,0 +1,7 @@
+SAY "I've got some great new for you."
+WAIT 1
+SAY "I just found some fans in storage and quickly\nput this together. It's a booster."
+WAIT 2
+SAY "Use it wisely."
+WAIT 1
+CLEAR_DIALOGUE
