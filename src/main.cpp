@@ -402,8 +402,10 @@ int main() {
 
   // ! DEBUG
   // Draw a test dialogue
-  TextBubble textBubble("Test dialogue system.\nAAAAAAAAAA     AAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAA");
-  threads.emplace_back(std::bind(&TextBubble::typewriterText, &textBubble));
+  TextBubble textBubble(std::string(48, ' '));
+  Dialogue dialogue;
+  dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/level1.qd"));
+  threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble));
   threads.back().detach();
 
   while (window.isOpen()) {

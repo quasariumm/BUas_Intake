@@ -18,14 +18,21 @@
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
+#include <ios>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../include/dialogue.hpp"
 #include "../include/ui_conf.hpp"
 #include "../include/globals.hpp"
+
+//////////////////////////////////////
+// TextBubble => TextLabel
+//////////////////////////////////////
 
 TextBubble::TextBubble(const std::string text) : message(text),
 UIElements::TextLabel(text, sf::Vector2f(0.5f * Globals::window->getSize().x, 14.f * Globals::unitSize), sf::Vector2f(12.f * Globals::unitSize, 2.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::monoFont) {
@@ -83,7 +90,58 @@ void TextBubble::draw() {
 
   // Draw text
   // Magic number time
-  this->setPos(sf::Vector2f(0.5f * Globals::window->getSize().x + 2.f * Globals::unitSize, 14.1f * Globals::unitSize));
-  this->setSize(sf::Vector2f(10.f * Globals::unitSize, 2.2f * Globals::unitSize));
+  this->setPos(sf::Vector2f(0.5f * Globals::window->getSize().x + .5f * Globals::unitSize, 14.3f * Globals::unitSize));
+  this->setSize(sf::Vector2f(12.f * Globals::unitSize, 2.2f * Globals::unitSize));
   static_cast<UIElements::TextLabel*>(this)->draw();
+}
+
+//////////////////////////////////////
+// Dialogue
+//////////////////////////////////////
+
+void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
+  std::ifstream stream;
+  stream.open(dialogueFile, std::ios::in);
+
+  if (!stream.is_open()) {
+    throw std::runtime_error("Couldn't open the dialogue file.");
+  }
+
+  std::string lineStr;
+  while (std::getline(stream, lineStr)) {
+    std::string instruction = lineStr.substr(0, lineStr.find(' '));
+    std::string argument = lineStr.substr(lineStr.find(' ') + 1);
+
+    // In the argument, replace all "\n" with real new-line characters
+    short pos;
+    while ((pos = argument.find("\\n")) != std::string::npos) {
+      argument.replace(pos, 2, 1, '\n');
+    }
+
+    this->instructions.push_back(std::make_pair(instruction, argument));
+  }
+}
+
+void Dialogue::play(TextBubble* textBubble) {
+
+  for (auto& [instruction, argument] : instructions) {
+
+    if (instruction == "SAY") {
+
+      textBubble->setMessage(argument.substr(1, argument.length() - 2));
+      textBubble->typewriterText();
+
+    } else if (instruction == "WAIT") {
+      
+      float seconds = std::stof(argument);
+      sf::sleep(sf::seconds(seconds));
+
+    } else if (instruction == "TEXT") {
+    
+
+
+    }
+
+  }
+
 }

@@ -74,3 +74,6 @@ Made level 1 and made it so that the money bags reset when the level resets.
 
 ## 2024-04-19
 Fixed the `UIElements::TextLabel` object, because the text was not properly scaled.
+
+## 2024-04-20
+Made a dialogue box and made a way to automatically switch the text. Also made an effect that the text on the dialogue box appears letter by letter. 
