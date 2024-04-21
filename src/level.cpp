@@ -16,6 +16,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Angle.hpp>
 #include <SFML/System/Sleep.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -29,9 +30,8 @@
 #include <vector>
 
 #include "../include/physics.hpp"
-#include "../include/math.hpp"
 #include "../include/globals.hpp"
-#include "ui_conf.hpp"
+#include "../include/ui_conf.hpp"
 
 const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;
@@ -301,70 +301,12 @@ bool MoneyBag::intersect(PhysicsObjects::Ball& ball) {
     this->pos + sf::Vector2f(0.3f * Globals::unitSize, -0.5f * Globals::unitSize),
     this->pos + sf::Vector2f(-0.3f * Globals::unitSize, -0.5f * Globals::unitSize),
   };
-  // Now, I just use a more simple version of the collision system in physics.cpp
-  for (unsigned short i = 0; i < 4; ++i) {
-    // Get the formula
-    // The a and b can be filled in by using the normal of the side.
+  // Now, out of simplicity I use AABB to check if at least one of 8 points on the ball is in the bag
+  for (unsigned short i = 0; i < 8; ++i) {
+    sf::Vector2f checkPoint = ball.getMidpoint() + (sf::Vector2f(1,0) * ball.getRadius()).rotatedBy(i * sf::degrees(45));
 
-    sf::Vector2f point1 = points[i];
-    sf::Vector2f point2 = points[(i+1)%4];
-
-    sf::Vector2f direction_vector = (point2 - point1).normalized();
-    sf::Vector2f normal = direction_vector.perpendicular();
-
-    float a, b, c;
-
-    a = normal.x;
-    b = normal.y;
-
-    c = -1 * (a * point1.x + b * point1.y);
-
-    float distanceToMidpoint = getDistance(a, b, c, ball.getMidpoint());
-
-    if (distanceToMidpoint >= ball.getRadius()) {
-      return false;
-    }
-    // Hurray, at least the line is in the circle.
-    // Now to check if it is in the actual object, I multiply the normal with the distance and add it to the midpoint.
-    // If that point is on the line and not outside the side, it collides.
-
-    sf::Vector2f checkPoint = ball.getMidpoint() + distanceToMidpoint * normal;
-    if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
-      // If xDirection is true, the side is more horizontal than vertical
-      bool xDirection = std::abs(point2.x - point1.x) > std::abs(point2.y - point1.y);
-      // Get the smallest and the biggest point based on the x or y coordinate (depending on xDirection).
-      sf::Vector2f smallest = 
-        (xDirection)
-        ? ((point1.x < point2.x) ? point1 : point2)
-        : ((point1.y < point2.y) ? point1 : point2);
-      sf::Vector2f biggest = (smallest == point1) ? point2 : point1;
-      // Check if the point is between the edges, thus in the object. If so, we collided with the side.
-      if (
-        (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
-        (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
-      ) {
-        return true;
-      }
-    }
-
-    checkPoint = ball.getMidpoint() + distanceToMidpoint * -normal;
-    // This is the same as the if-statement above.
-    if (std::round(a * checkPoint.x + b * checkPoint.y + c) == 0) {
-      // If xDirection is true, the side is more horizontal than vertical
-      bool xDirection = std::abs(point2.x - point1.x) > std::abs(point2.y - point1.y);
-      // Get the smallest and the biggest point based on the x or y coordinate (depending on xDirection).
-      sf::Vector2f smallest = 
-        (xDirection)
-        ? ((point1.x < point2.x) ? point1 : point2)
-        : ((point1.y < point2.y) ? point1 : point2);
-      sf::Vector2f biggest = (smallest == point1) ? point2 : point1;
-      // Check if the point is between the edges, thus in the object. If so, we collided with the side.
-      if (
-        (xDirection && checkPoint.x >= smallest.x && checkPoint.x <= biggest.x) ||
-        (!xDirection && checkPoint.y >= smallest.y && checkPoint.y <= biggest.y)
-      ) {
-        return true;
-      }
+    if (checkPoint.x >= points[0].x && checkPoint.x <= points[1].x && checkPoint.y <= points[0].y && checkPoint.y >= points[2].y) {
+      return true;
     }
   }
   return false;
