@@ -1,0 +1,12 @@
+% This is the config file for the game.
+% For the controls, please use the sf::Keyboard::Scan from https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php
+% Mouse buttons are not supported.
+
+[Keybinds]
+ROTATE_CCW 17
+ROTATE_CW 19
+ROTATE_SMALL 128
+ROTATE_BIG 127
+MOVE 5
+DELETE 6
+CANCEL 37

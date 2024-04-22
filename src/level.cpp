@@ -31,7 +31,7 @@
 
 #include "../include/physics.hpp"
 #include "../include/globals.hpp"
-#include "../include/ui_conf.hpp"
+#include "../include/ui.hpp"
 
 const unsigned short NUM_WALLS = 16;
 const unsigned short NUM_PIPES = 6;

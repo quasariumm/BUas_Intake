@@ -34,3 +34,5 @@ sf::RenderWindow* Globals::window;
 float Globals::unitSize;
 
 bool Globals::simulationOn = false;
+
+bool Globals::gameStarted = false;

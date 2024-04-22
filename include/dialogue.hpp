@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "../include/ui_conf.hpp"
+#include "../include/ui.hpp"
 
 class TextBubble : public UIElements::TextLabel {
 public:

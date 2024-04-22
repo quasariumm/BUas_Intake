@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <vector>
 
-#include "../include/ui_conf.hpp"
+#include "../include/ui.hpp"
 #include "../include/dialogue.hpp"
 
 class Tilemap {

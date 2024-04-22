@@ -14,6 +14,9 @@ namespace Globals {
   extern float unitSize;
 
   extern bool simulationOn;
+
+  // Game start value
+  extern bool gameStarted;
 }
 
 #endif //GLOBALS_H_

@@ -29,7 +29,7 @@
 
 #include "../include/physics.hpp"
 #include "../include/globals.hpp"
-#include "ui_conf.hpp"
+#include "ui.hpp"
 
 #define Key sf::Keyboard::Key
 

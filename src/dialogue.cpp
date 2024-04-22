@@ -27,7 +27,7 @@
 #include <vector>
 
 #include "../include/dialogue.hpp"
-#include "../include/ui_conf.hpp"
+#include "../include/ui.hpp"
 #include "../include/globals.hpp"
 
 //////////////////////////////////////

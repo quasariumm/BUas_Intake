@@ -34,10 +34,11 @@
 
 #include "../include/physics.hpp"
 #include "../include/level.hpp"
-#include "../include/ui_conf.hpp"
+#include "../include/ui.hpp"
 #include "../include/build.hpp"
 #include "../include/globals.hpp"
 #include "../include/dialogue.hpp"
+#include "../include/config.hpp"
 
 //////////////////////////////////////
 // Variables
@@ -79,6 +80,9 @@ UIElements::TextLabel dialogueTextLabel;
 
 // Threading
 std::vector<std::thread> threads;
+
+// User config
+Config playerConf;
 
 //////////////////////////////////////
 // Functions
@@ -137,15 +141,15 @@ void mousePressedEvent(sf::Event& event, UIElements::Inventory& inventory, Level
 }
 
 void keyPressedEvent(UIElements::Inventory& inventory) {
-  if (sf::Keyboard::isKeyPressed(Key::LControl)) {
+  if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_BIG"))) {
     modifier = "Ctrl";
-  } else if (sf::Keyboard::isKeyPressed(Key::LShift)) {
+  } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_SMALL"))) {
     modifier = "Shift";
   } else if (sf::Keyboard::isKeyPressed(Key::LAlt)) {
     modifier = "Alt";
-  } else if (sf::Keyboard::isKeyPressed(Key::R) || sf::Keyboard::isKeyPressed(Key::T)) {
+  } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CCW")) || sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CW"))) {
     rotate = true;
-  } else if (sf::Keyboard::isKeyPressed(Key::F) && editing != nullptr) {
+  } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("MOVE")) && editing != nullptr) {
     // Delete the object and enter building mode
     
     uint8_t itemId = editing->getItemId();
@@ -165,7 +169,7 @@ void keyPressedEvent(UIElements::Inventory& inventory) {
 
     inventory.changeCount(itemId, 1);
 
-  } else if (sf::Keyboard::isKeyPressed(Key::G) && editing != nullptr) {
+  } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("DELETE")) && editing != nullptr) {
     // Delete the object and add one to the count in the inventory
     uint8_t itemId = editing->getItemId();
 
@@ -182,7 +186,7 @@ void keyPressedEvent(UIElements::Inventory& inventory) {
     
     inventory.changeCount(itemId, 1);
 
-  } else if (sf::Keyboard::isKeyPressed(Key::Escape)) {
+  } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("CANCEL"))) {
     // Cancel building or editing
     if (UserObjects::getBuilding()->getSize().length() != 0) UserObjects::clearBuilding();
 
@@ -311,8 +315,6 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   level.getRunButton().draw();
 
   dialogueTextLabel.draw();
-
-  // ! DEBUG
   textBubble.draw();
 
   if (editing != nullptr) editGUI.draw();
@@ -403,10 +405,7 @@ int main() {
   tmpLevel.initLevel(wallsTexture, propsTexture, pipesTexture, inventory);
   std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
 
-  sf::Clock dt_clock;
-
-  // ! DEBUG
-  // Draw a test dialogue
+  // Initiate the dialogue text elements
   TextBubble textBubble(std::string(48, ' '));
   dialogueTextLabel = UIElements::TextLabel{
     "",
@@ -418,6 +417,12 @@ int main() {
   dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/intro.qd"));
   threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble, &dialogueTextLabel));
   threads.back().detach();
+
+  // Load the config
+  playerConf.loadFromFile(std::filesystem::path(DATA_PATH).append("playerConfig.qconf"));
+
+  // Delta time clock
+  sf::Clock dt_clock;
 
   while (window.isOpen()) {
     float deltaTime = dt_clock.restart().asSeconds();

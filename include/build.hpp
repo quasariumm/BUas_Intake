@@ -9,7 +9,7 @@
 #include <string>
 
 #include "../include/physics.hpp"
-#include "../include/ui_conf.hpp"
+#include "../include/ui.hpp"
 
 namespace UserObjects {
   class EditableObject {
