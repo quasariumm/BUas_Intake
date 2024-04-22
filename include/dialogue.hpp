@@ -82,6 +82,8 @@ private:
 
   std::vector<std::pair<std::string, std::string>> instructions;
 
+  bool isIntro;
+
 };
 
 #endif //DIALOGUE_H_

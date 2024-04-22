@@ -29,7 +29,6 @@
 #include <stdexcept>
 #include <iostream>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "../include/physics.hpp"
@@ -39,6 +38,7 @@
 #include "../include/globals.hpp"
 #include "../include/dialogue.hpp"
 #include "../include/config.hpp"
+#include "../include/main_menu.hpp"
 
 //////////////////////////////////////
 // Variables
@@ -78,11 +78,11 @@ long score;
 // Dialogue-specific variables
 UIElements::TextLabel dialogueTextLabel;
 
-// Threading
-std::vector<std::thread> threads;
-
 // User config
 Config playerConf;
+
+// Main menu
+MainMenu* mainMenu = nullptr;
 
 //////////////////////////////////////
 // Functions
@@ -204,8 +204,13 @@ void keyReleasedEvent() {
 
 // Loop
 
-void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime, TextBubble& textBubble) {
-  
+void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime, TextBubble& textBubble, UIElements::TextLabel& dialogueTextLabel) {
+
+  if (!Globals::gameStarted || Globals::currentLevel < 0) {
+    mainMenu->loop_draw(textBubble, dialogueTextLabel);
+    return;
+  }
+
   window.clear();
 
   sf::Event event;
@@ -305,8 +310,8 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     bag->setCollected(true);
     level.getScoreLabel().setScore(level.getScoreLabel().getScore() + bag->getValue());
     
-    threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y));
-    threads.back().detach();
+    Globals::threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y));
+    Globals::threads.back().detach();
   }
 
   // Draw the UI
@@ -385,25 +390,25 @@ int main() {
   PhysicsObjects::Ball ball{ballTexture, ballOrigin, 0.1f, 0.25f * unitSize};
 
   // Initialise the button outer texture and the items
-  sf::Texture buttonOuter;
-  loadTexture("sprites/buttonBackground.png", buttonOuter);
+  sf::Texture itemOuter;
+  loadTexture("sprites/itemBackground.png", itemOuter);
 
   // Create the inventory
-  UIElements::Inventory inventory{{0}, {0}, buttonOuter};
+  UIElements::Inventory inventory{{0}, {0}, itemOuter};
 
   // Initialise a test level
   std::filesystem::path tmppath = RESOURCES_PATH;
   tmppath += "levels/level1.ql";
 
-  Level tmpLevel{tmppath};
+  Level level{tmppath};
   
   // Load all of the texture atlases
   loadTexture("sprites/tilemapWall.png", wallsTexture);
   loadTexture("sprites/tilemapProps.png", propsTexture);
   loadTexture("sprites/tilemapPipes.png", pipesTexture);
 
-  tmpLevel.initLevel(wallsTexture, propsTexture, pipesTexture, inventory);
-  std::clog << "BouncyObject list size: " << tmpLevel.getBouncyObjects().getList().size() << std::endl;
+  level.initLevel(wallsTexture, propsTexture, pipesTexture, inventory);
+  std::clog << "BouncyObject list size: " << level.getBouncyObjects().getList().size() << std::endl;
 
   // Initiate the dialogue text elements
   TextBubble textBubble(std::string(48, ' '));
@@ -415,19 +420,23 @@ int main() {
   };
   Dialogue dialogue;
   dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/intro.qd"));
-  threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble, &dialogueTextLabel));
-  threads.back().detach();
 
   // Load the config
   playerConf.loadFromFile(std::filesystem::path(DATA_PATH).append("playerConfig.qconf"));
+
+  // Initialise the main menu
+  mainMenu = new MainMenu(&level, &playerConf, &dialogue);
 
   // Delta time clock
   sf::Clock dt_clock;
 
   while (window.isOpen()) {
     float deltaTime = dt_clock.restart().asSeconds();
-    loop(window, ball, tmpLevel, inventory, deltaTime, textBubble);
+    loop(window, ball, level, inventory, deltaTime, textBubble, dialogueTextLabel);
   }
+
+  // Clean main menu pointer
+  delete mainMenu;
 
   return 0;
 }

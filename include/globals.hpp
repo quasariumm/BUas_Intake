@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <vector>
+#include <thread>
 
 namespace Globals {
   extern sf::Font mainFont;
@@ -15,8 +17,12 @@ namespace Globals {
 
   extern bool simulationOn;
 
-  // Game start value
+  // Game values
   extern bool gameStarted;
+  extern short currentLevel;
+
+  // Threads
+  extern std::vector<std::thread> threads;
 }
 
 #endif //GLOBALS_H_

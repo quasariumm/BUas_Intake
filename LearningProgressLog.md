@@ -80,3 +80,6 @@ Made a dialogue box and made a way to automatically switch the text. Also made a
 
 ## 2024-04-21
 Made all of the dialogue files and fixed the money bag collision.
+
+## 2024-04-22
+Added a way to edit the controls. Began working on the main menu for the game. The buttons don't work for some reason. It detects whenever the left mouse button is clicked, but it doesn't detect that one of the buttons is pressed.

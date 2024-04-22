@@ -104,6 +104,9 @@ void TextBubble::draw() {
 //////////////////////////////////////
 
 void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
+
+  this->isIntro = dialogueFile.filename() == "intro.qd";
+
   std::ifstream stream;
   stream.open(dialogueFile, std::ios::in);
 
@@ -160,6 +163,10 @@ void Dialogue::play(TextBubble* textBubble, UIElements::TextLabel* textLabel) {
 
     }
 
+  }
+
+  if (this->isIntro) {
+    ++Globals::currentLevel;
   }
 
 }

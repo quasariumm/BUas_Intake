@@ -15,6 +15,8 @@
 #include <SFML/Graphics/Font.hpp>
 #include <filesystem>
 #include <stdexcept>
+#include <thread>
+#include <vector>
 
 sf::Font Globals::mainFont;
 sf::Font Globals::monoFont;
@@ -36,3 +38,6 @@ float Globals::unitSize;
 bool Globals::simulationOn = false;
 
 bool Globals::gameStarted = false;
+short Globals::currentLevel = -1;
+
+std::vector<std::thread> Globals::threads;

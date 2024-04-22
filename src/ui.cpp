@@ -36,24 +36,35 @@ sf::Texture tmpTexture;
 //////////////////////////////////////
 
 bool UIElements::Button::intersect(const sf::Vector2i pos) {
-  return (pos.x >= this->position.x && pos.x <= this->position.x + this->size.x && pos.y >= this->position.y && pos.y <= this->position.y + this->size.y);
+  return (
+    pos.x >= this->position.x - 0.5f * this->size.x 
+    && pos.x <= this->position.x + 0.5f * this->size.x 
+    && pos.y >= this->position.y - 0.5f * this->size.y
+    && pos.y <= this->position.y + 0.5f * this->size.y
+  );
 }
 
 void UIElements::Button::draw() {
   sf::Sprite outerSprite(this->outer);
 
-  sf::Text text(Globals::mainFont, this->text);
+  sf::Text buttonText(Globals::mainFont, this->text);
 
+  outerSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(this->outer.getSize()));
   outerSprite.setScale(sf::Vector2f(this->size.x / static_cast<float>(this->outer.getSize().x), this->size.y / static_cast<float>(this->outer.getSize().y)));
   outerSprite.setPosition(this->position);
   Globals::window->draw(outerSprite);
 
   if (!this->text.empty()) {
-    text.setFillColor(this->textColor);
-    text.setOrigin(sf::Vector2f(0.5f * text.getLocalBounds().width, 0));
-    text.setCharacterSize(this->size.y * this->textSize);
-    text.setPosition(this->position + sf::Vector2f(0.5f * this->size.x, 0));
-    Globals::window->draw(text);
+    buttonText.setFillColor(this->textColor);
+    buttonText.setCharacterSize(256);
+    sf::Vector2f textBounds = buttonText.getLocalBounds().getSize();
+
+    const float FACTOR = std::min(this->size.x / textBounds.x, this->size.y / textBounds.y);
+    buttonText.setScale(sf::Vector2f(FACTOR * this->textSize, FACTOR * this->textSize));
+    buttonText.setOrigin(0.5f * buttonText.getLocalBounds().getSize());
+    
+    buttonText.setPosition(this->position);
+    Globals::window->draw(buttonText);
   }
 }
 
