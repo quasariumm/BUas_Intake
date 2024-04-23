@@ -28,9 +28,11 @@ SAY "It would be great if you'd help me collect that\nmoney, given that I see yo
 WAIT 2
 SAY "If you accept, just wait in this room and I'll\nsee if I got something in storage to help you."
 WAIT 1
+CLEAR_DIALOGUE
 TEXT "You wait in the room"
 WAIT 8
 CLEAR_TEXT
+ENABLE_DIALOGUE
 SAY "Hey. I didn't think you'd still be willing to\nwork here. Come with me. I'll lead the way."
 WAIT 3
 CLEAR_DIALOGUE

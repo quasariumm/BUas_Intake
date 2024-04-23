@@ -6,7 +6,7 @@ SAY "Sadly this took a lot of money to develop, hence\nthe financial problems we
 WAIT 2
 SAY "Just place these in such a way that you collect\nall the money bags."
 WAIT 1
-SAY "Once you have collected enough bags, you will\ncontinue to the next level."
+SAY "Once you have collected all of the bags, you\nwill continue to the next level."
 WAIT 2
 SAY "Whenever you're ready, I'll drop a ball through\nthat pipe in the top-left corner."
 WAIT 2

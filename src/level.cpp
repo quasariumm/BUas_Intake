@@ -441,7 +441,7 @@ void Level::initLevel() {
     throw std::runtime_error("Couldn't load the run button background.");
   }
 
-  this->runButton = UIElements::RunButton(this->runButtonOuter, sf::Vector2f(0.5f * Globals::window->getSize().x, 1.2f * Globals::unitSize ), sf::Vector2u(2.f * Globals::unitSize, 0.5f * Globals::unitSize));
+  this->runButton = UIElements::RunButton(this->runButtonOuter, sf::Vector2f(0.5f * Globals::window->getSize().x, Globals::unitSize ), sf::Vector2u(2.f * Globals::unitSize, 0.5f * Globals::unitSize));
 }
 
 void Level::resetMoneyBagPositions() {

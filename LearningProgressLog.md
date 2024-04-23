@@ -83,3 +83,6 @@ Made all of the dialogue files and fixed the money bag collision.
 
 ## 2024-04-22
 Added a way to edit the controls. Began working on the main menu for the game. The buttons don't work for some reason. It detects whenever the left mouse button is clicked, but it doesn't detect that one of the buttons is pressed.
+
+## 2024-04-23
+Made a way to load a new level and dialogue. Also updated some UI elements.
