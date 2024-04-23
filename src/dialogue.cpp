@@ -84,6 +84,7 @@ void TextBubble::draw() {
   if (!backgrTexture.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/dialogueBackground.png"))) {
     throw std::runtime_error("Couldn't load the dialogue background sprite.");
   }
+  backgrTexture.setSmooth(true);
 
   sf::Sprite backgrSprite{backgrTexture};
   backgrSprite.setOrigin(sf::Vector2f(0.5f * backgrTexture.getSize().x, 0));
@@ -94,7 +95,7 @@ void TextBubble::draw() {
 
   // Draw text
   // Magic number time
-  this->setPos(sf::Vector2f(0.5f * Globals::window->getSize().x + .5f * Globals::unitSize, 14.3f * Globals::unitSize));
+  this->setPos(sf::Vector2f(0.5f * Globals::window->getSize().x + .5f * Globals::unitSize, 15.f * Globals::unitSize));
   this->setSize(sf::Vector2f(12.f * Globals::unitSize, 2.2f * Globals::unitSize));
   static_cast<UIElements::TextLabel*>(this)->draw();
 }
@@ -114,6 +115,8 @@ void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
     throw std::runtime_error("Couldn't open the dialogue file.");
   }
 
+  this->instructions.clear();
+
   std::string lineStr;
   while (std::getline(stream, lineStr)) {
     std::string instruction = lineStr.substr(0, lineStr.find(' '));
@@ -132,6 +135,8 @@ void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
 void Dialogue::play(TextBubble* textBubble, UIElements::TextLabel* textLabel) {
 
   textBubble->setEnabled(true);
+
+  Globals::dialoguePlaying = true;
 
   for (auto& [instruction, argument] : instructions) {
 
@@ -166,7 +171,9 @@ void Dialogue::play(TextBubble* textBubble, UIElements::TextLabel* textLabel) {
   }
 
   if (this->isIntro) {
-    ++Globals::currentLevel;
+    Globals::currentLevel = 0;
   }
+
+  Globals::dialoguePlaying = false;
 
 }

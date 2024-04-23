@@ -75,14 +75,14 @@ bool rotate;
 // Score
 long score;
 
-// Dialogue-specific variables
-UIElements::TextLabel dialogueTextLabel;
-
 // User config
 Config playerConf;
 
 // Main menu
 MainMenu* mainMenu = nullptr;
+
+// Current rendered level
+short renderedLevel = -2;
 
 //////////////////////////////////////
 // Functions
@@ -204,11 +204,29 @@ void keyReleasedEvent() {
 
 // Loop
 
-void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime, TextBubble& textBubble, UIElements::TextLabel& dialogueTextLabel) {
+void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UIElements::Inventory& inventory, float deltaTime, Dialogue& dialogue, TextBubble& textBubble, UIElements::TextLabel& dialogueTextLabel) {
 
-  if (!Globals::gameStarted || Globals::currentLevel < 0) {
-    mainMenu->loop_draw(textBubble, dialogueTextLabel);
+  if (!Globals::gameStarted) {
+    mainMenu->loop_draw();
     return;
+  }
+
+  // Check if another level needs to be loaded
+  if (Globals::currentLevel != renderedLevel) {
+    if (Globals::currentLevel == -1) {
+      // Intro
+      renderedLevel = -1;
+      dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/intro.qd"));
+      Globals::threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble, &dialogueTextLabel));
+      Globals::threads.back().detach();
+    } else {
+      level.setLevelFilePath(std::filesystem::path(RESOURCES_PATH).append("levels/level" + std::to_string(Globals::currentLevel) + ".ql"));
+      level.initLevel();
+      dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/level" + std::to_string(Globals::currentLevel) + ".qd"));
+      Globals::threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble, &dialogueTextLabel));
+      Globals::threads.back().detach();
+      renderedLevel = Globals::currentLevel;
+    }
   }
 
   window.clear();
@@ -267,11 +285,13 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     }
   }
 
-  level.getTilemap().drawPropsWalls(wallsTexture, propsTexture, sf::Vector2i(128, 128));
+  if (Globals::currentLevel >= 0){
+    level.getTilemap().drawPropsWalls(wallsTexture, propsTexture, sf::Vector2i(128, 128));
   
-  window.draw(ball);
-
-  level.getTilemap().drawPipes(pipesTexture, sf::Vector2i(128, 128));
+    window.draw(ball);
+  
+    level.getTilemap().drawPipes(pipesTexture, sf::Vector2i(128, 128));
+  }
 
   // Display the user's objects
   for (UserObjects::EditableObject* obj : editableObjects.getObjects()) {
@@ -300,24 +320,26 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     }
   }
 
-  // Display the money bags and check if the ball hits the bag.
-  // If the ball hits the bag, increase the score and make it fall.
-  for (MoneyBag* bag : level.getMoneyBags()) {
-    bag->draw();
-    if (!bag->intersect(ball) || bag->getCollected()) {
-      continue;
+  if (Globals::currentLevel >= 0) {
+    // Display the money bags and check if the ball hits the bag.
+    // If the ball hits the bag, increase the score and make it fall.
+    for (MoneyBag* bag : level.getMoneyBags()) {
+      bag->draw();
+      if (!bag->intersect(ball) || bag->getCollected()) {
+        continue;
+      }
+      bag->setCollected(true);
+      level.getScoreLabel().setScore(level.getScoreLabel().getScore() + bag->getValue());
+      
+      Globals::threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y));
+      Globals::threads.back().detach();
     }
-    bag->setCollected(true);
-    level.getScoreLabel().setScore(level.getScoreLabel().getScore() + bag->getValue());
-    
-    Globals::threads.emplace_back(std::bind(&MoneyBag::fall, bag, ball, window.getSize().y));
-    Globals::threads.back().detach();
-  }
 
-  // Draw the UI
-  inventory.draw();
-  level.getScoreLabel().draw();
-  level.getRunButton().draw();
+    // Draw the UI
+    inventory.draw();
+    level.getScoreLabel().draw();
+    level.getRunButton().draw();
+  }
 
   dialogueTextLabel.draw();
   textBubble.draw();
@@ -396,27 +418,25 @@ int main() {
   // Create the inventory
   UIElements::Inventory inventory{{0}, {0}, itemOuter};
 
-  // Initialise a test level
-  std::filesystem::path tmppath = RESOURCES_PATH;
-  tmppath += "levels/level1.ql";
-
-  Level level{tmppath};
-  
   // Load all of the texture atlases
   loadTexture("sprites/tilemapWall.png", wallsTexture);
   loadTexture("sprites/tilemapProps.png", propsTexture);
   loadTexture("sprites/tilemapPipes.png", pipesTexture);
 
-  level.initLevel(wallsTexture, propsTexture, pipesTexture, inventory);
-  std::clog << "BouncyObject list size: " << level.getBouncyObjects().getList().size() << std::endl;
+  // Initialise the first level, just temporary
+  std::filesystem::path tmppath = RESOURCES_PATH;
+  tmppath += "levels/level0.ql";
+
+  Level level{tmppath, wallsTexture, propsTexture, pipesTexture, inventory};
 
   // Initiate the dialogue text elements
   TextBubble textBubble(std::string(48, ' '));
-  dialogueTextLabel = UIElements::TextLabel{
+  UIElements::TextLabel dialogueTextLabel = UIElements::TextLabel{
     "",
     sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().x - Globals::unitSize),
     sf::Vector2f(10.f * Globals::unitSize, 4.f * Globals::unitSize),
-    std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")
+    std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+    sf::Color::White, Globals::mainFont, static_cast<int>(0.6f * Globals::unitSize)
   };
   Dialogue dialogue;
   dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/intro.qd"));
@@ -425,14 +445,14 @@ int main() {
   playerConf.loadFromFile(std::filesystem::path(DATA_PATH).append("playerConfig.qconf"));
 
   // Initialise the main menu
-  mainMenu = new MainMenu(&level, &playerConf, &dialogue);
+  mainMenu = new MainMenu(&level, &playerConf);
 
   // Delta time clock
   sf::Clock dt_clock;
 
   while (window.isOpen()) {
     float deltaTime = dt_clock.restart().asSeconds();
-    loop(window, ball, level, inventory, deltaTime, textBubble, dialogueTextLabel);
+    loop(window, ball, level, inventory, deltaTime, dialogue, textBubble, dialogueTextLabel);
   }
 
   // Clean main menu pointer

@@ -36,11 +36,13 @@ namespace UIElements {
      * @param vPos The position of the button
      * @param vSize The size of the button
      * @param buttonText Text that needs to be displayed on the button (optional)
+     * @param newColor The text color (default White)
+     * @param newFontSize Specific font size (optional, -1 to scale text to fit)
      */
     Button(
-      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = "", const sf::Color& newColor = sf::Color::Black
+      const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = "", const sf::Color& newColor = sf::Color::Black, const int newFontSize = -1
     ) :
-    outer(tOuter), text(buttonText), position(vPos), size(vSize), textSize(0.8f), textColor(newColor) {};
+    outer(tOuter), text(buttonText), position(vPos), size(vSize), textSize(0.8f), textColor(newColor), fontSize(newFontSize) {};
 
     /**
      * @brief Set the text
@@ -137,6 +139,7 @@ namespace UIElements {
 
     // Percentage/margin the text
     float textSize;
+    int fontSize;
 
     sf::Texture outer;
     std::string text;
@@ -357,8 +360,9 @@ namespace UIElements {
      * @param backgroundPath The path to the background texture
      * @param textColor The color to fill the text with
      * @param font The font to use. Default is the main font.
+     * @param newFontSize Specific size of the font (optional, -1 to scale to fit)
      */
-    TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White, const sf::Font& font = Globals::mainFont);
+    TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor = sf::Color::White, const sf::Font& font = Globals::mainFont, const int newFontSize = -1);
 
     /**
      * @brief Set the text and updates the size
@@ -423,6 +427,8 @@ namespace UIElements {
     std::string text;
     sf::Vector2f pos;
     sf::Vector2f size;
+
+    int fontSize;
 
   };
 

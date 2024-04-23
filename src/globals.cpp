@@ -38,6 +38,9 @@ float Globals::unitSize;
 bool Globals::simulationOn = false;
 
 bool Globals::gameStarted = false;
-short Globals::currentLevel = -1;
+// -2: main menu
+// -1: intro
+short Globals::currentLevel = -2;
+bool Globals::dialoguePlaying = false;
 
 std::vector<std::thread> Globals::threads;

@@ -349,12 +349,12 @@ Level::~Level() {
   }
 }
 
-void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes, UIElements::Inventory& inventory) {
+void Level::initLevel() {
 
   this->beginScore = this->scoreLabel.getScore();
   
   this->tilemap.loadFromFile(this->levelFilePath);
-  this->tilemap.drawPropsWalls(walls, props, sf::Vector2i(128, 128));
+  this->tilemap.drawPropsWalls(this->walls, this->props, sf::Vector2i(128, 128));
   
   this->bouncyObjects.makeWalls();
   this->bouncyObjects.loadFromFile(this->levelFilePath);
@@ -395,8 +395,8 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
 
   }
 
-  inventory.setItems(invItems);
-  inventory.setCounts(invCounts);
+  this->inventory.setItems(invItems);
+  this->inventory.setCounts(invCounts);
 
   while (std::getline(levelStream, lineStr)) {
     
@@ -431,7 +431,7 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
   // Init the ScoreLabel
   std::filesystem::path scoreLabelBackground = RESOURCES_PATH;
   scoreLabelBackground += "sprites/scoreLabelBackground.png";
-  this->scoreLabel = UIElements::ScoreLabel("Money: $0", sf::Vector2f(0.5f * Globals::window->getSize().x, 0), sf::Vector2f(5.5f * Globals::unitSize, 0.65f * Globals::unitSize), scoreLabelBackground, sf::Color::Black);
+  this->scoreLabel = UIElements::ScoreLabel("Money: $0", sf::Vector2f(0.5f * Globals::window->getSize().x, 0.325f * Globals::unitSize), sf::Vector2f(5.5f * Globals::unitSize, 0.65f * Globals::unitSize), scoreLabelBackground, sf::Color::Black);
 
   // Init the run button
   std::filesystem::path runButtonBackground = RESOURCES_PATH;
@@ -441,7 +441,7 @@ void Level::initLevel(const sf::Texture& walls, const sf::Texture& props, const 
     throw std::runtime_error("Couldn't load the run button background.");
   }
 
-  this->runButton = UIElements::RunButton(this->runButtonOuter, sf::Vector2f(0.5f * Globals::window->getSize().x - Globals::unitSize, 0.8f * Globals::unitSize ), sf::Vector2u(2.f * Globals::unitSize, 0.5f * Globals::unitSize));
+  this->runButton = UIElements::RunButton(this->runButtonOuter, sf::Vector2f(0.5f * Globals::window->getSize().x, 1.2f * Globals::unitSize ), sf::Vector2u(2.f * Globals::unitSize, 0.5f * Globals::unitSize));
 }
 
 void Level::resetMoneyBagPositions() {

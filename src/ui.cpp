@@ -12,6 +12,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -56,12 +57,19 @@ void UIElements::Button::draw() {
 
   if (!this->text.empty()) {
     buttonText.setFillColor(this->textColor);
-    buttonText.setCharacterSize(256);
-    sf::Vector2f textBounds = buttonText.getLocalBounds().getSize();
-
-    const float FACTOR = std::min(this->size.x / textBounds.x, this->size.y / textBounds.y);
-    buttonText.setScale(sf::Vector2f(FACTOR * this->textSize, FACTOR * this->textSize));
-    buttonText.setOrigin(0.5f * buttonText.getLocalBounds().getSize());
+    if (this->fontSize > 0) {
+      buttonText.setCharacterSize(this->fontSize);
+    } else {
+      buttonText.setCharacterSize(256);
+    }
+    const sf::FloatRect TEXT_RECT = buttonText.getLocalBounds();
+    
+    if (this->fontSize == -1) {
+      const float FACTOR = std::min(this->size.x / TEXT_RECT.width, this->size.y / TEXT_RECT.height);
+      buttonText.setScale(sf::Vector2f(FACTOR * this->textSize, FACTOR * this->textSize));
+    }
+    // ↓ Source: https://en.sfml-dev.org/forums/index.php?topic=26805.0 ↓
+    buttonText.setOrigin(sf::Vector2f(TEXT_RECT.left + 0.5f * TEXT_RECT.width, TEXT_RECT.top + 0.5f * TEXT_RECT.height));
     
     buttonText.setPosition(this->position);
     Globals::window->draw(buttonText);
@@ -253,20 +261,24 @@ void UIElements::Inventory::draw() {
 
 UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture) {};
 
-UIElements::TextLabel::TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor, const sf::Font& font)
- : text(newText), pos(newPos), size(newSize), Text(font, newText), Sprite(tmpTexture) {
+UIElements::TextLabel::TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor, const sf::Font& font, const int newFontSize)
+ : text(newText), pos(newPos), size(newSize), fontSize(newFontSize), Text(font, newText), Sprite(tmpTexture) {
   if (!this->background.loadFromFile(backgroundPath)) {
     throw std::runtime_error("Couldn't load the background of a TextLabel.");
   }
   this->setTexture(this->background, true);
 
   const float TEXT_SIZE = 0.7f; // Relative to the background
-  this->setCharacterSize(256);
-  sf::Vector2f textSize = static_cast<sf::Text*>(this)->getLocalBounds().getSize();
+  if (newFontSize > 0) {
+    this->setCharacterSize(newFontSize);
+  } else {
+    this->setCharacterSize(256);
+    sf::Vector2f textSize = static_cast<sf::Text*>(this)->getLocalBounds().getSize();
 
-  const float FACTOR = std::min(newSize.x / textSize.x, newSize.y / textSize.y);
+    const float FACTOR = std::min(newSize.x / textSize.x, newSize.y / textSize.y);
 
-  static_cast<sf::Text*>(this)->setScale(sf::Vector2f(TEXT_SIZE * FACTOR, TEXT_SIZE * FACTOR));
+    static_cast<sf::Text*>(this)->setScale(sf::Vector2f(TEXT_SIZE * FACTOR, TEXT_SIZE * FACTOR));
+  }
 
   this->setFillColor(textColor);
 }
@@ -280,12 +292,16 @@ void UIElements::TextLabel::setText(const std::string newString, const bool mini
   }
 
   const float TEXT_SIZE = 0.7f; // Relative to the background
-  this->setCharacterSize(256);
-  sf::Vector2f textSize = static_cast<sf::Text*>(this)->getLocalBounds().getSize();
+  if (this->fontSize > 0) {
+    this->setCharacterSize(this->fontSize);
+  } else {
+    this->setCharacterSize(256);
+    sf::Vector2f textSize = static_cast<sf::Text*>(this)->getLocalBounds().getSize();
 
-  const float FACTOR = std::min(this->size.x / textSize.x, this->size.y / textSize.y);
+    const float FACTOR = std::min(this->size.x / textSize.x, this->size.y / textSize.y);
 
-  static_cast<sf::Text*>(this)->setScale(sf::Vector2f(TEXT_SIZE * FACTOR, TEXT_SIZE * FACTOR));
+    static_cast<sf::Text*>(this)->setScale(sf::Vector2f(TEXT_SIZE * FACTOR, TEXT_SIZE * FACTOR));
+  }
 }
 
 void UIElements::TextLabel::draw() {
@@ -296,9 +312,13 @@ void UIElements::TextLabel::draw() {
   const float TEXT_SIZE = 0.7f; // Relative to the background
 
   sprite->setTexture(this->background, true);
+
+  const sf::FloatRect SPRITE_RECT = sprite->getLocalBounds();
+  const sf::FloatRect TEXT_RECT = text->getLocalBounds();
   
-  sprite->setOrigin(sf::Vector2f(0.5f * sprite->getLocalBounds().getSize().x, 0));
-  text->setOrigin(sf::Vector2f(0.5f * text->getLocalBounds().width, 0));
+  sprite->setOrigin(0.5f * sprite->getLocalBounds().getSize());
+  // ↓ Source: https://en.sfml-dev.org/forums/index.php?topic=26805.0 ↓
+  text->setOrigin(sf::Vector2f(TEXT_RECT.left + 0.5f * TEXT_RECT.width, TEXT_RECT.top + 0.5f * TEXT_RECT.height));
   sprite->setScale(sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
   sprite->setPosition(this->pos);
   text->setPosition(this->pos);

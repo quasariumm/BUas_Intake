@@ -2,7 +2,7 @@ CLEAR_DIALOGUE
 TEXT "You applied for a job at Quasar Labs,\na research facility."
 WAIT 6
 CLEAR_TEXT
-TEXT "You arrive at a field where you see an\nelevator stickig out."
+TEXT "You arrive at a field where you see an\nelevator sticking out."
 WAIT 6
 CLEAR_TEXT
 TEXT "While you take the elevator down, you\nsee a promotional video."

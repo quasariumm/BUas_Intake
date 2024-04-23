@@ -17,16 +17,14 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <cmath>
 #include <filesystem>
-#include <functional>
-#include <iostream>
 #include <stdexcept>
 #include <string>
 
 #include "../include/config.hpp"
-#include "../include/dialogue.hpp"
 #include "../include/globals.hpp"
 #include "../include/level.hpp"
 #include "../include/ui.hpp"
@@ -37,7 +35,7 @@ UIElements::Button* keybindEditing = nullptr;
 // MainMenu
 //////////////////////////////////////
 
-MainMenu::MainMenu(Level* _level, Config* _config, Dialogue* _dialogue) : level(_level), config(_config), dialogue(_dialogue) {
+MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_config) {
   
   sf::Texture playSettings;
   if (!playSettings.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/itemBackground.png"))) {
@@ -92,15 +90,21 @@ MainMenu::MainMenu(Level* _level, Config* _config, Dialogue* _dialogue) : level(
 
   for (short i = 0; i < NUM_KEYBINDS; ++i) {
     auto keybind = KEYBIND_NAMES[i];
+    std::string keybindDesc = sf::Keyboard::getDescription(this->config->getKeybind(keybind.first)).toAnsiString();
+    if (keybindDesc.length() == 1) {
+      // Made the one letter uppercase
+      keybindDesc = std::string(1, static_cast<char>(keybindDesc[0]-32));
+    }
+
     this->controls.emplace_back(
       UIElements::TextLabel(
-        keybind.second, sf::Vector2f(4.f * Globals::unitSize, 2.f * Globals::unitSize + 1.3f * i * Globals::unitSize),
-        sf::Vector2f(4.f * Globals::unitSize, Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+        keybind.second, sf::Vector2f(6.f * Globals::unitSize, 3.5f * Globals::unitSize + 1.3f * i * Globals::unitSize),
+        sf::Vector2f(7.f * Globals::unitSize, Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/itemBackground.png"),
         sf::Color::Cyan
       ),
       UIElements::Button(
-        buttonBackground, sf::Vector2f(12.f * Globals::unitSize, 2.f * Globals::unitSize + 1.3f * i * Globals::unitSize),
-        sf::Vector2u(4.f * Globals::unitSize, Globals::unitSize), sf::Keyboard::getDescription(this->config->getKeybind(keybind.first)).toAnsiString(),
+        buttonBackground, sf::Vector2f(12.f * Globals::unitSize, 3.5f * Globals::unitSize + 1.3f * i * Globals::unitSize),
+        sf::Vector2u(4.f * Globals::unitSize, Globals::unitSize), keybindDesc,
         sf::Color::Cyan
       )
     );
@@ -108,11 +112,11 @@ MainMenu::MainMenu(Level* _level, Config* _config, Dialogue* _dialogue) : level(
 
 }
 
-void MainMenu::loop_draw(TextBubble& textBubble, UIElements::TextLabel& dialogueTextLabel) {
+void MainMenu::loop_draw() {
 
   Globals::window->clear();
 
-  if (!this->settingsMenu && !this->playingIntro) {
+  if (!this->settingsMenu) {
 
     sf::Texture titleTexture;
     if (!titleTexture.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"))) {
@@ -128,8 +132,14 @@ void MainMenu::loop_draw(TextBubble& textBubble, UIElements::TextLabel& dialogue
     this->play.draw();
     this->settings.draw();
 
-  } else if (this->settingsMenu && !this->playingIntro) {
+  } else if (this->settingsMenu) {
 
+    UIElements::TextLabel controlsHeader(
+      "Controls", sf::Vector2f(0.5f * Globals::window->getSize().x, Globals::unitSize),
+      sf::Vector2f(6.f * Globals::unitSize, 2.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")
+    );
+    controlsHeader.draw();
+    
     // Draw all of the controls
     for (short i = 0; i < this->controls.size(); ++i) {
       this->controls[i].first.draw();
@@ -139,9 +149,6 @@ void MainMenu::loop_draw(TextBubble& textBubble, UIElements::TextLabel& dialogue
     this->back.draw();
 
   }
-
-  textBubble.draw();
-  dialogueTextLabel.draw();
 
   sf::Event event;
   while (Globals::window->pollEvent(event)) {
@@ -153,18 +160,16 @@ void MainMenu::loop_draw(TextBubble& textBubble, UIElements::TextLabel& dialogue
     case sf::Event::MouseButtonPressed:
       if (event.mouseButton.button != sf::Mouse::Button::Left) break;
       // Check button clicks (main screen)
-      if (this->play.intersect(sf::Mouse::getPosition(*Globals::window)) && !this->settingsMenu && !this->playingIntro) {
+      if (this->play.intersect(sf::Mouse::getPosition(*Globals::window)) && !this->settingsMenu) {
         
-        this->playingIntro = true;
         Globals::gameStarted = true;
-        Globals::threads.emplace_back(std::bind(&Dialogue::play, this->dialogue, &textBubble, &dialogueTextLabel));
-        Globals::threads.back().detach();
+        Globals::currentLevel = -1;
 
       }
-      if (this->settings.intersect(sf::Mouse::getPosition(*Globals::window)) && !this->settingsMenu && !this->playingIntro)
+      if (this->settings.intersect(sf::Mouse::getPosition(*Globals::window)) && !this->settingsMenu)
         this->settingsMenu = true;
 
-      if (this->back.intersect(sf::Mouse::getPosition(*Globals::window)) && this->settingsMenu && !this->playingIntro)
+      if (this->back.intersect(sf::Mouse::getPosition(*Globals::window)) && this->settingsMenu)
         this->settingsMenu = false;
       
       // Check button clicks (settings)
@@ -179,9 +184,17 @@ void MainMenu::loop_draw(TextBubble& textBubble, UIElements::TextLabel& dialogue
 
     case sf::Event::KeyPressed:
       if (keybindEditing != nullptr) {
-        int index = std::round((keybindEditing->getPosition().y - 2.f * Globals::unitSize) / (1.3f * Globals::unitSize));
+        int index = std::round((keybindEditing->getPosition().y - 3.5f * Globals::unitSize) / (1.3f * Globals::unitSize));
         this->config->setKeybind(this->keybindNames[index], event.key.scancode);
-        this->controls[index].second.setText(sf::Keyboard::getDescription(event.key.scancode));
+        
+        std::string keybindDesc = sf::Keyboard::getDescription(event.key.scancode);
+        if (keybindDesc.length() == 1) {
+          // Made the one letter uppercase
+          keybindDesc = std::string(1, static_cast<char>(keybindDesc[0]-32));
+        }
+
+        this->controls[index].second.setText(keybindDesc);
+        keybindEditing = nullptr;
       }
       break;
     

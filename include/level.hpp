@@ -169,14 +169,26 @@ public:
    * @brief Construct a new Level object
    * 
    * @param filePath The path to the level file (.ql extension)
+   * @param _walls The texture for the walls
+   * @param _props The texture for the props
+   * @param _pipes The texture for the pipes
+   * @param _inventory The inventory
    */
-  Level(const std::filesystem::path filePath) : levelFilePath(filePath) {};
+  Level(const std::filesystem::path filePath, sf::Texture& _walls, sf::Texture& _props, sf::Texture& _pipes, UIElements::Inventory& _inventory) 
+  : levelFilePath(filePath), walls(_walls), props(_props), pipes(_pipes), inventory(_inventory) {};
 
   /**
    * @brief Destroy the Level object
    * 
    */
   ~Level();
+
+  /**
+   * @brief Set the level file path
+   * 
+   * @param newPath The new level path (*.ql)
+   */
+  void setLevelFilePath(const std::filesystem::path newPath) {levelFilePath = newPath;};
 
   /**
    * @brief Get the Tilemap object
@@ -223,12 +235,8 @@ public:
   /**
    * @brief Initiates the level's tilemap and BouncyObjects
    * 
-   * @param walls The texture for the walls
-   * @param props The texture for the props
-   * @param pipes The texture for the pipes
-   * @param inventory The inventory
    */
-  void initLevel(const sf::Texture& walls, const sf::Texture& props, const sf::Texture& pipes, UIElements::Inventory& inventory);
+  void initLevel();
 
   /**
    * @brief Resets the money bags and the score
@@ -237,6 +245,11 @@ public:
   void resetMoneyBagPositions();
 
 private:
+
+  sf::Texture& walls;
+  sf::Texture& props;
+  sf::Texture& pipes;
+  UIElements::Inventory& inventory;
 
   std::filesystem::path levelFilePath;
   Tilemap tilemap;

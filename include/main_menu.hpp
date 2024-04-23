@@ -18,15 +18,14 @@ public:
    * 
    * @param _level The level object
    * @param _config The user config object
-   * @param _dialogue the dialogue object
    */
-  MainMenu(Level* _level, Config* _config, Dialogue* _dialogue);
+  MainMenu(Level* _level, Config* _config);
 
   /**
    * @brief Draws the menu on the screen and checks for button clicks
    * 
    */
-  void loop_draw(TextBubble& textBubble, UIElements::TextLabel& dialogueTextLabel);
+  void loop_draw();
 
 private:
 
@@ -43,8 +42,6 @@ private:
   std::vector<std::string> keybindNames;
 
   bool settingsMenu = false;
-
-  bool playingIntro = false;
 
 };
 

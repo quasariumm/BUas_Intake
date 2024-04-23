@@ -20,6 +20,7 @@ namespace Globals {
   // Game values
   extern bool gameStarted;
   extern short currentLevel;
+  extern bool dialoguePlaying;
 
   // Threads
   extern std::vector<std::thread> threads;
