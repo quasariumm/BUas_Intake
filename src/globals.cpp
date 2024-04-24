@@ -44,3 +44,5 @@ short Globals::currentLevel = -2;
 bool Globals::dialoguePlaying = false;
 
 std::vector<std::thread> Globals::threads;
+
+bool Globals::DEBUG_MODE = true;

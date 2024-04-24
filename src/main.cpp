@@ -83,6 +83,9 @@ MainMenu* mainMenu = nullptr;
 
 // Current rendered level
 short renderedLevel = -2;
+// This variable is necessary due to the fact that someone can finish the level
+// before the dialogue is finished.
+bool levelCompleted = false;
 
 //////////////////////////////////////
 // Functions
@@ -211,6 +214,20 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     return;
   }
 
+  // Check if the level is completed and that the dialogue is finished
+  // If so, increment the Globals::CurrentLevel
+  if (levelCompleted && !Globals::dialoguePlaying) {
+    ++Globals::currentLevel;
+    // Clear the editableObjects
+    for (UserObjects::EditableObject* object : editableObjects.getObjects()) {
+      delete object;
+    }
+    editableObjects.getObjects().clear();
+    // Clear the BouncyObjects
+    level.getBouncyObjects().getList().clear();
+    levelCompleted = false;
+  }
+
   // Check if another level needs to be loaded
   if (Globals::currentLevel != renderedLevel) {
     if (Globals::currentLevel == -1) {
@@ -281,7 +298,14 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       ball.setMidpoint(ballOrigin);
       ball.setVelocity(sf::Vector2f());
       level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
-      level.resetMoneyBagPositions();
+
+      // Check if the needed money bags have been collected
+      // If so, load the next level when the dialogue is finished
+      if (level.getScoreLabel().getScore() == level.getNeededScore()) {
+        levelCompleted = true;
+      } else {
+        level.resetMoneyBagPositions();
+      }
     }
   }
 
@@ -307,7 +331,14 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
         ball.setMidpoint(ballOrigin);
         ball.setVelocity(sf::Vector2f());
         level.getRunButton().setPosition(level.getRunButton().getPosition() + sf::Vector2f(0, 1e3));
-        level.resetMoneyBagPositions();
+
+        // Check if the needed money bags have been collected
+        // If so, load the next level when the dialogue is finished
+        if (level.getScoreLabel().getScore() == level.getNeededScore()) {
+          levelCompleted = true;
+        } else {
+          level.resetMoneyBagPositions();
+        }
       }
     }
     if (obj->hasBooster()) {
@@ -338,7 +369,8 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     // Draw the UI
     inventory.draw();
     level.getScoreLabel().draw();
-    level.getRunButton().draw();
+    if (!levelCompleted)
+      level.getRunButton().draw();
   }
 
   dialogueTextLabel.draw();

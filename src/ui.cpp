@@ -106,6 +106,7 @@ void UIElements::InventoryButton::draw() {
 
   sf::Sprite innerSprite(innerTexture);
 
+  outerSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(this->getOuterTexture().getSize()));
   outerSprite.setScale(sf::Vector2f(this->getSize().x / static_cast<float>(this->getOuterTexture().getSize().x), this->getSize().y / static_cast<float>(this->getOuterTexture().getSize().y)));
   outerSprite.setPosition(this->getPosition());
   Globals::window->draw(outerSprite);
@@ -121,13 +122,10 @@ void UIElements::InventoryButton::draw() {
     } else {
       factors = sf::Vector2f(innerSize.x / static_cast<float>(innerTexture.getSize().x), innerSize.y / static_cast<float>(innerTexture.getSize().y));
     }
+    innerSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(innerTexture.getSize()));
     innerSprite.setScale(factors);
-    sf::Vector2f basePos = this->getPosition() + 0.5f * (1.f - this->itemSize) * static_cast<sf::Vector2f>(this->getSize());
-    if (innerTexture.getSize().x != innerTexture.getSize().y) {
-      innerSprite.setPosition(basePos + sf::Vector2f(0, 0.5f * (innerSize.y - (innerTexture.getSize().y * innerSprite.getScale().y))));
-    } else {
-      innerSprite.setPosition(basePos);
-    }
+    sf::Vector2f basePos = this->getPosition();
+    innerSprite.setPosition(basePos);
     Globals::window->draw(innerSprite);
   }
 
@@ -137,9 +135,9 @@ void UIElements::InventoryButton::draw() {
     countText.setCharacterSize(0.25 * this->getSize().x);
     sf::Vector2f sizeF = static_cast<sf::Vector2f>(this->getSize());
 
-    sf::Vector2f bottomRightPadded = this->getPosition() + sizeF - 0.1f * sizeF;
+    sf::Vector2f bottomRightPadded = this->getPosition() + 0.4f * sizeF;
     bottomRightPadded.y -= 0.05f * sizeF.y;
-    countText.setPosition(bottomRightPadded - sf::Vector2f(countText.getLocalBounds().width, countText.getLocalBounds().height));
+    countText.setPosition(bottomRightPadded - sf::Vector2f(countText.getLocalBounds().width + 0.05f * Globals::unitSize, countText.getLocalBounds().height));
 
     countText.setFillColor(sf::Color(255, 255, 255));
 
@@ -148,7 +146,7 @@ void UIElements::InventoryButton::draw() {
 }
 
 void UIElements::InventoryButton::onClick() {
-  if (this->count == 0) return;
+  if (this->count == 0 || Globals::simulationOn) return;
   UserObjects::initBuilding(this->innerSize, this->innerPath, this->itemId);
 }
 
@@ -232,7 +230,7 @@ void UIElements::Inventory::draw() {
     
     std::vector<UIElements::InventoryButton*>::iterator middleButton = this->buttons.begin() + floor(static_cast<float>(this->buttons.size()) / 2.f);
     (*middleButton)->setSize(SIZE);
-    (*middleButton)->setPosition(middle - 0.5f * static_cast<sf::Vector2f>(SIZE));
+    (*middleButton)->setPosition(middle);
     (*middleButton)->draw();
 
     offset = SIZE.x + PADDING;
@@ -246,11 +244,11 @@ void UIElements::Inventory::draw() {
   uint8_t count = 0;
   for (;left >= this->buttons.begin() && right != this->buttons.end(); left--, right++, count++) {
     (*left)->setSize(SIZE);
-    (*left)->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
+    (*left)->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
     (*left)->draw();
 
     (*right)->setSize(SIZE);
-    (*right)->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0) - 0.5f * static_cast<sf::Vector2f>(SIZE));
+    (*right)->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
     (*right)->draw();
   }
 }

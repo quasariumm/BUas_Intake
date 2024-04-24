@@ -351,6 +351,8 @@ Level::~Level() {
 
 void Level::initLevel() {
 
+  this->moneyBags.clear();
+
   this->beginScore = this->scoreLabel.getScore();
   
   this->tilemap.loadFromFile(this->levelFilePath);
@@ -432,6 +434,7 @@ void Level::initLevel() {
   std::filesystem::path scoreLabelBackground = RESOURCES_PATH;
   scoreLabelBackground += "sprites/scoreLabelBackground.png";
   this->scoreLabel = UIElements::ScoreLabel("Money: $0", sf::Vector2f(0.5f * Globals::window->getSize().x, 0.325f * Globals::unitSize), sf::Vector2f(5.5f * Globals::unitSize, 0.65f * Globals::unitSize), scoreLabelBackground, sf::Color::Black);
+  this->scoreLabel.setScore(this->beginScore);
 
   // Init the run button
   std::filesystem::path runButtonBackground = RESOURCES_PATH;

@@ -233,6 +233,13 @@ public:
   Dialogue& getDialogue() {return dialogue;};
 
   /**
+   * @brief Get the Needed Score object
+   * 
+   * @return uint8_t 
+   */
+  uint8_t getNeededScore() {return neededScore;};
+
+  /**
    * @brief Initiates the level's tilemap and BouncyObjects
    * 
    */

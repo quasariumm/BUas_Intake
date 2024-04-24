@@ -24,6 +24,8 @@ namespace Globals {
 
   // Threads
   extern std::vector<std::thread> threads;
+
+  extern bool DEBUG_MODE;
 }
 
 #endif //GLOBALS_H_

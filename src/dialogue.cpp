@@ -134,6 +134,12 @@ void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
 
 void Dialogue::play(TextBubble* textBubble, UIElements::TextLabel* textLabel) {
 
+  if (Globals::DEBUG_MODE && this->isIntro) {
+    // Skip intro
+    Globals::currentLevel = 0;
+    return;
+  }
+
   textBubble->setEnabled(true);
 
   Globals::dialoguePlaying = true;
