@@ -16,6 +16,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
@@ -60,6 +61,11 @@ sf::Vector2f ballOrigin;
 sf::Texture wallsTexture;
 sf::Texture propsTexture;
 sf::Texture pipesTexture;
+
+sf::Texture backgroundTexture;
+
+// Background sprite
+sf::Sprite backgroundSprite(backgroundTexture);
 
 // Things that the player can click on
 UserObjects::EditableObjectList editableObjects;
@@ -310,6 +316,8 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   }
 
   if (Globals::currentLevel >= 0){
+    window.draw(backgroundSprite);
+
     level.getTilemap().drawPropsWalls(wallsTexture, propsTexture, sf::Vector2i(128, 128));
   
     window.draw(ball);
@@ -454,6 +462,15 @@ int main() {
   loadTexture("sprites/tilemapWall.png", wallsTexture);
   loadTexture("sprites/tilemapProps.png", propsTexture);
   loadTexture("sprites/tilemapPipes.png", pipesTexture);
+
+  loadTexture("sprites/background.png", backgroundTexture);
+
+  // Configure the background sprite
+  backgroundSprite.setTexture(backgroundTexture, true);
+
+  backgroundSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(backgroundTexture.getSize()));
+  backgroundSprite.setPosition(0.5f * static_cast<sf::Vector2f>(window.getSize()));
+  backgroundSprite.setScale(sf::Vector2f(window.getSize().x / static_cast<float>(backgroundTexture.getSize().x), window.getSize().y / static_cast<float>(backgroundTexture.getSize().y)));
 
   // Initialise the first level, just temporary
   std::filesystem::path tmppath = RESOURCES_PATH;

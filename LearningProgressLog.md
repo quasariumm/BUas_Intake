@@ -86,3 +86,6 @@ Added a way to edit the controls. Began working on the main menu for the game. T
 
 ## 2024-04-23
 Made a way to load a new level and dialogue. Also updated some UI elements.
+
+## 2024-04-24
+Made it so that you move to the next level once you have collected enough money bags and the dialogue has finished.

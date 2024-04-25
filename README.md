@@ -14,5 +14,6 @@ BouncePad sprite: Using [https://www.svgrepo.com/svg/324985/bounce-right](https:
 Money bag sprite: [https://www.svgrepo.com/svg/234197/money-bag](https://www.svgrepo.com/svg/234197/money-bag) (Edited)
 Booster sprite: Using [https://www.svgrepo.com/svg/470503/lightning](https://www.svgrepo.com/svg/470503/lightning) and [https://www.svgrepo.com/svg/533612/arrow-narrow-up](https://www.svgrepo.com/svg/533612/arrow-narrow-up)
 Dialogue bar: [https://www.svgrepo.com/svg/356715/businessman](https://www.svgrepo.com/svg/356715/businessman) (Edited)
+Background: [https://www.svgrepo.com/svg/338091/erlenmeyer-laboratory-lab-experiment-flask-science-medical](https://www.svgrepo.com/svg/338091/erlenmeyer-laboratory-lab-experiment-flask-science-medical) (Edited)
 
 Font: [https://fonts.google.com/noto/specimen/Noto+Sans](https://fonts.google.com/noto/specimen/Noto+Sans)

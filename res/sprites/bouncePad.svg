@@ -10,6 +10,9 @@
    xml:space="preserve"
    inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
    sodipodi:docname="bouncePad.svg"
+   inkscape:export-filename="bouncePad.png"
+   inkscape:export-xdpi="512"
+   inkscape:export-ydpi="512"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +28,7 @@
      inkscape:document-units="mm"
      inkscape:zoom="5.6568543"
      inkscape:cx="17.500893"
-     inkscape:cy="24.571961"
+     inkscape:cy="24.57196"
      inkscape:window-width="1920"
      inkscape:window-height="1006"
      inkscape:window-x="1680"
@@ -37,7 +40,7 @@
      inkscape:groupmode="layer"
      id="layer1"><path
        id="rect2"
-       style="fill:#999999;fill-opacity:1;stroke-width:0.125"
+       style="fill:#4a4a4a;fill-opacity:1;stroke-width:0.125"
        d="M 0 0 L 0 1.5875 L 1.0583333 1.5875 L 1.0583333 11.1125 L 0 11.1125 L 0 12.7 L 1.5875 12.7 L 1.5875 11.641667 L 23.8125 11.641667 L 23.8125 12.7 L 25.4 12.7 L 25.4 11.1125 L 24.341667 11.1125 L 24.341667 1.5875 L 25.4 1.5875 L 25.4 0 L 23.8125 0 L 23.8125 1.0583333 L 1.5875 1.0583333 L 1.5875 0 L 0 0 z " /><rect
        style="fill:#d38d5f;fill-opacity:1;stroke-width:0.125"
        id="rect6"
@@ -63,7 +66,7 @@
        height="9.5249996"
        x="24.870832"
        y="1.5875" /><ellipse
-       style="fill:#4d4d4d;fill-opacity:1;stroke-width:0.190035"
+       style="fill:#a6a6a6;fill-opacity:1;stroke-width:0.190035"
        id="path9"
        cx="12.7"
        cy="6.3499999"
