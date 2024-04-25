@@ -43,6 +43,8 @@ bool Globals::gameStarted = false;
 short Globals::currentLevel = -2;
 bool Globals::dialoguePlaying = false;
 
+float Globals::volume = 100;
+
 std::vector<std::thread> Globals::threads;
 
 bool Globals::DEBUG_MODE = true;

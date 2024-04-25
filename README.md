@@ -16,4 +16,6 @@ Booster sprite: Using [https://www.svgrepo.com/svg/470503/lightning](https://www
 Dialogue bar: [https://www.svgrepo.com/svg/356715/businessman](https://www.svgrepo.com/svg/356715/businessman) (Edited)
 Background: [https://www.svgrepo.com/svg/338091/erlenmeyer-laboratory-lab-experiment-flask-science-medical](https://www.svgrepo.com/svg/338091/erlenmeyer-laboratory-lab-experiment-flask-science-medical) (Edited)
 
+Key sound: [https://kbs.im/](https://kbs.im/) (Gateron Black Ink)
+
 Font: [https://fonts.google.com/noto/specimen/Noto+Sans](https://fonts.google.com/noto/specimen/Noto+Sans)

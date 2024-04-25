@@ -10,6 +10,7 @@
  */
 
 
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Sleep.hpp>
@@ -29,6 +30,7 @@
 #include "../include/dialogue.hpp"
 #include "../include/ui.hpp"
 #include "../include/globals.hpp"
+#include "../include/audio.hpp"
 
 //////////////////////////////////////
 // TextBubble => TextLabel
@@ -56,6 +58,12 @@ void TextBubble::typewriterText() {
   this->setText("", true);
   uint8_t currLine = 0;
 
+  sf::SoundBuffer keyPressSound;
+
+  if (!keyPressSound.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/key.wav"))) {
+    throw std::runtime_error("Couldn't load the key sound.");
+  }
+
   for (char character : this->message) {
 
     // Add the next character to the new string
@@ -69,6 +77,9 @@ void TextBubble::typewriterText() {
     const short NUM_SPACES = DEFAULT_LINE_LENGTH - (current.length() - DEFAULT_LINE_LENGTH * currLine - currLine);
 
     this->setText(current + std::string(NUM_SPACES, ' ') + std::string(lines - (currLine + 1), '\n'), true);
+
+    Globals::threads.emplace_back(playSound, keyPressSound);
+    Globals::threads.back().detach();
 
     sf::sleep(sf::milliseconds(50));
   }

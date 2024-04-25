@@ -22,6 +22,9 @@ namespace Globals {
   extern short currentLevel;
   extern bool dialoguePlaying;
 
+  // User config values
+  extern float volume; // [0,100]
+
   // Threads
   extern std::vector<std::thread> threads;
 
