@@ -1,5 +1,5 @@
-# BUaS_Intake
-The intake game for BUaS. Theme 'collect'
+# Sorry, we're broke
+The intake game for BUas. Theme 'collect'
 
 ## Installation
 When cloning, please use the following command to make sure that the SFML submodule will be installed as well: `git clone --recursive https://github.com/quasariumm/BUas_Intake.git`  

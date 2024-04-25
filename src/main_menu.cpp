@@ -16,6 +16,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -116,10 +117,16 @@ void MainMenu::loop_draw() {
 
   Globals::window->clear();
 
+  // Draw background
+  sf::RectangleShape background(static_cast<sf::Vector2f>(Globals::window->getSize()));
+  background.setFillColor(sf::Color(14, 19, 20));
+
+  Globals::window->draw(background);
+
   if (!this->settingsMenu) {
 
     sf::Texture titleTexture;
-    if (!titleTexture.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"))) {
+    if (!titleTexture.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/title.png"))) {
       throw std::runtime_error("Couldn't load the title texture.");
     }
     sf::Sprite title(titleTexture);
