@@ -253,13 +253,10 @@ PhysicsObjects::Booster::Booster(const sf::Vector2i& newPos, const sf::Vector2f&
 }
 
 void PhysicsObjects::Booster::boost(PhysicsObjects::Ball& ball) {
-  // To get the parallel velocity, I do the following:
-  // Get the angle between the velocity vector of the ball and this orientation
-  // Then, I take that as my angle φ (phi) and use the following formula to calculate the parallel speed
-  // $$ v_perp = v_tot * cos(φ) $$
-  const float phi = ball.getDirection().angleTo(this->getOrientation()).asRadians();
-  const float vPerp = ball.getVelocity() * std::cos(phi);
-  ball.setVelocity((ball.getVelocity() + boostExtra * vPerp) * ball.getDirection());
+  // This adds boosterExtra of the speed of the ball, rotated to face the arrow's direction
+  const sf::Vector2f ARROW_DIRECTION = this->getOrientation().normalized();
+
+  ball.setVelocity((ball.getVelocity() * ball.getDirection()) + boostExtra * ball.getVelocity() * ARROW_DIRECTION);
 
   this->setJustBoosted(true);
 }
