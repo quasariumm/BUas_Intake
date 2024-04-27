@@ -9,14 +9,16 @@
  * 
  */
 #include "../include/ui.hpp"
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -29,6 +31,7 @@
 
 #include "../include/build.hpp"
 #include "../include/globals.hpp"
+#include "../include/config.hpp"
 
 sf::Texture tmpTexture;
 
@@ -353,14 +356,111 @@ void UIElements::ScoreLabel::setScore(const uint8_t newScore) {
 // EditGUI => TextLabel
 //////////////////////////////////////
 
-UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
+UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::mainFont, 0.5f * Globals::unitSize) {
   this->setText("F: Move/Rotate\nG: Delete");
+}
+
+void UIElements::EditGUI::setCorrectText(Config& config) {
+  std::string moveKey = sf::Keyboard::getDescription(config.getKeybind("MOVE"));
+  if (moveKey.length() == 1) {
+    // Made the one letter uppercase
+    if (moveKey[0] >= 91 || moveKey[0] <= 122) {
+      // a-z
+      moveKey = std::string(1, static_cast<char>(moveKey[0]-32));
+    }
+  }
+  std::string deleteKey = sf::Keyboard::getDescription(config.getKeybind("DELETE"));
+  if (deleteKey.length() == 1) {
+    // Made the one letter uppercase
+    if (deleteKey[0] >= 91 || deleteKey[0] <= 122) {
+      // a-z
+      deleteKey = std::string(1, static_cast<char>(deleteKey[0]-32));
+    }
+  }
+  std::string editText = moveKey + ": Move\n" + deleteKey + ": Detele";
+  this->setText(editText);
+
+  this->setPos(sf::Vector2f(0.6f * Globals::unitSize, 13.f * Globals::unitSize) + 0.5f * static_cast<sf::Text*>(this)->getLocalBounds().getSize());
+}
+
+void UIElements::EditGUI::drawBackground() {
+  const sf::Vector2f SIZE = static_cast<sf::Text*>(this)->getLocalBounds().getSize() + sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize);
+  sf::RectangleShape background(SIZE);
+  background.setOrigin(0.5f * SIZE);
+
+  const sf::FloatRect TEXT_GLOBAL = static_cast<sf::Text*>(this)->getGlobalBounds();
+  background.setPosition(TEXT_GLOBAL.getCenter());
+
+  background.setFillColor(sf::Color(20,20,20,65));
+
+  Globals::window->draw(background);
 }
 
 //////////////////////////////////////
 // BuildGUI => TextLabel
 //////////////////////////////////////
 
-UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")) {
+UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::mainFont, 0.5f * Globals::unitSize) {
   this->setText("R: Rotate CCW\nT: Rotate CW\nEsc: Cancel");
+}
+
+void UIElements::BuildGUI::setCorrectText(Config& config) {
+  std::string rotateCCW = sf::Keyboard::getDescription(config.getKeybind("ROTATE_CCW"));
+  if (rotateCCW.length() == 1) {
+    // Made the one letter uppercase
+    if (rotateCCW[0] >= 91 || rotateCCW[0] <= 122) {
+      // a-z
+      rotateCCW = std::string(1, static_cast<char>(rotateCCW[0]-32));
+    }
+  }
+  std::string rotateCW = sf::Keyboard::getDescription(config.getKeybind("ROTATE_CW"));
+  if (rotateCW.length() == 1) {
+    // Made the one letter uppercase
+    if (rotateCW[0] >= 91 || rotateCW[0] <= 122) {
+      // a-z
+      rotateCW = std::string(1, static_cast<char>(rotateCW[0]-32));
+    }
+  }
+  std::string smallStep = sf::Keyboard::getDescription(config.getKeybind("ROTATE_SMALL"));
+  if (smallStep.length() == 1) {
+    // Made the one letter uppercase
+    if (smallStep[0] >= 91 || smallStep[0] <= 122) {
+      // a-z
+      smallStep = std::string(1, static_cast<char>(smallStep[0]-32));
+    }
+  }
+  std::string bigStep = sf::Keyboard::getDescription(config.getKeybind("ROTATE_BIG"));
+  if (bigStep.length() == 1) {
+    // Made the one letter uppercase
+    if (bigStep[0] >= 91 || bigStep[0] <= 122) {
+      // a-z
+      bigStep = std::string(1, static_cast<char>(bigStep[0]-32));
+    }
+  }
+  std::string cancel = sf::Keyboard::getDescription(config.getKeybind("CANCEL"));
+  if (cancel.length() == 1) {
+    // Made the one letter uppercase
+    if (cancel[0] >= 91 || cancel[0] <= 122) {
+      // a-z
+      cancel = std::string(1, static_cast<char>(cancel[0]-32));
+    }
+  }
+
+  std::string buildText = rotateCCW + ": Rotate CCW\n" + rotateCW + ": Rotate CW\n" + smallStep + ": Rotate slower\n" + bigStep + ": Rotate faster\n" + cancel + ": Cancel"; 
+  this->setText(buildText);
+
+  this->setPos(sf::Vector2f(0.6f * Globals::unitSize, 13.f * Globals::unitSize) + 0.5f * static_cast<sf::Text*>(this)->getLocalBounds().getSize());
+}
+
+void UIElements::BuildGUI::drawBackground() {
+  const sf::Vector2f SIZE = static_cast<sf::Text*>(this)->getLocalBounds().getSize() + sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize);
+  sf::RectangleShape background(SIZE);
+  background.setOrigin(0.5f * SIZE);
+
+  const sf::FloatRect TEXT_GLOBAL = static_cast<sf::Text*>(this)->getGlobalBounds();
+  background.setPosition(TEXT_GLOBAL.getCenter());
+
+  background.setFillColor(sf::Color(20,20,20,65));
+
+  Globals::window->draw(background);
 }

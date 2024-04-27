@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "../include/globals.hpp"
+#include "../include/config.hpp"
 
 namespace UIElements {
 
@@ -485,6 +486,19 @@ namespace UIElements {
      */
     EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize);
 
+    /**
+     * @brief Set the text according to the player config
+     * 
+     * @param config The player config object
+     */
+    void setCorrectText(Config& config);
+
+    /**
+     * @brief Draws the background to make the text more visible.
+     * 
+     */
+    void drawBackground();
+
   };
 
   class BuildGUI : public TextLabel {
@@ -497,6 +511,19 @@ namespace UIElements {
      * @param newSize The new size
      */
     BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize);
+
+    /**
+     * @brief Set the text according to the player config
+     * 
+     * @param config The player config object
+     */
+    void setCorrectText(Config& config);
+
+    /**
+     * @brief Draws the background to make the text more visible.
+     * 
+     */
+    void drawBackground();
 
   };
 

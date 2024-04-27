@@ -89,3 +89,6 @@ Made a way to load a new level and dialogue. Also updated some UI elements.
 
 ## 2024-04-24
 Made it so that you move to the next level once you have collected enough money bags and the dialogue has finished.
+
+## 2024-04-25
+Made a title and a background sprite. Also added a keyboard sound to the dialogue typewriter effect.

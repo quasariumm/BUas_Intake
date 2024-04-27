@@ -242,6 +242,9 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/intro.qd"));
       Globals::threads.emplace_back(std::bind(&Dialogue::play, &dialogue, &textBubble, &dialogueTextLabel));
       Globals::threads.back().detach();
+      // Set the keys in the Edit and Build GUI to the configured keybinds
+      editGUI.setCorrectText(playerConf);
+      buildGUI.setCorrectText(playerConf);
     } else {
       level.setLevelFilePath(std::filesystem::path(RESOURCES_PATH).append("levels/level" + std::to_string(Globals::currentLevel) + ".ql"));
       level.initLevel();
@@ -384,8 +387,14 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
   dialogueTextLabel.draw();
   textBubble.draw();
 
-  if (editing != nullptr) editGUI.draw();
-  if (UserObjects::getBuilding()->getSize().length() != 0) buildGUI.draw();
+  if (editing != nullptr) {
+    editGUI.drawBackground();
+    editGUI.draw();
+  }
+  if (UserObjects::getBuilding()->getSize().length() != 0) {
+    buildGUI.drawBackground();
+    buildGUI.draw();
+  }
 
   // Determine if the player is building something. If so, call the ghost object's loop()
   if (UserObjects::getBuilding()->getSize().length() != 0) {
