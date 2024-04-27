@@ -6,10 +6,10 @@
 #include <SFML/System/Vector2.hpp>
 #include <filesystem>
 #include <vector>
-#include <string>
 
 #include "../include/physics.hpp"
 #include "../include/ui.hpp"
+#include "../include/config.hpp"
 
 namespace UserObjects {
   class EditableObject {
@@ -222,9 +222,9 @@ namespace UserObjects {
      * @brief A function that is called on the main loop. It updates the position and rotation if the correct key is pressed
      * 
      * @param rotateKeyPressed Whether or not one of the rotate keys is pressed
-     * @param modifier The pressed modifier key. If no modifier keys are pressed, this is empty
+     * @param playerConf The player config object. Used to check the controls
      */
-    void loop(const bool rotateKeyPressed, const std::string modifier);
+    void loop(const bool rotateKeyPressed, Config& playerConf);
 
     /**
      * @brief Places the object that is currently bein built

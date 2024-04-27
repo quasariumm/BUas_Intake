@@ -361,18 +361,18 @@ UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& new
 }
 
 void UIElements::EditGUI::setCorrectText(Config& config) {
-  std::string moveKey = sf::Keyboard::getDescription(config.getKeybind("MOVE"));
+  std::string moveKey = sf::Keyboard::getDescription(config.getKeybind("MOVE")).toAnsiString();
   if (moveKey.length() == 1) {
     // Made the one letter uppercase
-    if (moveKey[0] >= 91 || moveKey[0] <= 122) {
+    if (moveKey[0] >= 97 && moveKey[0] <= 122) {
       // a-z
       moveKey = std::string(1, static_cast<char>(moveKey[0]-32));
     }
   }
-  std::string deleteKey = sf::Keyboard::getDescription(config.getKeybind("DELETE"));
+  std::string deleteKey = sf::Keyboard::getDescription(config.getKeybind("DELETE")).toAnsiString();
   if (deleteKey.length() == 1) {
     // Made the one letter uppercase
-    if (deleteKey[0] >= 91 || deleteKey[0] <= 122) {
+    if (deleteKey[0] >= 97 && deleteKey[0] <= 122) {
       // a-z
       deleteKey = std::string(1, static_cast<char>(deleteKey[0]-32));
     }
@@ -405,42 +405,42 @@ UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& n
 }
 
 void UIElements::BuildGUI::setCorrectText(Config& config) {
-  std::string rotateCCW = sf::Keyboard::getDescription(config.getKeybind("ROTATE_CCW"));
+  std::string rotateCCW = sf::Keyboard::getDescription(config.getKeybind("ROTATE_CCW")).toAnsiString();
   if (rotateCCW.length() == 1) {
     // Made the one letter uppercase
-    if (rotateCCW[0] >= 91 || rotateCCW[0] <= 122) {
+    if (rotateCCW[0] >= 97 && rotateCCW[0] <= 122) {
       // a-z
       rotateCCW = std::string(1, static_cast<char>(rotateCCW[0]-32));
     }
   }
-  std::string rotateCW = sf::Keyboard::getDescription(config.getKeybind("ROTATE_CW"));
+  std::string rotateCW = sf::Keyboard::getDescription(config.getKeybind("ROTATE_CW")).toAnsiString();
   if (rotateCW.length() == 1) {
     // Made the one letter uppercase
-    if (rotateCW[0] >= 91 || rotateCW[0] <= 122) {
+    if (rotateCW[0] >= 97 && rotateCW[0] <= 122) {
       // a-z
       rotateCW = std::string(1, static_cast<char>(rotateCW[0]-32));
     }
   }
-  std::string smallStep = sf::Keyboard::getDescription(config.getKeybind("ROTATE_SMALL"));
+  std::string smallStep = sf::Keyboard::getDescription(config.getKeybind("ROTATE_SMALL")).toAnsiString();
   if (smallStep.length() == 1) {
     // Made the one letter uppercase
-    if (smallStep[0] >= 91 || smallStep[0] <= 122) {
+    if (smallStep[0] >= 97 && smallStep[0] <= 122) {
       // a-z
       smallStep = std::string(1, static_cast<char>(smallStep[0]-32));
     }
   }
-  std::string bigStep = sf::Keyboard::getDescription(config.getKeybind("ROTATE_BIG"));
+  std::string bigStep = sf::Keyboard::getDescription(config.getKeybind("ROTATE_BIG")).toAnsiString();
   if (bigStep.length() == 1) {
     // Made the one letter uppercase
-    if (bigStep[0] >= 91 || bigStep[0] <= 122) {
+    if (bigStep[0] >= 97 && bigStep[0] <= 122) {
       // a-z
       bigStep = std::string(1, static_cast<char>(bigStep[0]-32));
     }
   }
-  std::string cancel = sf::Keyboard::getDescription(config.getKeybind("CANCEL"));
+  std::string cancel = sf::Keyboard::getDescription(config.getKeybind("CANCEL")).toAnsiString();
   if (cancel.length() == 1) {
     // Made the one letter uppercase
-    if (cancel[0] >= 91 || cancel[0] <= 122) {
+    if (cancel[0] >= 97 && cancel[0] <= 122) {
       // a-z
       cancel = std::string(1, static_cast<char>(cancel[0]-32));
     }

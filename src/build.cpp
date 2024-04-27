@@ -29,7 +29,8 @@
 
 #include "../include/physics.hpp"
 #include "../include/globals.hpp"
-#include "ui.hpp"
+#include "../include/ui.hpp"
+#include "../include/config.hpp"
 
 #define Key sf::Keyboard::Key
 
@@ -53,18 +54,18 @@ UserObjects::GhostObject* UserObjects::getBuilding() {
 // GhostObject
 //////////////////////////////////////
 
-void UserObjects::GhostObject::loop(const bool rotateKeyPressed, const std::string modifier) {
+void UserObjects::GhostObject::loop(const bool rotateKeyPressed, Config& playerConf) {
 
   if (rotateKeyPressed) {
     float rotateAngle = 0;
-    if (sf::Keyboard::isKeyPressed(Key::R)) {
+    if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CCW"))) {
       rotateAngle = -1;
-    } else if (sf::Keyboard::isKeyPressed(Key::T)) {
+    } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CW"))) {
       rotateAngle = 1;
     }
-    if (modifier == "Shift") {
+    if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_SMALL"))) {
       rotateAngle /= 5;
-    } else if (modifier == "Ctrl") {
+    } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_BIG"))) {
       rotateAngle *= 3;
     }
     this->rotation += rotateAngle;

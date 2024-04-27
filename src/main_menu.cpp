@@ -94,7 +94,7 @@ MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_conf
     std::string keybindDesc = sf::Keyboard::getDescription(this->config->getKeybind(keybind.first)).toAnsiString();
     if (keybindDesc.length() == 1) {
       // Made the one letter uppercase
-      if (keybindDesc[0] >= 91 || keybindDesc[0] <= 122) {
+      if (keybindDesc[0] >= 97 && keybindDesc[0] <= 122) {
         // a-z
         keybindDesc = std::string(1, static_cast<char>(keybindDesc[0]-32));
       }
@@ -197,10 +197,10 @@ void MainMenu::loop_draw() {
         int index = std::round((keybindEditing->getPosition().y - 3.5f * Globals::unitSize) / (1.3f * Globals::unitSize));
         this->config->setKeybind(this->keybindNames[index], event.key.scancode);
         
-        std::string keybindDesc = sf::Keyboard::getDescription(event.key.scancode);
+        std::string keybindDesc = sf::Keyboard::getDescription(event.key.scancode).toAnsiString();
         if (keybindDesc.length() == 1) {
           // Made the one letter uppercase
-          if (keybindDesc[0] >= 91 || keybindDesc[0] <= 122) {
+          if (keybindDesc[0] >= 97 && keybindDesc[0] <= 122) {
             // a-z
             keybindDesc = std::string(1, static_cast<char>(keybindDesc[0]-32));
           }

@@ -75,7 +75,6 @@ UIElements::EditGUI editGUI{sf::Vector2f(), sf::Vector2f()};
 UIElements::BuildGUI buildGUI{sf::Vector2f(), sf::Vector2f()};
 
 // Keyboard-specific variables
-std::string modifier; // The modifier pressed ("Ctrl", "Shift", "Alt" or empty)
 bool rotate;
 
 // Score
@@ -150,13 +149,7 @@ void mousePressedEvent(sf::Event& event, UIElements::Inventory& inventory, Level
 }
 
 void keyPressedEvent(UIElements::Inventory& inventory) {
-  if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_BIG"))) {
-    modifier = "Ctrl";
-  } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_SMALL"))) {
-    modifier = "Shift";
-  } else if (sf::Keyboard::isKeyPressed(Key::LAlt)) {
-    modifier = "Alt";
-  } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CCW")) || sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CW"))) {
+  if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CCW")) || sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CW"))) {
     rotate = true;
   } else if (sf::Keyboard::isKeyPressed(playerConf.getKeybind("MOVE")) && editing != nullptr) {
     // Delete the object and enter building mode
@@ -204,9 +197,7 @@ void keyPressedEvent(UIElements::Inventory& inventory) {
 }
 
 void keyReleasedEvent() {
-  if (!sf::Keyboard::isKeyPressed(Key::LShift) && !sf::Keyboard::isKeyPressed(Key::LControl) && !sf::Keyboard::isKeyPressed(Key::LAlt)) {
-    modifier = "";
-  } else if (!sf::Keyboard::isKeyPressed(Key::R) && !sf::Keyboard::isKeyPressed(Key::T)) {
+  if (!sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CCW")) && !sf::Keyboard::isKeyPressed(playerConf.getKeybind("ROTATE_CW"))) {
     rotate = false;
   }
 }
@@ -398,7 +389,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
 
   // Determine if the player is building something. If so, call the ghost object's loop()
   if (UserObjects::getBuilding()->getSize().length() != 0) {
-    UserObjects::getBuilding()->loop(rotate, modifier);
+    UserObjects::getBuilding()->loop(rotate, playerConf);
   }
   
   window.display();
