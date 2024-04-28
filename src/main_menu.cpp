@@ -39,7 +39,7 @@ UIElements::Button* keybindEditing = nullptr;
 MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_config) {
   
   sf::Texture playSettings;
-  if (!playSettings.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/itemBackground.png"))) {
+  if (!playSettings.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/genericButtonBackground.png"))) {
     throw std::runtime_error("Couldn't load the texture for the play and settings buttons.");
   }
 
@@ -50,16 +50,16 @@ MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_conf
 
   this->play = UIElements::Button(
     playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 2.f * Globals::unitSize),
-    sf::Vector2u(6.f * Globals::unitSize, 3.f * Globals::unitSize), "   Play   ", sf::Color::White
+    sf::Vector2u(8.f * Globals::unitSize, 2.f * Globals::unitSize), "   Play   ", sf::Color::White
   );
 
   this->settings = UIElements::Button(
     playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 6.f * Globals::unitSize),
-    sf::Vector2u(6.f * Globals::unitSize, 3.f * Globals::unitSize), "Settings", sf::Color::White
+    sf::Vector2u(8.f * Globals::unitSize, 2.f * Globals::unitSize), "Settings", sf::Color::White
   );
 
   this->back = UIElements::Button(
-    blank, sf::Vector2f(2.f * Globals::unitSize, 15.f * Globals::unitSize),
+    blank, sf::Vector2f(2.f * Globals::unitSize, 15.7f * Globals::unitSize),
     sf::Vector2u(3.f * Globals::unitSize, 2.f * Globals::unitSize), "Back", sf::Color::White
   );
 
@@ -102,14 +102,14 @@ MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_conf
 
     this->controls.emplace_back(
       UIElements::TextLabel(
-        keybind.second, sf::Vector2f(6.f * Globals::unitSize, 3.5f * Globals::unitSize + 1.3f * i * Globals::unitSize),
-        sf::Vector2f(7.f * Globals::unitSize, Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/itemBackground.png"),
-        sf::Color::Cyan
+        keybind.second, sf::Vector2f(6.f * Globals::unitSize, 3.f * Globals::unitSize + 1.3f * i * Globals::unitSize),
+        sf::Vector2f(7.f * Globals::unitSize, Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+        sf::Color::White
       ),
       UIElements::Button(
-        buttonBackground, sf::Vector2f(12.f * Globals::unitSize, 3.5f * Globals::unitSize + 1.3f * i * Globals::unitSize),
+        buttonBackground, sf::Vector2f(12.f * Globals::unitSize, 3.f * Globals::unitSize + 1.3f * i * Globals::unitSize),
         sf::Vector2u(4.f * Globals::unitSize, Globals::unitSize), keybindDesc,
-        sf::Color::Cyan
+        sf::Color::White
       )
     );
   }
@@ -145,15 +145,32 @@ void MainMenu::loop_draw() {
   } else if (this->settingsMenu) {
 
     UIElements::TextLabel controlsHeader(
-      "Controls", sf::Vector2f(0.5f * Globals::window->getSize().x, Globals::unitSize),
+      "Controls", sf::Vector2f(0.5f * Globals::window->getSize().x, 0.75f * Globals::unitSize),
       sf::Vector2f(6.f * Globals::unitSize, 2.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png")
     );
     controlsHeader.draw();
+
+    UIElements::TextLabel controlsIntruction(
+      "Click a control and press any key to edit", sf::Vector2f(0.5f * Globals::window->getSize().x, 1.75f * Globals::unitSize),
+      sf::Vector2f(10.f * Globals::unitSize, 2.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+      sf::Color(155,155,155)
+    );
+    controlsIntruction.draw();
     
     // Draw all of the controls
     for (short i = 0; i < this->controls.size(); ++i) {
       this->controls[i].first.draw();
       this->controls[i].second.draw();
+
+      // Draw a divider line
+      if (i == this->controls.size() - 1) continue;
+
+      sf::RectangleShape line(sf::Vector2f(11.f * Globals::unitSize, 0.075f * Globals::unitSize));
+      line.setOrigin(sf::Vector2f(5.5f * Globals::unitSize, 0.0375f * Globals::unitSize));
+      line.setPosition(sf::Vector2f(0.5f * Globals::window->getSize().x, 3.7f * Globals::unitSize + 1.3f * i * Globals::unitSize));
+      line.setFillColor(sf::Color(155,155,155));
+
+      Globals::window->draw(line);
     }
 
     this->back.draw();
@@ -194,7 +211,7 @@ void MainMenu::loop_draw() {
 
     case sf::Event::KeyPressed:
       if (keybindEditing != nullptr) {
-        int index = std::round((keybindEditing->getPosition().y - 3.5f * Globals::unitSize) / (1.3f * Globals::unitSize));
+        int index = std::round((keybindEditing->getPosition().y - 3.f * Globals::unitSize) / (1.3f * Globals::unitSize));
         this->config->setKeybind(this->keybindNames[index], event.key.scancode);
         
         std::string keybindDesc = sf::Keyboard::getDescription(event.key.scancode).toAnsiString();
