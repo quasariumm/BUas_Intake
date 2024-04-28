@@ -11,16 +11,20 @@
 
 #include "../include/physics.hpp"
 
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Angle.hpp>
 #include <algorithm>
 #include <cmath>
+#include <filesystem>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
 #include "../include/math.hpp"
 #include "../include/globals.hpp"
+#include "../include/audio.hpp"
 
 /**
  * @brief A way to represent a side as a line of the format ax+by=c. Also includes the side index.
@@ -256,7 +260,23 @@ void PhysicsObjects::Booster::boost(PhysicsObjects::Ball& ball) {
   // This adds boosterExtra of the speed of the ball, rotated to face the arrow's direction
   const sf::Vector2f ARROW_DIRECTION = this->getOrientation().normalized();
 
+  const float BEGIN_VELOCITY = ball.getVelocity();
+
   ball.setVelocity((ball.getVelocity() * ball.getDirection()) + boostExtra * ball.getVelocity() * ARROW_DIRECTION);
 
   this->setJustBoosted(true);
+
+  // Play a sound depending on whether the ball accelerates or slows down
+  sf::SoundBuffer boostBuffer;
+  if (BEGIN_VELOCITY < ball.getVelocity()) {
+    if (!boostBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/boost.wav"))) {
+      throw std::runtime_error("Couldn't load the boost sound.");
+    }
+  } else {
+    if (!boostBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/slower.wav"))) {
+      throw std::runtime_error("Couldn't load the boost slower sound.");
+    }
+  }
+  Globals::threads.emplace_back(playSound, boostBuffer);
+  Globals::threads.back().detach();
 }

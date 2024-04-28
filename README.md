@@ -17,5 +17,7 @@ Dialogue bar: [https://www.svgrepo.com/svg/356715/businessman](https://www.svgre
 Background: [https://www.svgrepo.com/svg/338091/erlenmeyer-laboratory-lab-experiment-flask-science-medical](https://www.svgrepo.com/svg/338091/erlenmeyer-laboratory-lab-experiment-flask-science-medical) (Edited)
 
 Key sound: [https://kbs.im/](https://kbs.im/) (Gateron Black Ink)
+Wall bounce sound: [https://samplefocus.com/samples/soft-kick-f-159](https://samplefocus.com/samples/soft-kick-f-159) (Changed pitch and applied EQ)
+All other sounds are made with my Arturia MicroFreak.
 
 Font: [https://fonts.google.com/noto/specimen/Noto+Sans](https://fonts.google.com/noto/specimen/Noto+Sans)

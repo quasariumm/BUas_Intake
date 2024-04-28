@@ -88,7 +88,7 @@ void UserObjects::GhostObject::loop(const bool rotateKeyPressed, Config& playerC
   ghostSprite.setPosition(static_cast<sf::Vector2f>(mousePos) + 0.5f * this->size);
 
   // Set the ghost sprite to be transparent
-  ghostSprite.setColor(sf::Color(255, 255, 255, 128));
+  ghostSprite.setColor(sf::Color(255, 255, 255, 200));
 
   Globals::window->draw(ghostSprite);
 

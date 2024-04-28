@@ -3,9 +3,10 @@
 ## Format
 Normal text is just a normal log entry.  
 _Italic_ text can give some context or indicate names.
+`Inline code` shows code or class names.
 
 ## 2024-02-05
-Struggles with letting SFML work with windows using cmake. Got a lot of errors. Realised that I forgot to link _sfml-graphics_.
+Struggles with letting _SFML_ work with windows using cmake. Got a lot of errors. Realised that I forgot to link _sfml-graphics_.
 
 ## 2024-02-06
 Started on the physics header file. Got to know some physics behind the bouncing of a ball.
@@ -20,7 +21,7 @@ Brainstormed for the collision system. Went through a couple of iterations:
 Finished the first version of the physics and collision system. Got to work on the drawing of the ball.  Got to know how the file system works and how to make prites and load textures from files.  
 
 ## 2024-02-15
-Made a system to check collision for every object in the level. I made a `for (PhysicsObjects::Bouncyobject& object : bouncyObjectList)` loop, but forgot to use references, so I accidentally worked with copies.  Got some problems with the bouncing code. I realised that the documentation was incorrect. It stated _'this amounts to a clockwise rotation by phi'_, when in fact it was counterclockwise. What inevitably fixed the issue was converting my physics to 'real world' (so (0,1) is up, because in SFML (0,0) is in the top-left corner) and when updating the position using `+=` with x and `-=` with y to convert real world to SFML.
+Made a system to check collision for every object in the level. I made a `for (PhysicsObjects::Bouncyobject& object : bouncyObjectList)` loop, but forgot to use references, so I accidentally worked with copies.  Got some problems with the bouncing code. I realised that the documentation was incorrect. It stated _'this amounts to a clockwise rotation by phi'_, when in fact it was counterclockwise. What inevitably fixed the issue was converting my physics to 'real world' (so (0,1) is up, because in _SFML_ (0,0) is in the top-left corner) and when updating the position using `+=` with x and `-=` with y to convert real world to _SFML_.
 
 ## 2024-02-17
 Got to work on a tilemap loading system. I seperated the objects in both 'walls and props' (background objects) and 'pipes' (foreground). Also made the file map width and height 18, whilst the window is divided up into 17x17 'units'. _The walls take up 0.5 unit on either side of the screen, to maximise the available screen space._ It didn't work at first, later found out it was using the wrong offset.  
@@ -45,7 +46,7 @@ Added money bags to the level file and implemented a system to read them from th
 Implemented the collision of the money bags. Tried to make them fall with no collision using threads, which didn't work.
 
 ## 2024-04-11
-Made them fall. Standard threads worked while SFML threads didn't.  
+Made them fall. Standard threads worked while _SFML_ threads didn't.  
 Made a global source and header file and changed some variables in all files to the global ones. This makes it easier to access the most common parameters like the unit size or the game window
 
 ## 2024-04-12
@@ -92,3 +93,9 @@ Made it so that you move to the next level once you have collected enough money 
 
 ## 2024-04-25
 Made a title and a background sprite. Also added a keyboard sound to the dialogue typewriter effect.
+
+## 2024-04-26
+Made it so that the tooltips in-game reflect the controls the player configured.
+
+## 2024-04-27
+Fixed the boosters and made the items more visible by altering the colors. Also made the configured controls work in-game. Took a while because I forgot a couple of lines where I still checked for the formerly hardcoded (default) controls.

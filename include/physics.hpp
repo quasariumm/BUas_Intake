@@ -152,6 +152,13 @@ namespace PhysicsObjects {
     void setCOR(const float newCor) {cor = newCor;};
 
     /**
+     * @brief Get the Coefficient of Restitution
+     * 
+     * @return float 
+     */
+    float getCOR() {return cor;};
+
+    /**
      * @brief Checks if the ball collides with this shape
      * 
      * @param ball A reference to the ball

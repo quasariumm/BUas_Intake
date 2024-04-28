@@ -9,6 +9,7 @@
  * 
  */
 
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
@@ -40,6 +41,8 @@
 #include "../include/dialogue.hpp"
 #include "../include/config.hpp"
 #include "../include/main_menu.hpp"
+#include "../include/audio.hpp"
+#include "SFML/Audio/Sound.hpp"
 
 //////////////////////////////////////
 // Variables
@@ -107,6 +110,20 @@ void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
 void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& ball) {
   short collisionSide = object.checkBallCollision(ball);
   if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
+    sf::SoundBuffer bounceBuffer;
+    if (object.getCOR() == 0.95f) {
+      // Bounce pad
+      if (!bounceBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/bounce_pad.wav"))) {
+        throw std::runtime_error("Couldn't load the bounce pad bounce sound.");
+      }
+    } else {
+      // Walls
+      if (!bounceBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/bounce_wall.wav"))) {
+        throw std::runtime_error("Couldn't load the wall bounce sound.");
+      }
+    }
+    Globals::threads.emplace_back(playSound, bounceBuffer);
+    Globals::threads.back().detach();
     object.bounce(ball, collisionSide);
   } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
     // This prevents the ball from inevitably staying in the first object it made contact with
