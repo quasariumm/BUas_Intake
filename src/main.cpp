@@ -95,6 +95,9 @@ short renderedLevel = -2;
 // before the dialogue is finished.
 bool levelCompleted = false;
 
+// Ball bounce buffers
+sf::SoundBuffer bouncePadBuffer, bounceWallBuffer;
+
 //////////////////////////////////////
 // Functions
 //////////////////////////////////////
@@ -110,20 +113,15 @@ void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
 void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& ball) {
   short collisionSide = object.checkBallCollision(ball);
   if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
-    sf::SoundBuffer bounceBuffer;
     if (object.getCOR() == 0.95f) {
       // Bounce pad
-      if (!bounceBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/bounce_pad.wav"))) {
-        throw std::runtime_error("Couldn't load the bounce pad bounce sound.");
-      }
+      Globals::threads.emplace_back(playSound, bouncePadBuffer);
+      Globals::threads.back().detach();
     } else {
       // Walls
-      if (!bounceBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/bounce_wall.wav"))) {
-        throw std::runtime_error("Couldn't load the wall bounce sound.");
-      }
+      Globals::threads.emplace_back(playSound, bounceWallBuffer);
+      Globals::threads.back().detach();
     }
-    Globals::threads.emplace_back(playSound, bounceBuffer);
-    Globals::threads.back().detach();
     object.bounce(ball, collisionSide);
   } else if (object.getJustBounced() != NULL_VALUE && collisionSide == NULL_VALUE) {
     // This prevents the ball from inevitably staying in the first object it made contact with
@@ -512,6 +510,14 @@ int main() {
 
   // Initialise the main menu
   mainMenu = new MainMenu(&level, &playerConf);
+
+  // Initialise the ball bounce sounds
+  if (!bouncePadBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/bounce_pad.wav"))) {
+    throw std::runtime_error("Couldn't load the bounce pad bounce sound.");
+  }
+  if (!bounceWallBuffer.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("audio/bounce_wall.wav"))) {
+    throw std::runtime_error("Couldn't load the wall bounce sound.");
+  }
 
   // Delta time clock
   sf::Clock dt_clock;
