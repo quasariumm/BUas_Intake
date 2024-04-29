@@ -300,6 +300,51 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     deltaTime = 0;
   }
 
+  // Shows the credits if needed
+  if (renderedLevel == 3) {
+
+    sf::RectangleShape background(static_cast<sf::Vector2f>(window.getSize()));
+    background.setFillColor(sf::Color(14, 19, 20));
+    window.draw(background);
+
+    UIElements::TextLabel credits{
+      "Credits:\n\n\n\n\nPatrick Vreeburg (Quasarium)\n\nExternal resources used:\nsvgrepo.com\nGoogle Fonts\nkbs.im (Keyboard sounds)\nsamplefocus.com (Bounce sample)",
+      sf::Vector2f(0.5f * window.getSize().x, 7.f * Globals::unitSize), sf::Vector2f(window.getSize().x, 6.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+      sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * Globals::unitSize)
+    };
+    credits.draw();
+
+    sf::Texture quasarLogoTexture;
+    if (!quasarLogoTexture.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/quasarLogo.png"))) {
+      throw std::runtime_error("Couldn't load the Quasar logo sprite.");
+    }
+    sf::Sprite quasarLogo(quasarLogoTexture);
+    quasarLogo.setScale(sf::Vector2f(1.5f * unitSize / quasarLogoTexture.getSize().x, 1.5f * unitSize / quasarLogoTexture.getSize().y));
+    quasarLogo.setPosition(sf::Vector2f(4.5f * unitSize, 4.5f * unitSize));
+
+    window.draw(quasarLogo);
+
+    UIElements::TextLabel madeAs{
+      "This was made as the intake assignment for", sf::Vector2f(0.5f * window.getSize().x, 13.f * unitSize),
+      sf::Vector2f(window.getSize().x, 2.f * unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+      sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * unitSize)
+    };
+    madeAs.draw();
+
+    sf::Texture BUasLogoTexture;
+    if (!BUasLogoTexture.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("sprites/BUasLogo.png"))) {
+      throw std::runtime_error("Couldn't load the Quasar logo sprite.");
+    }
+    sf::Sprite BUasLogo(BUasLogoTexture);
+    BUasLogo.setScale(sf::Vector2f(4.5f * unitSize / BUasLogoTexture.getSize().x, 1.5f * unitSize / BUasLogoTexture.getSize().y));
+    BUasLogo.setPosition(sf::Vector2f(0.5f * window.getSize().x - 2.25f * unitSize, 14.f * unitSize));
+
+    window.draw(BUasLogo);
+
+    window.display();
+    return;
+  }
+
   if (Globals::simulationOn) applyForces(ball, deltaTime);
 
 

@@ -146,7 +146,7 @@ void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
 void Dialogue::play(TextBubble* textBubble, UIElements::TextLabel* textLabel) {
 
   if (Globals::DEBUG_MODE && this->isIntro) {
-    // Skip to level 2
+    // Skip to the credits (purely for easy testing, edit if you please)
     Globals::currentLevel = 2;
     return;
   }
