@@ -140,7 +140,7 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
     });
   }
   if (booster) {
-    this->boost = PhysicsObjects::Booster(newPos, newSize, newRotation, 0.5f);
+    this->boost = PhysicsObjects::Booster(newPos, newSize, newRotation, 0.3f);
   }
 };
 

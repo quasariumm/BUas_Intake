@@ -251,6 +251,9 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       // Set the keys in the Edit and Build GUI to the configured keybinds
       editGUI.setCorrectText(playerConf);
       buildGUI.setCorrectText(playerConf);
+    } else if (Globals::currentLevel == 3) {
+      // Credits -> don't load a new level and dialogue
+      renderedLevel = 3;
     } else {
       level.setLevelFilePath(std::filesystem::path(RESOURCES_PATH).append("levels/level" + std::to_string(Globals::currentLevel) + ".ql"));
       level.initLevel();

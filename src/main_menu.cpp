@@ -49,12 +49,12 @@ MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_conf
   }
 
   this->play = UIElements::Button(
-    playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 2.f * Globals::unitSize),
+    playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 2.5f * Globals::unitSize),
     sf::Vector2u(8.f * Globals::unitSize, 2.f * Globals::unitSize), "   Play   ", sf::Color::White
   );
 
   this->settings = UIElements::Button(
-    playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 6.f * Globals::unitSize),
+    playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 5.5f * Globals::unitSize),
     sf::Vector2u(8.f * Globals::unitSize, 2.f * Globals::unitSize), "Settings", sf::Color::White
   );
 
