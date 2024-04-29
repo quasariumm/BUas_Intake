@@ -99,3 +99,9 @@ Made it so that the tooltips in-game reflect the controls the player configured.
 
 ## 2024-04-27
 Fixed the boosters and made the items more visible by altering the colors. Also made the configured controls work in-game. Took a while because I forgot a couple of lines where I still checked for the formerly hardcoded (default) controls.
+
+## 2024-04-28
+Made more sounds and updated the main menu.
+
+## 2024-04-29
+Made level 2 and a final credits screen. Also made the booster a bit more balanced by decreasing the power.
