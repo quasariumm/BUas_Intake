@@ -382,6 +382,13 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     level.getTilemap().drawPipes(pipesTexture, sf::Vector2i(128, 128));
   }
 
+  if (renderedLevel == -1) {
+    // Draw a background
+    sf::RectangleShape background(static_cast<sf::Vector2f>(window.getSize()));
+    background.setFillColor(sf::Color(14, 19, 20));
+    window.draw(background);
+  }
+
   // Display the user's objects
   for (UserObjects::EditableObject* obj : editableObjects.getObjects()) {
     obj->draw();
