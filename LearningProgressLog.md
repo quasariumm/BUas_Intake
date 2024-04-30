@@ -105,3 +105,6 @@ Made more sounds and updated the main menu.
 
 ## 2024-04-29
 Made level 2 and a final credits screen. Also made the booster a bit more balanced by decreasing the power.
+
+## 2024-04-30
+Made the README.
