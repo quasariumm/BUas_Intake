@@ -43,7 +43,7 @@ namespace UIElements {
     Button(
       const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, std::string buttonText = "", const sf::Color& newColor = sf::Color::Black, const int newFontSize = -1
     ) :
-    outer(tOuter), text(buttonText), position(vPos), size(vSize), textSize(0.8f), textColor(newColor), fontSize(newFontSize) {};
+    textSize(0.8f), fontSize(newFontSize), outer(tOuter), text(buttonText), textColor(newColor), position(vPos), size(vSize) {};
 
     /**
      * @brief Set the text
@@ -200,7 +200,13 @@ namespace UIElements {
     InventoryButton(
       const int8_t itemId, const sf::Texture& tOuter, const sf::Vector2f& vPos, const sf::Vector2u& vSize, const std::filesystem::path pathInner,
       const sf::Vector2f& itemRealSize, int16_t newCount = -1, bool lockAspectRario = false
-    ) : Button(tOuter, vPos, vSize), itemId(itemId), innerPath(pathInner), count(newCount), lockAspect(lockAspectRario), itemSize(0.7f), innerSize(itemRealSize) {};
+    ) : Button(tOuter, vPos, vSize), itemId(itemId), itemSize(0.7f), innerPath(pathInner), innerSize(itemRealSize), lockAspect(lockAspectRario), count(newCount) {};
+
+    /**
+     * @brief Destroy the Inventory Button object
+     * 
+     */
+    //virtual ~InventoryButton();
 
     /**
      * @brief Get the path of the texture of the item

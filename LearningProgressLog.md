@@ -108,3 +108,6 @@ Made level 2 and a final credits screen. Also made the booster a bit more balanc
 
 ## 2024-04-30
 Made the README.
+
+## 2024-05-02
+Tried to build it on Visual Studio, didn't work for a long time. Eventually got down to that my files were not static. Also fixed some errors that I didn't get on Linux.

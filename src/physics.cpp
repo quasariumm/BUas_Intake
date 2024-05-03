@@ -60,7 +60,7 @@ void PhysicsObjects::Ball::applyForce(const float deltaTime, const float F, sf::
 }
 
 PhysicsObjects::Ball::Ball(const sf::Texture& texture, const sf::Vector2f mid, const float m, const float r) :
-      mass(m), radius(r), midpoint(mid), Ball::Sprite(texture)
+      Sprite(texture), mass(m), midpoint(mid), radius(r)
 {
   float factor = (2 * r) / static_cast<float>(texture.getSize().x);
   this->setScale({factor, factor});
@@ -99,11 +99,11 @@ unsigned short getBestSide(PhysicsObjects::Ball& ball, std::vector<Side>& sides,
   // Get the distance to both sides. Grab the smallest distance (x) and get the position of the ball x-1 pixels back.
   // Then, check wich side is closest.
   float smallestDistance = *std::min_element(distances.begin(), distances.end());
-  sf::Vector2f ballBackPos = ball.getPosition() - (smallestDistance - 3) * ball.getDirection();
+  sf::Vector2f ballBackPos = ball.getMidpoint() - (smallestDistance - 3) * ball.getDirection();
   
   std::vector<unsigned short> collSides;
   for (Side side : sides) {
-    float distanceToMidpoint = getDistance(side.a, side.b, side.c, ball.getMidpoint());
+    float distanceToMidpoint = getDistance(side.a, side.b, side.c, ballBackPos);
     if (distanceToMidpoint < ball.getRadius()) {
       collSides.push_back(side.i);
     }

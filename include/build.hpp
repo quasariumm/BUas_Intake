@@ -188,7 +188,7 @@ namespace UserObjects {
      * @param itemId The ID of the item to build. See @a UIElements::Inventory for what ID corresponds with what item
      * @param rotation (optional) The angle in degrees at which the object is rotated
      */
-    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float rotation = 0.0f) : size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(rotation) {};
+    GhostObject(const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float rotation = 0.0f) : itemID(itemId), size(newSize), texturePath(newTexturePath), rotation(rotation) {};
     
     /**
      * @brief Set the size

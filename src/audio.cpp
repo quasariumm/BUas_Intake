@@ -13,18 +13,19 @@
 
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
-#include <SFML/System/Sleep.hpp>
-#include <SFML/System/Time.hpp>
+#include <chrono>
 
 #include "../include/globals.hpp"
 
 void playSound(sf::SoundBuffer buffer) {
-  sf::Sound sound(buffer);
+  sf::Sound* sound = new sf::Sound(buffer);
 
-  sound.setVolume(Globals::volume);
-  sound.play();
+  sound->setVolume(Globals::volume);
+  sound->play();
 
-  while (sound.getStatus() == sf::Sound::Playing) {
-    sf::sleep(sf::milliseconds(10));
+  while (sound->getStatus() == sf::Sound::Playing) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
+  
+  delete sound;
 }

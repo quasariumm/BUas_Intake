@@ -111,7 +111,7 @@ void UserObjects::GhostObject::place(UserObjects::EditableObjectList& objList, U
 //////////////////////////////////////
 
 UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf::Vector2f newSize, const std::filesystem::path newTexturePath, const int8_t itemId, const float newRotation, const bool bouncy, const float cor, const bool booster) 
-: pos(newPos), size(newSize), texturePath(newTexturePath), itemID(itemId), rotation(newRotation), bouncyObject(bouncy), cor(cor), booster(booster) {
+: itemID(itemId), pos(newPos), size(newSize), texturePath(newTexturePath), rotation(newRotation), bouncyObject(bouncy), cor(cor), booster(booster) {
   // Load the texture and store it
   if (!this->texture.loadFromFile(newTexturePath)) {
     throw std::runtime_error("Couldn't load the EditableObject's texture.");

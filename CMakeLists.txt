@@ -6,44 +6,85 @@ cmake_minimum_required(VERSION 3.20)
 
 include(FetchContent)
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(SFML_USE_STATIC_STD_LIBS ON CACHE BOOL "" FORCE)
-set(SFML_BUILD_WINDOW ON CACHE BOOL "" FORCE)
-set(SFML_BUILD_GRAPHICS ON CACHE BOOL "" FORCE)
-set(SFML_BUILD_AUDIO ON CACHE BOOL "" FORCE)
-set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
-set(SFML_ENABLE_COVERAGE OFF CACHE BOOL "" FORCE)
-set(SFML_INSTALL_PKGCONFIG_FILES OFF CACHE BOOL "" FORCE)
-set(SFML_ENABLE_PCH ON CACHE BOOL "" FORCE)
-set(SFML_USE_SYSTEM_DEPS OFF CACHE BOOL "" FORCE)
-set(SFML_BUILD_FRAMEWORKS OFF CACHE BOOL "" FORCE)
-set(SFML_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS ON)
+set(SFML_USE_STATIC_STD_LIBS OFF)
+set(SFML_BUILD_WINDOW ON)
+set(SFML_BUILD_GRAPHICS ON)
+set(SFML_BUILD_AUDIO ON)
+set(SFML_BUILD_NETWORK OFF)
+set(SFML_BUILD_DOC OFF)
+set(SFML_BUILD_EXAMPLES OFF)
+set(SFML_BUILD_TEST_SUITE OFF)
+set(SFML_ENABLE_COVERAGE OFF)
+set(SFML_INSTALL_PKGCONFIG_FILES OFF)
+set(SFML_ENABLE_PCH OFF)
+set(SFML_USE_SYSTEM_DEPS OFF)
+set(SFML_BUILD_FRAMEWORKS OFF)
+set(SFML_STATIC_LIBRARIES OFF)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/SFML)
 
 file(GLOB_RECURSE CPP_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 project(SorryWereBroke)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-add_executable(${CMAKE_PROJECT_NAME} ${CPP_SOURCES})
+if (WIN32)
+	add_executable(${CMAKE_PROJECT_NAME} WIN32 ${CPP_SOURCES})
+else()
+	add_executable(${CMAKE_PROJECT_NAME} ${CPP_SOURCES})
+endif()
 
-target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/")
-target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/")
-#target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="./res/")
-#target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC DATA_PATH="./data/")
+#target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/")
+#target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/")
+target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC RESOURCES_PATH="./res/")
+target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC DATA_PATH="./data/")
 
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE lib)
+target_link_directories(${CMAKE_PROJECT_NAME}
+	PRIVATE lib
+	PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/lib
+)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system)
+# Add openal32 to the libs
+if (WIN23)
+	file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/lib/SFML/extlibs/bin/x64/openal32.dll ${CMAKE_CURRENT_BINARY_DIR}/lib/openal32.dll)
+elseif(UNIX)
+	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lib/openal/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/lib/.)
+endif()
+
+if (UNIX)
+	target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-window sfml-system openal)
+elseif(WIN32 OR MINGW)
+	target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-window sfml-system lib/openal32)
+endif()
+
+# if(MSVC)
+#   target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4 /WX)
+# else()
+#   target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+# endif()
 
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_17)
+
+# Add the data and res folder to the executable folder
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+		${CMAKE_CURRENT_BINARY_DIR}/res
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+		${CMAKE_CURRENT_BINARY_DIR}/data
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_CURRENT_SOURCE_DIR}/res
+		${CMAKE_CURRENT_BINARY_DIR}/res
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_CURRENT_SOURCE_DIR}/data
+		${CMAKE_CURRENT_BINARY_DIR}/data
+)
 
 install(TARGETS ${CMAKE_PROJECT_NAME})

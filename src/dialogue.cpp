@@ -36,9 +36,9 @@
 // TextBubble => TextLabel
 //////////////////////////////////////
 
-TextBubble::TextBubble(const std::string text) : message(text),
+TextBubble::TextBubble(const std::string text) :
 UIElements::TextLabel(text, sf::Vector2f(0.5f * Globals::window->getSize().x, 14.f * Globals::unitSize), sf::Vector2f(12.f * Globals::unitSize, 2.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::monoFont) {
-  
+  this->message = text;
 }
 
 void TextBubble::typewriterText() {
@@ -134,7 +134,7 @@ void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
     std::string argument = lineStr.substr(lineStr.find(' ') + 1);
 
     // In the argument, replace all "\n" with real new-line characters
-    short pos;
+    std::string::size_type pos;
     while ((pos = argument.find("\\n")) != std::string::npos) {
       argument.replace(pos, 2, 1, '\n');
     }
@@ -146,7 +146,7 @@ void Dialogue::loadFromFile(const std::filesystem::path dialogueFile) {
 void Dialogue::play(TextBubble* textBubble, UIElements::TextLabel* textLabel) {
 
   if (Globals::DEBUG_MODE && this->isIntro) {
-    // Skip to the credits (purely for easy testing, edit if you please)
+    // Skip to the level below (purely for easy testing, edit if you please)
     Globals::currentLevel = 2;
     return;
   }

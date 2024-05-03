@@ -307,11 +307,11 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     background.setFillColor(sf::Color(14, 19, 20));
     window.draw(background);
 
-    UIElements::TextLabel credits{
+    UIElements::TextLabel credits(
       "Credits:\n\n\n\n\nPatrick Vreeburg (Quasarium)\n\nExternal resources used:\nsvgrepo.com\nGoogle Fonts\nkbs.im (Keyboard sounds)\nsamplefocus.com (Bounce sample)",
       sf::Vector2f(0.5f * window.getSize().x, 7.f * Globals::unitSize), sf::Vector2f(window.getSize().x, 6.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
       sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * Globals::unitSize)
-    };
+    );
     credits.draw();
 
     sf::Texture quasarLogoTexture;
@@ -324,11 +324,11 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
 
     window.draw(quasarLogo);
 
-    UIElements::TextLabel madeAs{
+    UIElements::TextLabel madeAs(
       "This was made as the intake assignment for", sf::Vector2f(0.5f * window.getSize().x, 13.f * unitSize),
       sf::Vector2f(window.getSize().x, 2.f * unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
       sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * unitSize)
-    };
+    );
     madeAs.draw();
 
     sf::Texture BUasLogoTexture;
@@ -550,13 +550,13 @@ int main() {
 
   // Initiate the dialogue text elements
   TextBubble textBubble(std::string(48, ' '));
-  UIElements::TextLabel dialogueTextLabel = UIElements::TextLabel{
+  UIElements::TextLabel dialogueTextLabel = UIElements::TextLabel(
     "",
     sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().x - Globals::unitSize),
     sf::Vector2f(10.f * Globals::unitSize, 4.f * Globals::unitSize),
     std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
     sf::Color::White, Globals::mainFont, static_cast<int>(0.6f * Globals::unitSize)
-  };
+  );
   Dialogue dialogue;
   dialogue.loadFromFile(std::filesystem::path(RESOURCES_PATH).append("dialogues/intro.qd"));
 
@@ -587,3 +587,11 @@ int main() {
 
   return 0;
 }
+
+#ifndef WIN32
+// Windows :(
+// Why do you force me to use this function
+int WinMain() {
+  return main();
+}
+#endif

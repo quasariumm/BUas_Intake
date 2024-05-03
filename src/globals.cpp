@@ -22,8 +22,7 @@ sf::Font Globals::mainFont;
 sf::Font Globals::monoFont;
 
 void Globals::initFont() {
-  std::filesystem::path fontPath = RESOURCES_PATH;
-  fontPath.append("font/NotoSans-Regular.ttf");
+  std::filesystem::path fontPath = std::filesystem::path(RESOURCES_PATH).append("font/NotoSans-Regular.ttf");
   if (!mainFont.loadFromFile(fontPath)) {
     throw std::runtime_error("Couldn't load the font. Did you set the hardcoded variable right?");
   }
@@ -47,4 +46,4 @@ float Globals::volume = 100;
 
 std::vector<std::thread> Globals::threads;
 
-bool Globals::DEBUG_MODE = false;
+bool Globals::DEBUG_MODE = true;

@@ -64,7 +64,7 @@ void Tilemap::loadFromFile(const std::filesystem::path path) {
     if (!foundTileMap) {
       continue;
     }
-    int start, end;
+    std::string::size_type start, end;
     start = end = 0;
     int ctr2 = 0;
     while ((start = lineText.find_first_not_of(" ", end)) != std::string::npos) {
@@ -230,7 +230,7 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path) {
   }
 
   std::string lineStr;
-  bool foundBO;
+  bool foundBO = false;
   while (std::getline(file, lineStr)) {
 
     if (lineStr.find("[BouncyObjects]") != std::string::npos) {
@@ -322,7 +322,6 @@ void MoneyBag::draw() {
 
 void MoneyBag::fall(PhysicsObjects::Ball& ball, const unsigned windowHeight) {
   sf::Vector2f speed = 2.f * ball.getDirection();
-  const float mass = 0.1f;
   const float acceleraion = 9.81f;
 
   while (this->pos.y <= windowHeight + 0.5f * Globals::unitSize) {

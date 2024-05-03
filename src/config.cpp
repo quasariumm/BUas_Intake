@@ -75,7 +75,6 @@ void Config::setKeybind(const std::string name, const sf::Keyboard::Scan value) 
 
   std::vector<std::string> lines;
   std::string linestr;
-  bool CRLF = false;
 
   while (std::getline(fileStream, linestr)) {
     if (linestr.find(name) != std::string::npos) {

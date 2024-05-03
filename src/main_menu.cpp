@@ -21,6 +21,7 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <cmath>
+#include <cstddef>
 #include <filesystem>
 #include <stdexcept>
 #include <string>
@@ -90,7 +91,7 @@ MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_conf
   }
 
   for (short i = 0; i < NUM_KEYBINDS; ++i) {
-    auto keybind = KEYBIND_NAMES[i];
+    auto& keybind = KEYBIND_NAMES[i];
     std::string keybindDesc = sf::Keyboard::getDescription(this->config->getKeybind(keybind.first)).toAnsiString();
     if (keybindDesc.length() == 1) {
       // Made the one letter uppercase
@@ -158,7 +159,7 @@ void MainMenu::loop_draw() {
     controlsIntruction.draw();
     
     // Draw all of the controls
-    for (short i = 0; i < this->controls.size(); ++i) {
+    for (size_t i = 0; i < this->controls.size(); ++i) {
       this->controls[i].first.draw();
       this->controls[i].second.draw();
 
@@ -183,6 +184,7 @@ void MainMenu::loop_draw() {
 
     case sf::Event::Closed:
       Globals::window->close();
+      break;
     
     case sf::Event::MouseButtonPressed:
       if (event.mouseButton.button != sf::Mouse::Button::Left) break;
@@ -200,7 +202,7 @@ void MainMenu::loop_draw() {
         this->settingsMenu = false;
       
       // Check button clicks (settings)
-      for (short i = 0; i < this->controls.size(); ++i) {
+      for (size_t i = 0; i < this->controls.size(); ++i) {
         if (!this->controls[i].second.intersect(sf::Mouse::getPosition(*Globals::window)) || !this->settingsMenu) {
           continue;
         }

@@ -183,8 +183,7 @@ void UIElements::Inventory::setItems(std::vector<int8_t>& newItems) {
 
   for (unsigned short i = 0; i < newItems.size(); ++i) {
     int8_t item = newItems[i];
-    int16_t count = this->counts[i];
-    this->buttons.push_back(new UIElements::InventoryButton(item, this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], count, true));
+    this->buttons.push_back(new UIElements::InventoryButton(item, this->outerTexture, sf::Vector2f(), sf::Vector2u(0,0), this->itemIdToPath[item], this->itemIdToSize[item], 0, true));
   }
 }
 
@@ -236,6 +235,8 @@ void UIElements::Inventory::draw() {
     (*middleButton)->setPosition(middle);
     (*middleButton)->draw();
 
+    if (this->items.size() == 1) return;
+
     offset = SIZE.x + PADDING;
 
     left = middleButton - 1;
@@ -245,7 +246,7 @@ void UIElements::Inventory::draw() {
 
   // Place the buttons
   uint8_t count = 0;
-  for (;left >= this->buttons.begin() && right != this->buttons.end(); left--, right++, count++) {
+  while (true) {
     (*left)->setSize(SIZE);
     (*left)->setPosition(middle - sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
     (*left)->draw();
@@ -253,6 +254,10 @@ void UIElements::Inventory::draw() {
     (*right)->setSize(SIZE);
     (*right)->setPosition(middle + sf::Vector2f(offset + count * SIZE.x + count * PADDING, 0));
     (*right)->draw();
+
+    if (++right == this->buttons.end()) break;
+    left--;
+    count++;
   }
 }
 
@@ -260,10 +265,10 @@ void UIElements::Inventory::draw() {
 // TextLabel
 //////////////////////////////////////
 
-UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture) {};
+UIElements::TextLabel::TextLabel() : Text(Globals::mainFont), Sprite(tmpTexture), fontSize(0) {};
 
 UIElements::TextLabel::TextLabel(const std::string newText, const sf::Vector2f& newPos, const sf::Vector2f& newSize, const std::filesystem::path backgroundPath, const sf::Color& textColor, const sf::Font& font, const int newFontSize)
- : text(newText), pos(newPos), size(newSize), fontSize(newFontSize), Text(font, newText), Sprite(tmpTexture) {
+ : Text(font, newText), Sprite(tmpTexture), text(newText), pos(newPos), size(newSize), fontSize(newFontSize) {
   if (!this->background.loadFromFile(backgroundPath)) {
     throw std::runtime_error("Couldn't load the background of a TextLabel.");
   }
@@ -317,10 +322,10 @@ void UIElements::TextLabel::draw() {
   const sf::FloatRect SPRITE_RECT = sprite->getLocalBounds();
   const sf::FloatRect TEXT_RECT = text->getLocalBounds();
   
-  sprite->setOrigin(0.5f * sprite->getLocalBounds().getSize());
+  sprite->setOrigin(0.5f * SPRITE_RECT.getSize());
   // ↓ Source: https://en.sfml-dev.org/forums/index.php?topic=26805.0 ↓
   text->setOrigin(sf::Vector2f(TEXT_RECT.left + 0.5f * TEXT_RECT.width, TEXT_RECT.top + 0.5f * TEXT_RECT.height));
-  sprite->setScale(sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
+  sprite->setScale(TEXT_SIZE * sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
   sprite->setPosition(this->pos);
   text->setPosition(this->pos);
 

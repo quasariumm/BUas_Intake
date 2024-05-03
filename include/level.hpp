@@ -175,7 +175,8 @@ public:
    * @param _inventory The inventory
    */
   Level(const std::filesystem::path filePath, sf::Texture& _walls, sf::Texture& _props, sf::Texture& _pipes, UIElements::Inventory& _inventory) 
-  : levelFilePath(filePath), walls(_walls), props(_props), pipes(_pipes), inventory(_inventory) {};
+  : walls(_walls), props(_props), pipes(_pipes), inventory(_inventory), levelFilePath(filePath),
+	tilemap(), moneyBagsNeeded(0), beginScore(0), neededScore(0) {};
 
   /**
    * @brief Destroy the Level object
