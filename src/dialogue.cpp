@@ -51,7 +51,7 @@ void TextBubble::typewriterText() {
   std::string to;
   while (std::getline(stringstream, to, '\n')) {
     ++lines;
-    lineLengths.push_back(to.length());
+    lineLengths.push_back(static_cast<short>(to.length()));
   }
 
   std::string current = "";
@@ -74,7 +74,7 @@ void TextBubble::typewriterText() {
       current += character;
     }
 
-    const short NUM_SPACES = DEFAULT_LINE_LENGTH - (current.length() - DEFAULT_LINE_LENGTH * currLine - currLine);
+    const short NUM_SPACES = static_cast<short>(DEFAULT_LINE_LENGTH - (current.length() - DEFAULT_LINE_LENGTH * currLine - currLine));
 
     this->setText(current + std::string(NUM_SPACES, ' ') + std::string(lines - (currLine + 1), '\n'), true);
 

@@ -105,13 +105,13 @@ sf::SoundBuffer bouncePadBuffer, bounceWallBuffer;
 // Ball-related functions
 
 void applyForces(PhysicsObjects::Ball& ball, float deltaTime) {
-  ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81), {0,-1});
+  ball.applyForce(deltaTime, ball.getMass() * (unitSize * 9.81f), {0,-1});
 
   ball.updatePoistion(deltaTime);
 }
 
 void checkCollision(PhysicsObjects::BouncyObject& object, PhysicsObjects::Ball& ball) {
-  short collisionSide = object.checkBallCollision(ball);
+  short collisionSide = static_cast<short>(object.checkBallCollision(ball));
   if (object.getJustBounced() != collisionSide && collisionSide != NULL_VALUE) {
     if (object.getCOR() == 0.95f) {
       // Bounce pad
@@ -309,7 +309,9 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
 
     UIElements::TextLabel credits(
       "Credits:\n\n\n\n\nPatrick Vreeburg (Quasarium)\n\nExternal resources used:\nsvgrepo.com\nGoogle Fonts\nkbs.im (Keyboard sounds)\nsamplefocus.com (Bounce sample)",
-      sf::Vector2f(0.5f * window.getSize().x, 7.f * Globals::unitSize), sf::Vector2f(window.getSize().x, 6.f * Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+      sf::Vector2f(0.5f * window.getSize().x, 7.f * Globals::unitSize),
+      sf::Vector2f(static_cast<float>(window.getSize().x), 6.f * Globals::unitSize),
+      std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
       sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * Globals::unitSize)
     );
     credits.draw();
@@ -325,8 +327,10 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
     window.draw(quasarLogo);
 
     UIElements::TextLabel madeAs(
-      "This was made as the intake assignment for", sf::Vector2f(0.5f * window.getSize().x, 13.f * unitSize),
-      sf::Vector2f(window.getSize().x, 2.f * unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+      "This was made as the intake assignment for",
+      sf::Vector2f(0.5f * window.getSize().x, 13.f * unitSize),
+      sf::Vector2f(static_cast<float>(window.getSize().x), 2.f * unitSize),
+      std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
       sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * unitSize)
     );
     madeAs.draw();
@@ -414,7 +418,7 @@ void loop(sf::RenderWindow& window, PhysicsObjects::Ball& ball, Level& level, UI
       }
     }
     if (obj->hasBooster()) {
-      short collSide = obj->getBooster().checkBallCollision(ball);
+      int collSide = obj->getBooster().checkBallCollision(ball);
       if (!obj->getBooster().getJustBoosted() && collSide != NULL_VALUE) {
         obj->getBooster().boost(ball);
       } else if (obj->getBooster().getJustBoosted() && collSide == NULL_VALUE) {
@@ -588,10 +592,8 @@ int main() {
   return 0;
 }
 
-#ifndef WIN32
 // Windows :(
 // Why do you force me to use this function
 int WinMain() {
   return main();
 }
-#endif

@@ -236,9 +236,9 @@ public:
   /**
    * @brief Get the Needed Score object
    * 
-   * @return uint8_t 
+   * @return uint16_t 
    */
-  uint8_t getNeededScore() {return neededScore;};
+  uint16_t getNeededScore() {return neededScore;};
 
   /**
    * @brief Initiates the level's tilemap and BouncyObjects
@@ -271,7 +271,8 @@ private:
 
   sf::Texture runButtonOuter;
 
-  uint16_t beginScore, neededScore;
+  uint8_t beginScore = 0;
+  uint8_t neededScore = 0;
 
   Dialogue dialogue;
 

@@ -31,7 +31,6 @@ private:
 
   Level* level;
   Config* config;
-  Dialogue* dialogue;
 
   UIElements::Button play;
   UIElements::Button settings;

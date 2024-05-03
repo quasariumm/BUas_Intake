@@ -139,8 +139,9 @@ namespace UIElements {
   private:
 
     // Percentage/margin the text
-    float textSize;
-    int fontSize;
+    float textSize = 0.7f;
+
+    int fontSize = 0;
 
     sf::Texture outer;
     std::string text;

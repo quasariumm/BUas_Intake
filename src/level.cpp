@@ -82,9 +82,9 @@ void Tilemap::loadFromFile(const std::filesystem::path path) {
 
 void Tilemap::drawPropsWalls(const sf::Texture& walls, const sf::Texture& props, const sf::Vector2i tileSize) {
   
-  unsigned short wallsCols = walls.getSize().x / tileSize.x;
+  unsigned short wallsCols = static_cast<unsigned short>(walls.getSize().x / tileSize.x);
   
-  unsigned short propsCols = props.getSize().x / tileSize.x;
+  unsigned short propsCols = static_cast<unsigned short>(props.getSize().x / tileSize.x);
 
   for (unsigned short i = 0; i < 18; ++i) {
     for (unsigned short j = 0; j < 18; ++j) {
@@ -99,7 +99,7 @@ void Tilemap::drawPropsWalls(const sf::Texture& walls, const sf::Texture& props,
         tile.setTextureRect(
           sf::IntRect(sf::Vector2i(
             (this->map[i][j] - 1) % wallsCols * tileSize.x,
-            std::floor((this->map[i][j] - 1) / wallsCols) * tileSize.y), 
+            static_cast<int>(std::floor((this->map[i][j] - 1) / wallsCols) * tileSize.y)), 
             tileSize)
         );
       } else if (this->map[i][j] <= NUM_WALLS + NUM_PIPES + NUM_PROPS) {
@@ -108,7 +108,7 @@ void Tilemap::drawPropsWalls(const sf::Texture& walls, const sf::Texture& props,
         tile.setTextureRect(
           sf::IntRect(sf::Vector2i(
             (this->map[i][j] - NUM_WALLS - NUM_PIPES - 1) % propsCols * tileSize.x,
-            std::floor((this->map[i][j] - NUM_WALLS - NUM_PIPES - 1) / propsCols) * tileSize.y), 
+            static_cast<int>(std::floor((this->map[i][j] - NUM_WALLS - NUM_PIPES - 1) / propsCols) * tileSize.y)), 
             tileSize)
         );
       }
@@ -124,7 +124,7 @@ void Tilemap::drawPropsWalls(const sf::Texture& walls, const sf::Texture& props,
 
 void Tilemap::drawPipes(const sf::Texture& wholeTexture, const sf::Vector2i tileSize) {
 
-  unsigned short pipesCols = wholeTexture.getSize().x / tileSize.x;
+  unsigned short pipesCols = static_cast<unsigned short>(wholeTexture.getSize().x / tileSize.x);
 
   for (unsigned short i = 0; i < 18; ++i) {
     for (unsigned short j = 0; j < 18; ++j) {
@@ -137,7 +137,7 @@ void Tilemap::drawPipes(const sf::Texture& wholeTexture, const sf::Vector2i tile
       // Place the right pipe
       tile.setTextureRect(sf::IntRect(sf::Vector2i(
         (this->map[i][j] - NUM_WALLS - 1) % pipesCols * tileSize.x,
-        std::floor((this->map[i][j] - NUM_WALLS - 1) / pipesCols) * tileSize.y), 
+        static_cast<int>(std::floor((this->map[i][j] - NUM_WALLS - 1) / pipesCols) * tileSize.y)), 
         tileSize
       ));
 
@@ -162,8 +162,8 @@ void BouncyObjects::makeWalls() {
   floor.setPoints({
     sf::Vector2f(0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize), 
     sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize), 
-    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, windowSize.y + 100),
-    sf::Vector2f(0.5f * Globals::unitSize, windowSize.y + 100)
+    sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, windowSize.y + 100.f),
+    sf::Vector2f(0.5f * Globals::unitSize, windowSize.y + 100.f)
   });
   floor.setCOR(0.8f);
   this->bo_list.push_back(floor);
@@ -171,8 +171,8 @@ void BouncyObjects::makeWalls() {
   PhysicsObjects::BouncyObject right_wall;
   right_wall.setPoints({
     sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
-    sf::Vector2f(windowSize.x + 100, 0.5f * Globals::unitSize),
-    sf::Vector2f(windowSize.x + 100, windowSize.y - 0.5f * Globals::unitSize),
+    sf::Vector2f(windowSize.x + 100.f, 0.5f * Globals::unitSize),
+    sf::Vector2f(windowSize.x + 100.f, windowSize.y - 0.5f * Globals::unitSize),
     sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize)
   });
   right_wall.setCOR(0.8f);
@@ -182,8 +182,8 @@ void BouncyObjects::makeWalls() {
   ceiling1.setPoints({
     sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
     sf::Vector2f(1.5f * Globals::unitSize, 0.5f * Globals::unitSize),
-    sf::Vector2f(1.5f * Globals::unitSize, -100),
-    sf::Vector2f(0.5f * Globals::unitSize, -100)
+    sf::Vector2f(1.5f * Globals::unitSize, -100.f),
+    sf::Vector2f(0.5f * Globals::unitSize, -100.f)
   });
   ceiling1.setCOR(0.8f);
   this->bo_list.push_back(ceiling1);
@@ -192,7 +192,7 @@ void BouncyObjects::makeWalls() {
     sf::Vector2f(2.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
     sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, 0.5f * Globals::unitSize),
     sf::Vector2f(windowSize.x - 0.5f * Globals::unitSize, -100),
-    sf::Vector2f(2.5f * Globals::unitSize, -100)
+    sf::Vector2f(2.5f * Globals::unitSize, -100.f)
   });
   ceiling2.setCOR(0.8f);
   this->bo_list.push_back(ceiling2);
@@ -200,8 +200,8 @@ void BouncyObjects::makeWalls() {
   PhysicsObjects::BouncyObject left_wall;
   left_wall.setPoints({
     sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize), 
-    sf::Vector2f(-100, 0.5f * Globals::unitSize),
-    sf::Vector2f(-100, windowSize.y - 0.5f * Globals::unitSize),
+    sf::Vector2f(-100.f, 0.5f * Globals::unitSize),
+    sf::Vector2f(-100.f, windowSize.y - 0.5f * Globals::unitSize),
     sf::Vector2f(0.5f * Globals::unitSize, windowSize.y - 0.5f * Globals::unitSize)
   });
   left_wall.setCOR(0.8f);
@@ -247,7 +247,7 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path) {
     PhysicsObjects::BouncyObject obj;
 
     std::vector<sf::Vector2f> points;
-    int one = lineStr.find_first_of('(');
+    size_t one = lineStr.find_first_of('(');
     sf::Vector2f startPoint;
     startPoint.x = Globals::unitSize * std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
     startPoint.y = Globals::unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
@@ -257,7 +257,7 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path) {
     one = lineStr.find_first_of(')');
 
     sf::Vector2f endPoint;
-    int two = lineStr.find_first_of('(', one);
+    size_t two = lineStr.find_first_of('(', one);
     endPoint.x = Globals::unitSize * std::stoi(lineStr.substr(two + 1, lineStr.find_first_of(',', two) - two)) + Globals::unitSize;
     endPoint.y = Globals::unitSize * std::stoi(lineStr.substr(lineStr.find_first_of(',', two) + 1, lineStr.find_first_of(')', two) - lineStr.find_first_of(',', two))) + Globals::unitSize;
     
@@ -266,11 +266,11 @@ void BouncyObjects::loadFromFile(const std::filesystem::path path) {
     points = {sf::Vector2f(startPoint.x, startPoint.y), sf::Vector2f(endPoint.x, startPoint.y), sf::Vector2f(endPoint.x, endPoint.y), sf::Vector2f(startPoint.x, endPoint.y)};
 
     obj.setPoints(points);
-    int digitStart = lineStr.find_first_of(')', two) + 2;
+    size_t digitStart = lineStr.find_first_of(')', two) + 2;
     obj.setCOR(std::stof(lineStr.substr(digitStart, lineStr.find_first_of(' ', digitStart) - digitStart)));
     
     sf::Vector2f orientation;
-    int orientationStart = lineStr.find_first_of('(', digitStart) + 1;
+    size_t orientationStart = lineStr.find_first_of('(', digitStart) + 1;
     orientation.x = std::stof(lineStr.substr(orientationStart, lineStr.find_first_of(',', orientationStart) - orientationStart));
     orientation.y = std::stof(lineStr.substr(lineStr.find_first_of(',', orientationStart) + 1, lineStr.find_first_of(')', orientationStart) - lineStr.find_first_of(',', orientationStart) - 1));
 
@@ -390,9 +390,9 @@ void Level::initLevel() {
       break;
     }
 
-    int one = lineStr.find_first_of('(');
-    invItems.push_back(std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one)));
-    invCounts.push_back(std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(','))));
+    size_t one = lineStr.find_first_of('(');
+    invItems.push_back(static_cast<int8_t>(std::stoi(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one))));
+    invCounts.push_back(static_cast<int16_t>(std::stoi(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')))));
 
   }
 
@@ -407,7 +407,7 @@ void Level::initLevel() {
     } else if (lineStr.find("[MoneyBagsNeeded]") != std::string::npos) {
       // Get the next line and set moneyBagsNeeded
       std::getline(levelStream, lineStr);
-      this->moneyBagsNeeded = std::stoi(lineStr);
+      this->moneyBagsNeeded = static_cast<uint8_t>(std::stoi(lineStr));
     }
 
     if (!foundMoneyBagHeader) {
@@ -418,7 +418,7 @@ void Level::initLevel() {
     }
 
     sf::Vector2f pos;
-    int one = lineStr.find_first_of('(');
+    size_t one = lineStr.find_first_of('(');
     pos.x = Globals::unitSize * std::stof(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
     pos.y = Globals::unitSize * std::stof(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
 
@@ -432,7 +432,13 @@ void Level::initLevel() {
   // Init the ScoreLabel
   std::filesystem::path scoreLabelBackground = RESOURCES_PATH;
   scoreLabelBackground += "sprites/scoreLabelBackground.png";
-  this->scoreLabel = UIElements::ScoreLabel("Money: $0", sf::Vector2f(0.5f * Globals::window->getSize().x, 0.325f * Globals::unitSize), sf::Vector2f(5.5f * Globals::unitSize, 0.65f * Globals::unitSize), scoreLabelBackground, sf::Color::Black);
+  this->scoreLabel = UIElements::ScoreLabel(
+    "Money: $0",
+    sf::Vector2f(0.5f * Globals::window->getSize().x, 0.325f * Globals::unitSize),
+    sf::Vector2f(5.5f * Globals::unitSize, 0.65f * Globals::unitSize),
+    scoreLabelBackground,
+    sf::Color::Black
+  );
   this->scoreLabel.setScore(this->beginScore);
 
   // Init the run button
@@ -443,7 +449,11 @@ void Level::initLevel() {
     throw std::runtime_error("Couldn't load the run button background.");
   }
 
-  this->runButton = UIElements::RunButton(this->runButtonOuter, sf::Vector2f(0.5f * Globals::window->getSize().x, Globals::unitSize ), sf::Vector2u(2.f * Globals::unitSize, 0.5f * Globals::unitSize));
+  this->runButton = UIElements::RunButton(
+    this->runButtonOuter,
+    sf::Vector2f(0.5f * Globals::window->getSize().x, Globals::unitSize ),
+    sf::Vector2u(static_cast<unsigned>(2.f * Globals::unitSize), static_cast<unsigned>(0.5f * Globals::unitSize))
+  );
 }
 
 void Level::resetMoneyBagPositions() {
@@ -472,7 +482,7 @@ void Level::resetMoneyBagPositions() {
     }
 
     sf::Vector2f pos;
-    int one = lineStr.find_first_of('(');
+    size_t one = lineStr.find_first_of('(');
     pos.x = Globals::unitSize * std::stof(lineStr.substr(one + 1, lineStr.find_first_of(',', one) - one));
     pos.y = Globals::unitSize * std::stof(lineStr.substr(lineStr.find_first_of(',') + 1, lineStr.find_first_of(')', one) - lineStr.find_first_of(',')));
 

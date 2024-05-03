@@ -222,11 +222,11 @@ int PhysicsObjects::BouncyObject::checkBallCollision(PhysicsObjects::Ball& ball)
 
 }
 
-void PhysicsObjects::BouncyObject::bounce(PhysicsObjects::Ball& ball, const int side) {
+void PhysicsObjects::BouncyObject::bounce(PhysicsObjects::Ball& ball, const short side) {
 
   // Take the inverse of the velocity vector of the ball and mirror it relative to this object's normal.
   sf::Vector2f invVelocity = -(ball.getDirection() * ball.getVelocity());
-  sf::Vector2f newVelocity = cor * invVelocity.rotatedBy(2 * invVelocity.angleTo(this->orientation.rotatedBy(sf::degrees(-90 * (side-1)))));
+  sf::Vector2f newVelocity = cor * invVelocity.rotatedBy(2.f * invVelocity.angleTo(this->orientation.rotatedBy(sf::degrees(-90.f * (side-1)))));
 
   ball.setVelocity(newVelocity);
   this->setJustBounced(side);

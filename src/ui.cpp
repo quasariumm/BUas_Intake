@@ -115,17 +115,20 @@ void UIElements::InventoryButton::draw() {
   Globals::window->draw(outerSprite);
 
   if (innerTexture.getSize().x != 0 && innerTexture.getSize().y != 0) {
-    sf::Vector2f innerSize = this->itemSize * static_cast<sf::Vector2f>(this->getSize());
+    sf::Vector2f innerSizeVector = this->itemSize * static_cast<sf::Vector2f>(this->getSize());
     sf::Vector2f factors;
+
+    sf::Vector2f textureSize = static_cast<sf::Vector2f>(innerTexture.getSize());
+
     if (lockAspect) {
-      float smallestSide = (this->getSize().x < this->getSize().y) ? this->getSize().x : this->getSize().y;
-      smallestSide *= this->itemSize * (innerSprite.getTexture().getSize().y / static_cast<float>(innerSprite.getTexture().getSize().x));
-      const float yToXAspect = innerTexture.getSize().x / static_cast<float>(innerTexture.getSize().y);
-      factors = sf::Vector2f((smallestSide * yToXAspect) / static_cast<float>(innerTexture.getSize().x), smallestSide / static_cast<float>(innerTexture.getSize().y));
+      float smallestSide = static_cast<float>( (this->getSize().x < this->getSize().y) ? this->getSize().x : this->getSize().y );
+      smallestSide *= this->itemSize * (textureSize.y / textureSize.x);
+      const float yToXAspect = textureSize.x / textureSize.y;
+      factors = sf::Vector2f((smallestSide * yToXAspect) / textureSize.x, smallestSide / textureSize.y);
     } else {
-      factors = sf::Vector2f(innerSize.x / static_cast<float>(innerTexture.getSize().x), innerSize.y / static_cast<float>(innerTexture.getSize().y));
+      factors = sf::Vector2f(innerSizeVector.x / textureSize.x, innerSizeVector.y / textureSize.y);
     }
-    innerSprite.setOrigin(0.5f * static_cast<sf::Vector2f>(innerTexture.getSize()));
+    innerSprite.setOrigin(0.5f * textureSize);
     innerSprite.setScale(factors);
     sf::Vector2f basePos = this->getPosition();
     innerSprite.setPosition(basePos);
@@ -135,7 +138,7 @@ void UIElements::InventoryButton::draw() {
   if (this->count > -1) {
     std::string countStr = std::to_string(this->count);
     sf::Text countText(Globals::mainFont, countStr);
-    countText.setCharacterSize(0.25 * this->getSize().x);
+    countText.setCharacterSize(static_cast<unsigned>(0.25f * this->getSize().x));
     sf::Vector2f sizeF = static_cast<sf::Vector2f>(this->getSize());
 
     sf::Vector2f bottomRightPadded = this->getPosition() + 0.4f * sizeF;
@@ -201,7 +204,7 @@ void UIElements::Inventory::setCounts(std::vector<int16_t>& newCounts) {
 
 void UIElements::Inventory::changeCount(int8_t itemId, int8_t difference) {
   auto itemIter = std::find(this->items.begin(), this->items.end(), itemId);
-  long itemIndex = std::distance(this->items.begin(), itemIter);
+  auto itemIndex = std::distance(this->items.begin(), itemIter);
     
   this->counts[itemIndex] += difference;
 
@@ -218,7 +221,7 @@ void UIElements::Inventory::draw() {
   float offset = 0.f;
   const float PADDING = 0.3f * Globals::unitSize;
 
-  const sf::Vector2u SIZE = sf::Vector2u(1.5f * Globals::unitSize, 1.5f * Globals::unitSize);
+  const sf::Vector2u SIZE = static_cast<unsigned>(1.5f * Globals::unitSize) * sf::Vector2u(1,1);
 
   std::vector<UIElements::InventoryButton*>::iterator left, right;
   if (this->items.size() % 2 == 0) {
@@ -230,7 +233,7 @@ void UIElements::Inventory::draw() {
 
   } else {
     
-    std::vector<UIElements::InventoryButton*>::iterator middleButton = this->buttons.begin() + floor(static_cast<float>(this->buttons.size()) / 2.f);
+    std::vector<UIElements::InventoryButton*>::iterator middleButton = this->buttons.begin() + static_cast<int>(floor(static_cast<float>(this->buttons.size()) / 2.f));
     (*middleButton)->setSize(SIZE);
     (*middleButton)->setPosition(middle);
     (*middleButton)->draw();
@@ -312,25 +315,23 @@ void UIElements::TextLabel::setText(const std::string newString, const bool mini
 
 void UIElements::TextLabel::draw() {
   // Set the right size and position
-  sf::Sprite* sprite = static_cast<sf::Sprite*>(this);
-  sf::Text* text = static_cast<sf::Text*>(this);
+  sf::Sprite* pSprite = static_cast<sf::Sprite*>(this);
+  sf::Text* pText = static_cast<sf::Text*>(this);
 
-  const float TEXT_SIZE = 0.7f; // Relative to the background
+  pSprite->setTexture(this->background, true);
 
-  sprite->setTexture(this->background, true);
-
-  const sf::FloatRect SPRITE_RECT = sprite->getLocalBounds();
-  const sf::FloatRect TEXT_RECT = text->getLocalBounds();
+  const sf::FloatRect SPRITE_RECT = pSprite->getLocalBounds();
+  const sf::FloatRect TEXT_RECT = pText->getLocalBounds();
   
-  sprite->setOrigin(0.5f * SPRITE_RECT.getSize());
+  pSprite->setOrigin(0.5f * SPRITE_RECT.getSize());
   // ↓ Source: https://en.sfml-dev.org/forums/index.php?topic=26805.0 ↓
-  text->setOrigin(sf::Vector2f(TEXT_RECT.left + 0.5f * TEXT_RECT.width, TEXT_RECT.top + 0.5f * TEXT_RECT.height));
-  sprite->setScale(TEXT_SIZE * sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
-  sprite->setPosition(this->pos);
-  text->setPosition(this->pos);
+  pText->setOrigin(sf::Vector2f(TEXT_RECT.left + 0.5f * TEXT_RECT.width, TEXT_RECT.top + 0.5f * TEXT_RECT.height));
+  pSprite->setScale(sf::Vector2f(this->size.x / this->background.getSize().x, this->size.y / this->background.getSize().y));
+  pSprite->setPosition(this->pos);
+  pText->setPosition(this->pos);
 
-  Globals::window->draw(*sprite);
-  Globals::window->draw(*text);
+  Globals::window->draw(*pSprite);
+  Globals::window->draw(*pText);
 }
 
 //////////////////////////////////////
@@ -338,14 +339,16 @@ void UIElements::TextLabel::draw() {
 //////////////////////////////////////
 
 std::string moneyScore(const uint8_t score) {
-  std::string base("Money: $");
+  std::string base = "Money: $";
 
   std::stringstream moneyStream;
   moneyStream << score * 100000;
   std::string money = moneyStream.str();
 
-  for (int i = money.length() - 3; i > 0; ------i) {
-    money.insert(i, ",");
+  if (money.length() <= 3) return base + money;
+
+  for (int i = static_cast<int>(money.length() - 3); i > 0; ------i) {
+    money.insert(i, 1, ',');
   }
 
   return base + money;
@@ -361,7 +364,7 @@ void UIElements::ScoreLabel::setScore(const uint8_t newScore) {
 // EditGUI => TextLabel
 //////////////////////////////////////
 
-UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::mainFont, 0.5f * Globals::unitSize) {
+UIElements::EditGUI::EditGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * Globals::unitSize)) {
   this->setText("F: Move/Rotate\nG: Delete");
 }
 
@@ -390,22 +393,22 @@ void UIElements::EditGUI::setCorrectText(Config& config) {
 
 void UIElements::EditGUI::drawBackground() {
   const sf::Vector2f SIZE = static_cast<sf::Text*>(this)->getLocalBounds().getSize() + sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize);
-  sf::RectangleShape background(SIZE);
-  background.setOrigin(0.5f * SIZE);
+  sf::RectangleShape backgroundShape(SIZE);
+  backgroundShape.setOrigin(0.5f * SIZE);
 
   const sf::FloatRect TEXT_GLOBAL = static_cast<sf::Text*>(this)->getGlobalBounds();
-  background.setPosition(TEXT_GLOBAL.getCenter());
+  backgroundShape.setPosition(TEXT_GLOBAL.getCenter());
 
-  background.setFillColor(sf::Color(20,20,20,65));
+  backgroundShape.setFillColor(sf::Color(20,20,20,65));
 
-  Globals::window->draw(background);
+  Globals::window->draw(backgroundShape);
 }
 
 //////////////////////////////////////
 // BuildGUI => TextLabel
 //////////////////////////////////////
 
-UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::mainFont, 0.5f * Globals::unitSize) {
+UIElements::BuildGUI::BuildGUI(const sf::Vector2f& newPos, const sf::Vector2f& newSize) : TextLabel("", newPos, newSize, std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"), sf::Color::White, Globals::mainFont, static_cast<int>(0.5f * Globals::unitSize)) {
   this->setText("R: Rotate CCW\nT: Rotate CW\nEsc: Cancel");
 }
 
@@ -459,13 +462,13 @@ void UIElements::BuildGUI::setCorrectText(Config& config) {
 
 void UIElements::BuildGUI::drawBackground() {
   const sf::Vector2f SIZE = static_cast<sf::Text*>(this)->getLocalBounds().getSize() + sf::Vector2f(0.5f * Globals::unitSize, 0.5f * Globals::unitSize);
-  sf::RectangleShape background(SIZE);
-  background.setOrigin(0.5f * SIZE);
+  sf::RectangleShape backgroundRect(SIZE);
+  backgroundRect.setOrigin(0.5f * SIZE);
 
   const sf::FloatRect TEXT_GLOBAL = static_cast<sf::Text*>(this)->getGlobalBounds();
-  background.setPosition(TEXT_GLOBAL.getCenter());
+  backgroundRect.setPosition(TEXT_GLOBAL.getCenter());
 
-  background.setFillColor(sf::Color(20,20,20,65));
+  backgroundRect.setFillColor(sf::Color(20,20,20,65));
 
-  Globals::window->draw(background);
+  Globals::window->draw(backgroundRect);
 }

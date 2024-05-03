@@ -46,4 +46,4 @@ float Globals::volume = 100;
 
 std::vector<std::thread> Globals::threads;
 
-bool Globals::DEBUG_MODE = true;
+bool Globals::DEBUG_MODE = false;

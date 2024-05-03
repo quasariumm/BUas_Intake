@@ -103,7 +103,7 @@ namespace PhysicsObjects {
 
   private:
 
-    const float G = 9.81; // Gravitational acceleration constant
+    const float G = 9.81f; // Gravitational acceleration constant
 
     float mass = 1; // Mass in kg
     sf::Vector2f midpoint;
@@ -172,7 +172,7 @@ namespace PhysicsObjects {
      * @param ball A reference to the ball
      * @param side The side to bounce the ball of
      */
-    void bounce(Ball& ball, const int side);
+    void bounce(Ball& ball, const short side);
 
     /**
      * @brief Set justBounced
@@ -195,7 +195,7 @@ namespace PhysicsObjects {
     std::vector<sf::Vector2f> points;
 
     sf::Vector2f orientation = {1, 0};
-    float cor; // Coefficient of restitution. This is the factor with which the ball gets slowed down upon impact.
+    float cor = 0.8f; // Coefficient of restitution. This is the factor with which the ball gets slowed down upon impact.
 
     short justBounced = -1;
 
@@ -246,11 +246,11 @@ namespace PhysicsObjects {
 
     sf::Vector2i pos;
     sf::Vector2f size;
-    float rotation;
+    float rotation = 0.f;
 
-    float boostExtra;
+    float boostExtra = 0.4f;
 
-    bool justBoosted;
+    bool justBoosted = false;
 
   };
 

@@ -144,7 +144,7 @@ UserObjects::EditableObject::EditableObject(const sf::Vector2i newPos, const sf:
   }
 };
 
-bool UserObjects::EditableObject::intersect(const sf::Vector2i pos) {
+bool UserObjects::EditableObject::intersect(const sf::Vector2i position) {
   // I'm not going to do a very complicated way of knowing if it intersects.
   // I'm just going to get the global bounds and use its contain function
   // Fist, make a temporary RectangleShape to get the global bounds of
@@ -153,7 +153,7 @@ bool UserObjects::EditableObject::intersect(const sf::Vector2i pos) {
   rect.setPosition(static_cast<sf::Vector2f>(this->pos));
   rect.setRotation(sf::degrees(this->rotation));
   sf::FloatRect rectBounds = rect.getGlobalBounds();
-  return rectBounds.contains(static_cast<sf::Vector2f>(pos));
+  return rectBounds.contains(static_cast<sf::Vector2f>(position));
 }
 
 void UserObjects::EditableObject::draw() {

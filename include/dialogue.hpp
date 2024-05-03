@@ -82,7 +82,7 @@ private:
 
   std::vector<std::pair<std::string, std::string>> instructions;
 
-  bool isIntro;
+  bool isIntro = false;
 
 };
 

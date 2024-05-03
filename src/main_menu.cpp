@@ -51,17 +51,17 @@ MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_conf
 
   this->play = UIElements::Button(
     playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 2.5f * Globals::unitSize),
-    sf::Vector2u(8.f * Globals::unitSize, 2.f * Globals::unitSize), "   Play   ", sf::Color::White
+    sf::Vector2u(static_cast<unsigned>(8.f * Globals::unitSize), static_cast<unsigned>(2.f * Globals::unitSize)), "   Play   ", sf::Color::White
   );
 
   this->settings = UIElements::Button(
     playSettings, sf::Vector2f(0.5f * Globals::window->getSize().x, 0.5f * Globals::window->getSize().y + 5.5f * Globals::unitSize),
-    sf::Vector2u(8.f * Globals::unitSize, 2.f * Globals::unitSize), "Settings", sf::Color::White
+    sf::Vector2u(static_cast<unsigned>(8.f * Globals::unitSize), static_cast<unsigned>(2.f * Globals::unitSize)), "Settings", sf::Color::White
   );
 
   this->back = UIElements::Button(
     blank, sf::Vector2f(2.f * Globals::unitSize, 15.7f * Globals::unitSize),
-    sf::Vector2u(3.f * Globals::unitSize, 2.f * Globals::unitSize), "Back", sf::Color::White
+    sf::Vector2u(static_cast<unsigned>(3.f * Globals::unitSize), static_cast<unsigned>(2.f * Globals::unitSize)), "Back", sf::Color::White
   );
 
   const int NUM_KEYBINDS = 7;
@@ -104,12 +104,14 @@ MainMenu::MainMenu(Level* _level, Config* _config) : level(_level), config(_conf
     this->controls.emplace_back(
       UIElements::TextLabel(
         keybind.second, sf::Vector2f(6.f * Globals::unitSize, 3.f * Globals::unitSize + 1.3f * i * Globals::unitSize),
-        sf::Vector2f(7.f * Globals::unitSize, Globals::unitSize), std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
+        sf::Vector2f(7.f * Globals::unitSize, Globals::unitSize),
+        std::filesystem::path(RESOURCES_PATH).append("sprites/blank.png"),
         sf::Color::White
       ),
       UIElements::Button(
         buttonBackground, sf::Vector2f(12.f * Globals::unitSize, 3.f * Globals::unitSize + 1.3f * i * Globals::unitSize),
-        sf::Vector2u(4.f * Globals::unitSize, Globals::unitSize), keybindDesc,
+        sf::Vector2u(static_cast<unsigned>(4.f * Globals::unitSize), static_cast<unsigned>(Globals::unitSize)),
+        keybindDesc,
         sf::Color::White
       )
     );
@@ -213,7 +215,7 @@ void MainMenu::loop_draw() {
 
     case sf::Event::KeyPressed:
       if (keybindEditing != nullptr) {
-        int index = std::round((keybindEditing->getPosition().y - 3.f * Globals::unitSize) / (1.3f * Globals::unitSize));
+        int index = static_cast<int>(std::round((keybindEditing->getPosition().y - 3.f * Globals::unitSize) / (1.3f * Globals::unitSize)));
         this->config->setKeybind(this->keybindNames[index], event.key.scancode);
         
         std::string keybindDesc = sf::Keyboard::getDescription(event.key.scancode).toAnsiString();

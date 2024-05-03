@@ -114,11 +114,11 @@ namespace UserObjects {
     /**
      * @brief Checks if the editable object is clicked on
      * 
-     * @param pos The position to check (the position of the mouse once clicked)
+     * @param position The position to check (the position of the mouse once clicked)
      * @return true if the user has clicked the object
      * @return false if the user clicked somewhere else
      */
-    bool intersect(const sf::Vector2i pos);
+    bool intersect(const sf::Vector2i position);
 
     /**
      * @brief Draws the object on the screen
