@@ -56,7 +56,7 @@ target_link_directories(${CMAKE_PROJECT_NAME}
 if (MSVC)
 	file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/lib/SFML/extlibs/bin/x64/openal32.dll ${CMAKE_CURRENT_BINARY_DIR}/lib/openal32.dll)
 elseif(UNIX)
-	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lib/openal/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/lib/.)
+	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lib/openal/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.)
 endif()
 
 # Add SFML DLLs to PATH
@@ -65,7 +65,7 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/lib/SFML/bin/)
 if (UNIX)
 	target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-window sfml-system openal)
 elseif(WIN32 OR MSVC)
-	target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-window sfml-system)
+	target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-window sfml-system openal32)
 endif()
 
 if(WIN32 OR MSVC)
@@ -91,10 +91,18 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 )
 
 # After SFML build completes, copy the DLLs to the binary directory
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_BINARY_DIR}/lib/SFML/bin/
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
+if (WIN32 OR MSVC)
+	add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+  	  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  	  ${CMAKE_CURRENT_BINARY_DIR}/lib/SFML/bin/
+  	  ${CMAKE_CURRENT_BINARY_DIR}
+	)
+elseif(UNIX)
+	add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_CURRENT_BINARY_DIR}/lib/SFML/lib/
+		${CMAKE_CURRENT_BINARY_DIR}
+	)
+endif()
 
 install(TARGETS ${CMAKE_PROJECT_NAME})
