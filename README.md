@@ -1,11 +1,19 @@
 # Sorry, we're broke
-The intake game for BUas. Theme 'collect'
+The intake game for BUas. The theme was 'collect'.
 
 ## Installation
 You can install the game from the releases or clone and build it yourself.
 When cloning, please use the following command to make sure that the SFML submodule will be installed as well: `git clone --recursive https://github.com/quasariumm/BUas_Intake.git`  
-If you already cloned it and are not seeing the SFML repository, you can update the submodules with `git submodules update --init --recursive`  
-  
+If you have already cloned it and are not seeing the SFML repository, you can update the submodules with `git submodules update --init --recursive`  
+
+### Visual Studio
+To build the game, follow these steps:
+- Open the folder with Visual Studio and make sure it recognises the CMake configuration. Also, make sure you have the required modules installed to build with CMake.
+- Select your preferred build configuration.
+- Select "SorryWereBroke.exe" as the target.
+- Build.
+
+### Terminal/Command prompt
 To build the game, do the following:
 - Install cmake (if you haven't already)
 - Make a `build` directory in the project directory (`cd` to the cloned folder and run `mkdir build` and `cd build`)
@@ -14,16 +22,16 @@ To build the game, do the following:
 - You can now run the game using `bin/SorryWereBroke` (on Windows `bin/SorryWereBroke.exe`)
 
 ## Controls
-You are able to change the controls in the settings in the main menu. The default controls are:
+You can change the controls in the settings in the main menu. Note that you can't go back to the main menu once you have clicked _Play_. The default controls are:
 - `R`: Rotate counterclockwise (in placement mode)
 - `T`: Rotate clockwise (in placement mode)
 - Hold `Left Shift`: Rotate slower (in placement mode)
 - Hold `Left control`: Rotate faster (in placement mode)
-- `Escape`: Cancel placement (puts item back in inventory)
+- `Escape`: Cancel placement (puts the item back in inventory)
 - `F`: Move (in edit mode)
 - `G`: Delete (in edit mode)
 
-NOTE: Moue buttons are not supported. If you do want to use the mouse, please rebind that moude button to a supported key (See [https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php](https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php) for the supported keys).
+NOTE: Moue buttons are not supported. If you do want to use the mouse, please rebind that mouse button to a supported key (See [https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php](https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php) for the supported keys).
 
 ## Specific file extensions
 ### .ql
@@ -36,7 +44,7 @@ The tilemap for the level in base 36. The value denotes an entry in a texture at
 `h` is the first pipe  
 `n` is the first prop  
 You can find the tilemaps in `res/sprites/tilemap[...].png`.  
-Note that the level is 16 by 16 _units_ and that the tiles on the edges count as the walls. The tilemap gets drawn with an offset of `(-0.5 unit, -0.5 unit)`, so that the walls are only half visible. 
+Note that the level is 16 by 16 _units_ and that the tiles on the edges count as the walls. The tilemap gets drawn with an offset of `(-0.5 unit, -0.5 unit)` so that the walls are only half visible. 
 
 #### [Inventory]
 The items that the player gets. Each item is written on one line using the format `(ITEMID,COUNT)` where a bounce pad has ITEMID `0` and a booster ITEMID `1`
@@ -48,14 +56,14 @@ Each following line represents a money bag. The format for the lines is `(X,Y)` 
 On the line below you can put the required money bags.
 
 #### [BouncyObjects]
-Each following line represents a BouncyObject, so a block that the ball bounces of. Every line has the format `(STARTX,STARTY) (ENDX,ENDY) COR (ORX,ORY)`.  
+Each following line represents a BouncyObject, a block that the ball bounces off. Every line has the format `(STARTX,STARTY) (ENDX,ENDY) COR (ORX,ORY)`.  
 The start and end coordinates are in _units_. The BouncyObject spans from the top-left corner of the start tile to the bottom-right corner of the end tile.  
-`COR` stands for _Coefficient of Restitution_ and is the factor that the speed of the ball gets multiplied by when it bounces of the object.  
+`COR` stands for _Coefficient of Restitution_ and is the factor that the speed of the ball gets multiplied by when it bounces off the object.  
 `(ORX,ORY)` is the orientation of the object (always `(1,0)`).
 
 ### .qd
 These are the dialogue files (Quasar Dialogue). To make a dialogue you can use the following commands, each on its own line:
-- `SAY`: Shows text on the text bubble at the bottom of the screen. Uses a typewriter effect to make the text appear. This command is followed by a message (string) with quotation marks (`"<MESSAGE>"`).
+- `SAY`: Shows text on the text bubble at the bottom of the screen. It uses a typewriter effect to make the text appear. This command is followed by a message (string) with quotation marks (`"<MESSAGE>"`).
 - `TEXT`: Shows text in the center of the screen. This command is followed by a string with quotation marks.
 - `WAIT`: Waits for the specified amount of seconds. This command is followed by a number that can be a floating point number.
 - `ENABLE_DIALOGUE`: Enables the dialogue and makes it so that the text bubble is drawn on the screen. This command is run by default at the beginning of every dialogue (so no need to put it at the start).
