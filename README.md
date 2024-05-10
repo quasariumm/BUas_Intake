@@ -21,6 +21,8 @@ To build the game, do the following:
 - Finally, build the game using `cmake --build .`
 - You can now run the game using `bin/SorryWereBroke` (on Windows `bin/SorryWereBroke.exe`)
 
+NOTE: If you are building using MSVC (Microsoft Visual C++) through the cmake command, you may need to manually move the `data` and `res` folders to the same location as the executable, due to the weird folder structure MSVC generates.
+
 ## Controls
 You can change the controls in the settings in the main menu. Note that you can't go back to the main menu once you have clicked _Play_. The default controls are:
 - `R`: Rotate counterclockwise (in placement mode)
