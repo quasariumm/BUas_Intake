@@ -111,3 +111,9 @@ Made the README.
 
 ## 2024-05-02
 Tried to build it on Visual Studio, didn't work for a long time. Eventually got down to that my files were not static. Also fixed some errors that I didn't get on Linux.
+
+## 2024-05-04
+Fixed building on Linux.
+
+## 2024-05-10
+Tested the game and uploaded the final version.

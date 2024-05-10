@@ -1,6 +1,6 @@
 SAY "Okay, just wait here and I'll get the item."
 WAIT 5
-SAY "Last year's theme was bounce, and this\nexperiment came out of it. It's a highly elastic\nbouce pad."
+SAY "Last year's theme was bounce, and this\nexperiment came out of it. It's a highly elastic\nbounce pad."
 WAIT 2
 SAY "Sadly this took a lot of money to develop, hence\nthe financial problems we're in."
 WAIT 2
