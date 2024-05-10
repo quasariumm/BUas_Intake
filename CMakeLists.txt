@@ -54,8 +54,8 @@ target_link_directories(${CMAKE_PROJECT_NAME}
 
 # Add openal32 to the libs
 if (MSVC OR WIN32)
-	file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/lib/SFML/extlibs/bin/x64/openal32.dll ${CMAKE_CURRENT_BINARY_DIR}/lib/openal32.dll)
-	file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/lib/SFML/extlibs/libs-msvc-universal/x64/openal32.lib ${CMAKE_CURRENT_BINARY_DIR}/lib/openal32.lib)
+	file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/lib/SFML/extlibs/bin/x64/openal32.dll ${CMAKE_CURRENT_BINARY_DIR}/openal32.dll)
+	file(COPY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/lib/SFML/extlibs/libs-msvc-universal/x64/openal32.lib ${CMAKE_CURRENT_BINARY_DIR}/openal32.lib)
 elseif(UNIX)
 	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lib/openal/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.)
 endif()
