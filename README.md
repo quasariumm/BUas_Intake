@@ -33,7 +33,7 @@ You can change the controls in the settings in the main menu. Note that you can'
 - `F`: Move (in edit mode)
 - `G`: Delete (in edit mode)
 
-NOTE: Moue buttons are not supported. If you do want to use the mouse, please rebind that mouse button to a supported key (See [https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php](https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php) for the supported keys).
+NOTE: Mouse buttons are not supported. If you do want to use the mouse, please rebind that mouse button to a supported key (See [https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php](https://www.sfml-dev.org/documentation/2.6.1/structsf_1_1Keyboard_1_1Scan.php) for the supported keys).
 
 ## Specific file extensions
 ### .ql
